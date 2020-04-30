@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<h2>Edit category</h2>
+{% from "includes/_formhelpers.html" import render_field %}
+
+<form method="POST" action="">
+	<div class="form-group">
+		{{render_field(form.category, class_="form-control")}}
+	</div>
+	<p><input type="submit" class="btn btn-primary" value="Rename"></p>
+
+</form>
+
+
+{% endblock %}
