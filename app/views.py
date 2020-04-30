@@ -4,8 +4,8 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory
-from .register import Register_Category
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem
+from .register import Register_Category, Register_Item
 
 USERNAME="Talal"
 
@@ -24,17 +24,28 @@ def register():
 @app.route('/register/<string:type>', methods=['GET', 'POST'])
 def register_with_param(type):
     form_category = Register_Category(request.form)
+    form_item = Register_Item(request.form)
 
-    if request.method == 'POST' and form_category.category.data and form_category.validate():
-        insertCategory(form_category.category.data)
-        return view()
+    if type == 'category':
+        if request.method == 'POST' and form_category.category.data and form_category.validate():
+            insertCategory(form_category.category.data)
+            return view()
 
-    return render_template('register:' + type + '.html', USER=USERNAME, form=form_category)
+        return render_template('register:' + type + '.html', USER=USERNAME, form=form_category)
+
+    elif type == 'item':
+        if request.method == 'POST' and form_item.item.data and form_item.validate():
+            insertItem(form_item.item.data)
+            return view()
+
+        return render_template('register:' + type + '.html', USER=USERNAME, form=form_item)
+
+    else:
+        return redirect('/dashboard')
 
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])
 def edit_category(uuid):
     form_category = Register_Category(request.form)
-
 
     if request.method == 'POST' and form_category.category.data and form_category.validate():
         updateCategory(uuid, form_category.category.data)

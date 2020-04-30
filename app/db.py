@@ -5,6 +5,7 @@ myclient = pymongo.MongoClient("mongodb://nerv:9201/")
 mydb = myclient["MAI_UCLA_DB"]
 
 CATEGORY_DB = mydb["category"]
+ITEM_DB = mydb["item"]
 
 def getCategoryNames():
     result = []
@@ -31,3 +32,20 @@ def updateCategory(uuid, newName):
 def insertCategory(newCategory):
     if str(newCategory) not in getCategoryNames():
         CATEGORY_DB.insert_one({"name": str(newCategory).strip()})
+
+def getItemNames():
+    result = []
+    for item in ITEM_DB.find():
+        result.append(item['name'])
+    return result
+
+def insertItem(category_id, name, locations, quantity_active, quantity_expired, notes, barcodes):
+    if str(newCategory) not in getCategoryNames(): ITEM.insert_one({
+            "category_id": str(category_id).strip(),
+            "name": str(newCategory).strip(),
+            "locations": locations,
+            "quantity_active": 0,
+            "quantity_expired": 0,
+            "notes": str(newCategory),
+            "barcodes": newCategory})
+
