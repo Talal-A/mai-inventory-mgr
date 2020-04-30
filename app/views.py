@@ -4,7 +4,7 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory
+from .db import insertCategory, getCategories
 from .register import Register_Category
 
 USERNAME="Talal"
@@ -27,9 +27,11 @@ def register_with_param(type):
 
     if request.method == 'POST' and form_category.category.data and form_category.validate():
         insertCategory(form_category.category.data)
+        return view()
 
     return render_template('register:' + type + '.html', USER=USERNAME, form=form_category)
 
 @app.route('/view')
 def view():
-    return render_template('view.html', USER=USERNAME)
+    print(getCategories())
+    return render_template('view.html', USER=USERNAME, categories=getCategories())
