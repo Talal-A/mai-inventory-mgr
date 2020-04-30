@@ -1,0 +1,25 @@
+<style>
+  #nav-profile {
+    margin-right: 15px;
+  }
+
+  #nav-image {
+    display: inline-block;
+    width: 72px;
+    height: 72px;
+    background: no-repeat url("../static/mai_logo.png") center/cover;
+  }
+</style>
+
+<nav class="navbar navbar-light navbar-expand-lg bg-light sticky-top mb-4 pr-0 pt-0 pb-0">
+
+  <a class="navbar-brand" href="/">MAI Inventory<sup>Beta</sup></a>
+  <div class="collapse navbar-collapse">
+    <div class="nav navbar-nav mr-auto">
+      <a class="nav-item nav-link" href="/dashboard">Dashboard</a>
+      <a class="nav-item nav-link" href="/register">Register</a>
+    </div>
+    <div id="nav-profile" class="d-flex justify-content-end navbar-text"> Welcome,&nbsp;{{USER}}</div>
+    <div id="nav-image" class="navbar-brand-image"></div>
+  </div>
+</nav>

@@ -5,5 +5,8 @@ from app import app
 
 @app.route('/')
 def index():
-    print('hello world')
-    return "hello world"
+    return redirect('/dashboard')
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html', USER="Talal")
