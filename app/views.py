@@ -10,3 +10,13 @@ def index():
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html', USER="Talal")
+
+@app.route('/register')
+def register():
+    print(type)
+    return render_template('register.html', USER="Talal")
+
+@app.route('/register/<string:type>')
+def register_with_param(type):
+    print(type)
+    return render_template('register:' + type + '.html', USER="Talal")
