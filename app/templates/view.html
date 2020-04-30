@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<h2>View database</h2>
+
+<ul class="nav nav-pills nav-fill">
+  <li class="nav-item">
+  	<a class="nav-link active" data-toggle="pill" href="#a">Category</a>
+  </li>
+  <li class="nav-item">
+  	<a class="nav-link disabled" data-toggle="pill" href="#b">Item</a>
+  </li>
+</ul>
+
+<div class="tab-content">
+  <div id="a" class="tab-pane fade in active">
+    <h3>HOME</h3>
+    <p>Some content.</p>
+  </div>
+  <div id="b" class="tab-pane fade">
+    <h3>Menu 1</h3>
+    <p>Some content in menu 1.</p>
+  </div>
+</div>
+
+
+{% endblock %}

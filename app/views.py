@@ -19,7 +19,6 @@ def dashboard():
 
 @app.route('/register')
 def register():
-    print(type)
     return render_template('register.html', USER=USERNAME)
 
 @app.route('/register/<string:type>', methods=['GET', 'POST'])
@@ -30,3 +29,7 @@ def register_with_param(type):
         insertCategory(form_category.category.data)
 
     return render_template('register:' + type + '.html', USER=USERNAME, form=form_category)
+
+@app.route('/view')
+def view():
+    return render_template('view.html', USER=USERNAME)
