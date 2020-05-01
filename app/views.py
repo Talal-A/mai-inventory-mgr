@@ -4,7 +4,7 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory
 from .register import Register_Category, Register_Item, Update_Item
 
 USERNAME="Talal"
@@ -54,6 +54,16 @@ def edit_category(uuid):
         form_category.category.data = getCategoryForId(uuid)['name']
 
     return render_template('edit:category.html', USER=USERNAME, form=form_category)
+
+@app.route('/delete/category')
+def delete_category_view():
+    return render_template('delete:category.html', USER=USERNAME, categories=getDeletableCategories())
+
+@app.route('/delete/category/<string:uuid>')
+def delete_category(uuid):
+    deleteCategory(uuid)
+    return redirect('/delete/category')
+
 
 @app.route('/edit/item/<string:uuid>', methods=['GET', 'POST'])
 def edit_item(uuid):

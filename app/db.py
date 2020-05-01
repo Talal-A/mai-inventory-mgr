@@ -7,6 +7,24 @@ mydb = myclient["MAI_UCLA_DB"]
 CATEGORY_DB = mydb["category"]
 ITEM_DB = mydb["item"]
 
+def getDeletableCategories():
+    items = getItems()
+    result = []
+    for category in getCategories():
+        if not categoryInUse(category['id'], items):
+            result.append(category)
+    return result
+
+def categoryInUse(category_id, items):
+    for item in items:
+        if str(category_id) == str(item['category_id']):
+            return True
+    return False
+
+def deleteCategory(category_id):
+    query = {'_id': ObjectId(category_id)}
+    CATEGORY_DB.delete_one(query)
+
 def getCategoryNames():
     result = []
     for item in CATEGORY_DB.find():
