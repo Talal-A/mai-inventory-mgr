@@ -2,6 +2,8 @@ from wtforms import Form, StringField, validators, ValidationError, SubmitField,
 from .db import getCategoryNames, getItemNames, getCategories
 
 def validateCategory(form, field):
+	if len(field.data.strip()) == 0:
+		raise ValidationError('Category cannot be empty')
 	if field.data.strip() in getCategoryNames():
 		raise ValidationError('Category already exists')
 
@@ -10,6 +12,8 @@ class Register_Category(Form):
 	submit = SubmitField('Submit')
 
 def validateItem(form, field):
+	if len(field.data.strip()) == 0:
+		raise ValidationError('Item cannot be empty')
 	if field.data.strip() in getItemNames():
 		raise ValidationError('Item already exists')
 

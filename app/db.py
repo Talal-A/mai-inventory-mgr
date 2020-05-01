@@ -39,13 +39,13 @@ def getItemNames():
         result.append(item['name'])
     return result
 
-def insertItem(category_id, name, locations, quantity_active, quantity_expired, notes, barcodes):
-    if str(newCategory) not in getCategoryNames(): ITEM.insert_one({
+def insertItem(category_id, name, locations=[], quantity_active=0, quantity_expired=0, notes="", barcodes=[]):
+    if str(name).strip() not in getItemNames(): ITEM_DB.insert_one({
             "category_id": str(category_id).strip(),
-            "name": str(newCategory).strip(),
+            "name": str(name).strip(),
             "locations": locations,
             "quantity_active": 0,
             "quantity_expired": 0,
-            "notes": str(newCategory),
-            "barcodes": newCategory})
+            "notes": notes,
+            "barcodes": barcodes})
 
