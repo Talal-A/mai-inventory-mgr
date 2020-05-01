@@ -17,7 +17,7 @@ class Register_Item(Form):
 	# TODO: Add dropdown for category selection
 	category_choices = []
 	for category in getCategories():
-		category_choices.append((category['id'], category['name']))
-	category = SelectField('Category', choices=category_choices)
-	item = StringField('Item', [validators.Length(min=1), validateCategory])
+		category_choices.append((str(category['id']), str(category['name'])))
+	category = SelectField('Category', choices=category_choices, coerce=str)
+	item = StringField('Item', [validators.Length(min=1), validateItem])
 	submit = SubmitField('Submit')

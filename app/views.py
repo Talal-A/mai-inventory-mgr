@@ -34,6 +34,8 @@ def register_with_param(type):
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_category)
 
     elif type == 'item':
+        print(form_item.category.data)
+        print(form_item.item.data)
         if request.method == 'POST' and form_item.category.data and form_item.item.data and form_item.validate():
             insertItem(form_item.item.data) # TODO: Insert the category uuid and all other metadata
             return redirect('/view')
