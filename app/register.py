@@ -18,6 +18,7 @@ def validateItem(form, field):
 		raise ValidationError('Item already exists')
 
 class Register_Item(Form):
+	# TODO: Categories are being cached here. Need to ensure they are updated every time the class is called.
 	category_choices = []
 	for category in getCategories():
 		category_choices.append((str(category['id']), str(category['name'])))
@@ -27,6 +28,7 @@ class Register_Item(Form):
 	submit = SubmitField('Submit')
 
 class Update_Item(Form):
+	# TODO: Categories are being cached here. Need to ensure they are updated every time the class is called.
 	category_choices = []
 	for category in getCategories():
 		category_choices.append((str(category['id']), str(category['name'])))
