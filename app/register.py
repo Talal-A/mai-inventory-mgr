@@ -26,7 +26,7 @@ class Register_Item(Form):
 	location = StringField('Location', [validators.Length(min=1), validators.required()])
 	submit = SubmitField('Submit')
 
-class Update_Item(Form): # WIP
+class Update_Item(Form):
 	category_choices = []
 	for category in getCategories():
 		category_choices.append((str(category['id']), str(category['name'])))
@@ -34,5 +34,5 @@ class Update_Item(Form): # WIP
 	location = StringField('Location', [validators.required()])
 	quantity_active = IntegerField('Quantity - Active', [validators.required()])
 	quantity_expired = IntegerField('Quantity - Expired', [validators.required()])
-	notes = TextAreaField('Notes', [validators.required()])
+	notes = TextAreaField('Notes')
 	submit = SubmitField('Submit')

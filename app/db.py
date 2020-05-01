@@ -61,6 +61,16 @@ def getItemNames():
         result.append(item['name'])
     return result
 
+def updateItem(uuid, category_id, location, quantity_active, quantity_expired, notes):
+    print("ummm??")
+    ITEM_DB.update_one({'_id': ObjectId(uuid)}, {"$set": {
+        "category_id": str(category_id).strip(),
+        "location": str(location).strip(),
+        "quantity_active": int(quantity_active),
+        "quantity_expired": int(quantity_expired),
+        "notes": str(notes)
+        }})
+
 def insertItem(category_id, name, location="", quantity_active=0, quantity_expired=0, notes="", barcodes=[]):
     if str(name).strip() not in getItemNames(): ITEM_DB.insert_one({
             "category_id": str(category_id).strip(),

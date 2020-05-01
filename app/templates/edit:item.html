@@ -10,10 +10,7 @@
 		{{render_field(form.category, class_="form-control")}}
 	</div>
 	<div class="form-group">
-		{% for location in form.locations %}
-
-		{{render_field(location, class_="form-control")}}
-		{% endfor %}
+		{{render_field(form.location, class_="form-control")}}
 	</div>
 	<div class="form-group">
 		{{render_field(form.quantity_active, class_="form-control")}}
@@ -23,9 +20,6 @@
 	</div>
 	<div class="form-group">
 		{{render_field(form.notes, class_="form-control")}}
-	</div>
-	<div class="form-group">
-		{{render_field(form.barcodes, class_="form-control")}}
 	</div>
 	<p><input type="submit" class="btn btn-primary" value="Submit"></p>
 
