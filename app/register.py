@@ -1,4 +1,4 @@
-from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField, SelectField
+from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField, SelectField, IntegerField, FieldList, FormField
 from .db import getCategoryNames, getItemNames, getCategories
 
 def validateCategory(form, field):
@@ -18,10 +18,21 @@ def validateItem(form, field):
 		raise ValidationError('Item already exists')
 
 class Register_Item(Form):
-	# TODO: Add dropdown for category selection
 	category_choices = []
 	for category in getCategories():
 		category_choices.append((str(category['id']), str(category['name'])))
 	category = SelectField('Category', choices=category_choices, coerce=str)
-	item = StringField('Item', [validators.Length(min=1), validateItem])
+	item = StringField('Name', [validators.Length(min=1), validators.required(), validateItem])
+	location = StringField('Location', [validators.Length(min=1), validators.required()])
+	submit = SubmitField('Submit')
+
+class Update_Item(Form): # WIP
+	category_choices = []
+	for category in getCategories():
+		category_choices.append((str(category['id']), str(category['name'])))
+	category = SelectField('Category', choices=category_choices, coerce=str)
+	location = StringField('Location', [validators.required()])
+	quantity_active = IntegerField('Quantity - Active', [validators.required()])
+	quantity_expired = IntegerField('Quantity - Expired', [validators.required()])
+	notes = TextAreaField('Notes', [validators.required()])
 	submit = SubmitField('Submit')
