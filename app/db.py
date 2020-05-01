@@ -80,7 +80,6 @@ def getItemNames():
     return result
 
 def updateItem(uuid, category_id, location, quantity_active, quantity_expired, notes):
-    print("ummm??")
     ITEM_DB.update_one({'_id': ObjectId(uuid)}, {"$set": {
         "category_id": str(category_id).strip(),
         "location": str(location).strip(),
