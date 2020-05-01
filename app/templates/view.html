@@ -6,7 +6,7 @@
         <a class="nav-link" data-toggle="pill" href="#a">Category</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link disabled" data-toggle="pill" href="#b">Item</a>
+        <a class="nav-link" data-toggle="pill" href="#b">Item</a>
     </li>
 </ul>
 <div class="tab-content">
@@ -31,8 +31,30 @@
         </table>
     </div>
     <div id="b" class="tab-pane fade">
-        <h3>Menu 1</h3>
-        <p>Some content in menu 1.</p>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Category</th>
+                    <th scope="col">Item</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{item.category_name}}</td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.locations[]}}</td>
+                    <td>{{item.quantity_active}}</td>
+                    <td class="text-right">
+                        <a href="edit/item/{{item.id}}"><button class="btn"><i class="material-icons">edit</i></button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

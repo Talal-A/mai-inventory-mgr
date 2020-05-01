@@ -33,6 +33,20 @@ def insertCategory(newCategory):
     if str(newCategory) not in getCategoryNames():
         CATEGORY_DB.insert_one({"name": str(newCategory).strip()})
 
+def getItems():
+    result = []
+    for item in ITEM_DB.find():
+        result.append({
+            'category_id': item['category_id'],
+            'category_name': getCategoryForId(item['category_id'])['name'],
+            'name': item['name'], 
+            'locations': item['locations'], 
+            'quantity_active': item['quantity_active'], 
+            'quantity_expired': item['quantity_expired'], 
+            'notes': item['notes'], 
+            'barcodes': item['barcodes']})
+    return result
+
 def getItemNames():
     result = []
     for item in ITEM_DB.find():

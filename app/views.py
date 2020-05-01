@@ -4,7 +4,7 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems
 from .register import Register_Category, Register_Item
 
 USERNAME="Talal"
@@ -58,4 +58,5 @@ def edit_category(uuid):
 @app.route('/view')
 def view():
     print(getCategories())
-    return render_template('view.html', USER=USERNAME, categories=getCategories())
+    print(getItems())
+    return render_template('view.html', USER=USERNAME, categories=getCategories(), items=getItems())
