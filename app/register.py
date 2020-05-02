@@ -1,5 +1,5 @@
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField, SelectField, IntegerField, FieldList, FormField
-from .db import getCategoryNames, getItemNames, getCategories, getItems
+from .db import getCategoryNames, getItemNames, getCategories, getItems, getBarcodeNames
 
 def validateCategory(form, field):
 	if len(field.data.strip()) == 0:
@@ -45,9 +45,15 @@ class Update_Item(Form):
 			category_choices.append((str(category['id']), str(category['name'])))
 		self.category.choices = category_choices
 
+def validateBarcode(form, field):
+	if len(field.data.strip()) == 0:
+		raise ValidationError('Barcode cannot be empty')
+	if field.data.strip() in getBarcodeNames():
+		raise ValidationError('Barcode already exists')
+
 class Register_Barcode(Form):
 	item = SelectField('Item', choices=[], coerce=str)
-	barcode = StringField('Barcode', [validators.required()])
+	barcode = StringField('Barcode', [validators.required(), validateBarcode])
 
 	def __init__(self, *args, **kwargs):
 		super(Register_Barcode, self).__init__(*args, **kwargs)
