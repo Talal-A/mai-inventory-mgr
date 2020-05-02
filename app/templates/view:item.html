@@ -2,6 +2,63 @@
 {% block body %}
 <h2>{{item.name}}</h2>
 
-Hi.
+<!-- Used to align the material icon to the text -->
+<style type="text/css">
+    .material-icons{
+        display: inline-flex;
+        vertical-align: top;
+    }
+</style>
+
+<div class="list-group mt-3">
+
+    <div class="d-flex list-group-item flex-row ">
+        <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">code</i> Item ID</span>
+        <span class="flex-fill text-right">{{item.id}}</span>
+    </div>
+
+    <div class="d-flex list-group-item flex-row ">
+        <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">code</i> Category ID</span>
+        <span class="flex-fill text-right">{{item.category_id}}</span>
+    </div>
+
+    <div class="d-flex list-group-item flex-row ">
+        <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">category</i> Category</span>
+        <span class="flex-fill text-right">{{item.category_name}}</span>
+    </div>
+
+    <div class="d-flex list-group-item flex-row ">
+        <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">title</i> Item Name</span>
+        <span class="flex-fill text-right">{{item.name}}</span>
+    </div>
+
+    <div class="d-flex list-group-item flex-row ">
+        <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">insert_chart_outlined</i> Quantity - Active</span>
+        <span class="flex-fill text-right">{{item.quantity_active}}</span>
+    </div>
+
+    <div class="d-flex list-group-item flex-row ">
+        <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">insert_chart</i> Quantity - Expired</span>
+        <span class="flex-fill text-right">{{item.quantity_expired}}</span>
+    </div>
+
+</div>
+
+<br>
+
+<div class="card">
+  <div class="card-header">
+        <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">description</i> Notes</span>
+  </div>
+  <div class="card-body">
+    <blockquote class="blockquote mb-0">
+        {% set list1 = item.notes.split('\n') %}
+            {% for list in list1 %}
+            <p>{{ list }}</p>
+        {% endfor %}
+    </blockquote>
+  </div>
+</div>
+
 
 {% endblock %}
