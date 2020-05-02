@@ -70,25 +70,16 @@ def edit_item(uuid):
     form_item = Update_Item(request.form)
 
     if request.method == 'POST' and form_item.validate():
-        print("Okay")
-        print(uuid)
-        print(form_item.category.data)
-        print(form_item.location.data)
-        print(form_item.quantity_active.data)
-        print(form_item.quantity_expired.data)
-        print(form_item.notes.data)
         updateItem(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data)
         return redirect('/view')
     else:
         current_item = getItemForId(uuid)
-        print(current_item)
-        form_item.category.data = current_item['category_id']
-        form_item.location.data = current_item['location']
-        form_item.quantity_active.data = current_item['quantity_active']
-        form_item.quantity_expired.data = current_item['quantity_expired']
-        form_item.notes.data = current_item['notes']
 
     return render_template('edit:item.html', USER=USERNAME, form=form_item, item_name=current_item['name'])
+
+@app.route('/view/item/<string:uuid>')
+def view_item(uuid):
+    return render_template('view:item.html', USER=USERNAME, item=getItemForId(uuid))
 
 @app.route('/view')
 def view():
