@@ -30,21 +30,21 @@ def register_with_param(type):
     if type == 'category':
         if request.method == 'POST' and form_category.category.data and form_category.validate():
             insertCategory(form_category.category.data)
-            return redirect('/view')
+            return redirect('/register')
 
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_category)
 
     elif type == 'item':
         if request.method == 'POST' and form_item.category.data and form_item.item.data and form_item.validate():
             insertItem(str(form_item.category.data).strip(), str(form_item.item.data).strip(), str(form_item.location.data).strip())
-            return redirect('/view')
+            return redirect('/register')
 
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_item, categories=getCategories())
 
     elif type == 'barcode':
         if request.method == 'POST' and form_barcode.validate():
             insertBarcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
-            return redirect('/view')
+            return redirect('/register')
 
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_barcode, categories=getCategories())
 
