@@ -2,9 +2,32 @@
 
 {% block body %}
 
-<div class="jumbotron">
-	<h1>Dashboard</h1>
-	<p class="lead">Hi.</p>
+
+<h2><label id="greet"></label> {{USER}}, what would you like to do?</h2>
+
+<div class="list-group">
+  <a href="/register/category" class="list-group-item list-group-item-action">Create a new category</a>
+  <a href="/register/item" class="list-group-item list-group-item-action">Add a new item</a>
+  <a href="/register/barcode" class="list-group-item list-group-item-action">Register a new barcode</a>
+  <a href="/delete/item" class="list-group-item list-group-item-action disabled"><div style="color:red">Delete an item</div></a>
+  <a href="/delete/category" class="list-group-item list-group-item-action"><div style="color:red">Delete a category</div></a>
+  <a href="/delete/barcode" class="list-group-item list-group-item-action"><div style="color:red">Delete a barcode</div></a>
 </div>
+
+<script>
+    var myDate = new Date();
+    var hrs = myDate.getHours();
+
+    var greet;
+
+    if (hrs < 12)
+        greet = 'Good morning';
+    else if (hrs >= 12 && hrs <= 17)
+        greet = 'Good afternoon';
+    else if (hrs >= 17 && hrs <= 24)
+        greet = 'Good evening';
+
+    document.getElementById('greet').innerHTML = greet;
+</script> 
 
 {% endblock %}

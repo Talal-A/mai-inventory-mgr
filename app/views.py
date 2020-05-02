@@ -17,10 +17,6 @@ def index():
 def dashboard():
     return render_template('dashboard.html', USER=USERNAME)
 
-@app.route('/register')
-def register():
-    return render_template('register.html', USER=USERNAME)
-
 @app.route('/register/<string:type>', methods=['GET', 'POST'])
 def register_with_param(type):
     form_category = Register_Category(request.form)
