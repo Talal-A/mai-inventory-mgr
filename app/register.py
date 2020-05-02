@@ -18,23 +18,29 @@ def validateItem(form, field):
 		raise ValidationError('Item already exists')
 
 class Register_Item(Form):
-	# TODO: Categories are being cached here. Need to ensure they are updated every time the class is called.
-	category_choices = []
-	for category in getCategories():
-		category_choices.append((str(category['id']), str(category['name'])))
-	category = SelectField('Category', choices=category_choices, coerce=str)
+	category = SelectField('Category', choices=[], coerce=str)
 	item = StringField('Name', [validators.Length(min=1), validators.required(), validateItem])
 	location = StringField('Location', [validators.Length(min=1), validators.required()])
 	submit = SubmitField('Submit')
+	
+	def __init__(self, *args, **kwargs):
+		super(Register_Item, self).__init__(*args, **kwargs)
+		category_choices = []
+		for category in getCategories():
+			category_choices.append((str(category['id']), str(category['name'])))
+		self.category.choices = category_choices
 
 class Update_Item(Form):
-	# TODO: Categories are being cached here. Need to ensure they are updated every time the class is called.
-	category_choices = []
-	for category in getCategories():
-		category_choices.append((str(category['id']), str(category['name'])))
-	category = SelectField('Category', choices=category_choices, coerce=str)
+	category = SelectField('Category', choices=[], coerce=str)
 	location = StringField('Location', [validators.required()])
 	quantity_active = IntegerField('Quantity - Active', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")])
 	quantity_expired = IntegerField('Quantity - Expired', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")])
 	notes = TextAreaField('Notes')
 	submit = SubmitField('Submit')
+
+	def __init__(self, *args, **kwargs):
+		super(Update_Item, self).__init__(*args, **kwargs)
+		category_choices = []
+		for category in getCategories():
+			category_choices.append((str(category['id']), str(category['name'])))
+		self.category.choices = category_choices
