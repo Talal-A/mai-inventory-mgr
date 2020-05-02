@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block body %}
 <h2 style="text-align:left;float:left;">{{item.name}}</h2> 
-<a style="text-align:right;float:right;" href="/edit/item/{{item.id}}"><button class="btn"><i class="material-icons">edit</i></button></a>
+<a style="text-align:right;float:right;">
+    <button class="btn" href="/edit/item/{{item.id}}"><i class="material-icons">edit</i></button>
+    <button class="btn" onclick="confirmDelete('{{item.id}}', '{{item.name}}')"><i class="material-icons">delete</i></button>
+</a>
 <div style="clear:both;"/>
 
 
@@ -80,5 +83,12 @@
   </div>
 </div>
 
+<script>
+  function confirmDelete(id, name) {
+    if (confirm("Are you sure you want to delete item [" + name + "]? This action is not reversable.")) {
+      window.location.href = "/delete/item/" + id
+    }
+  }
+</script>
 
 {% endblock %}

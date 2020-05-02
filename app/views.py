@@ -4,7 +4,7 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem
 from .register import Register_Category, Register_Item, Update_Item, Register_Barcode
 
 USERNAME="Talal"
@@ -67,6 +67,11 @@ def delete_barcode_view():
 def delete_barcode(uuid):
     deleteBarcode(uuid)
     return redirect('/delete/barcode')
+
+@app.route('/delete/item/<string:uuid>')
+def delete_item(uuid):
+    deleteItem(uuid)
+    return redirect('/view')
 
 @app.route('/delete/category')
 def delete_category_view():

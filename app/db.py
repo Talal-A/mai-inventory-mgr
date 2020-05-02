@@ -87,6 +87,16 @@ def getItemNames():
         result.append(item['name'])
     return result
 
+def deleteItem(item_id):
+    # First delete the barcodes, if any
+    for barcode in getBarcodesForItem(item_id):
+        print(barcode)
+        deleteBarcode(str(barcode['_id']))
+
+    # Delete item
+    query = {'_id': ObjectId(item_id)}
+    ITEM_DB.delete_one(query)
+
 def updateItem(uuid, category_id, location, quantity_active, quantity_expired, notes):
     ITEM_DB.update_one({'_id': ObjectId(uuid)}, {"$set": {
         "category_id": str(category_id).strip(),
