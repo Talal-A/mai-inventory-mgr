@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block body %}
-<h2>{{item.name}}</h2>
+<h2 style="text-align:left;float:left;">{{item.name}}</h2> 
+<a style="text-align:right;float:right;" href="/edit/item/{{item.id}}"><button class="btn"><i class="material-icons">edit</i></button></a>
+<div style="clear:both;"/>
+
 
 <!-- Used to align the material icon to the text -->
 <style type="text/css">
