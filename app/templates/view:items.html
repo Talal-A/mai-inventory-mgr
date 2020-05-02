@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>{{category}}</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Item</th>
+            <th scope="col">Location</th>
+            <th scope="col">Quantity</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{item.category_name}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.location}}</td>
+            <td>{{item.quantity_active}}</td>
+            <td class="text-right">
+                <a href="view/item/{{item.id}}"><button class="btn"><i class="material-icons">description</i></button></a>
+                <a href="edit/item/{{item.id}}"><button class="btn"><i class="material-icons">edit</i></button></a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

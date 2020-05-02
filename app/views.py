@@ -4,7 +4,7 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory
 from .register import Register_Category, Register_Item, Update_Item, Register_Barcode
 
 USERNAME="Talal"
@@ -81,7 +81,6 @@ def delete_category(uuid):
     deleteCategory(uuid)
     return redirect('/delete/category')
 
-
 @app.route('/edit/item/<string:uuid>', methods=['GET', 'POST'])
 def edit_item(uuid):
     form_item = Update_Item(request.form)
@@ -99,10 +98,18 @@ def edit_item(uuid):
 
     return render_template('edit:item.html', USER=USERNAME, form=form_item, item_name=current_item['name'])
 
+@app.route('/view/category/<string:uuid>')
+def view_category(uuid):
+    return render_template('view:items.html', USER=USERNAME, category=getCategoryForId(uuid)['name'], items=getItemsForCategory(uuid))
+
+@app.route('/view/all')
+def view_all_items():
+    return render_template('view:items.html', USER=USERNAME, category='All items', items=getItems())
+
 @app.route('/view/item/<string:uuid>')
 def view_item(uuid):
     return render_template('view:item.html', USER=USERNAME, item=getItemForId(uuid), barcodes=getBarcodesForItem(uuid))
 
 @app.route('/view')
 def view():
-    return render_template('view.html', USER=USERNAME, categories=getCategories(), items=getItems())
+    return render_template('view.html', USER=USERNAME, categories=getCategories())

@@ -59,7 +59,14 @@ def getItemForId(uuid):
             result = item
     return result
 
-def getItems():
+def getItemsForCategory(category_id):
+    result = []
+    for item in getItems():
+        if str(category_id) == str(item['category_id']):
+            result.append(item)
+    return result
+
+def getItems(): # TODO: Add url field
     result = []
     for item in ITEM_DB.find():
         result.append({
