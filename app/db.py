@@ -6,6 +6,7 @@ mydb = myclient["MAI_UCLA_DB"]
 
 CATEGORY_DB = mydb["category"]
 ITEM_DB = mydb["item"]
+BARCODE_DB = mydb["barcode"]
 
 def getDeletableCategories():
     items = getItems()
@@ -97,4 +98,24 @@ def insertItem(category_id, name, location="", quantity_active=0, quantity_expir
             "quantity_expired": 0,
             "notes": notes,
             "barcodes": barcodes})
+
+def getBarcodesForItem(item_id):
+    result = []
+    for barcode in BARCODE_DB.find():
+        if item_id == barcode['item_id']:
+            result.append(barcode)
+    return result
+
+def getBarcodes():
+    result = []
+    for item in BARCODE_DB.find():
+        result.append(item['barcode'])
+    return result
+
+def insertBarcode(newBarcode, itemId):
+    if str(newBarcode).strip() not in getBarcodes():
+        BARCODE_DB.insert_one({
+            "barcode": str(newBarcode).strip(),
+            "item_id": str(itemId).strip()
+        })
 

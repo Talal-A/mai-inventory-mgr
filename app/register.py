@@ -1,5 +1,5 @@
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField, SelectField, IntegerField, FieldList, FormField
-from .db import getCategoryNames, getItemNames, getCategories
+from .db import getCategoryNames, getItemNames, getCategories, getItems
 
 def validateCategory(form, field):
 	if len(field.data.strip()) == 0:
@@ -22,7 +22,7 @@ class Register_Item(Form):
 	item = StringField('Name', [validators.Length(min=1), validators.required(), validateItem])
 	location = StringField('Location', [validators.Length(min=1), validators.required()])
 	submit = SubmitField('Submit')
-	
+
 	def __init__(self, *args, **kwargs):
 		super(Register_Item, self).__init__(*args, **kwargs)
 		category_choices = []
@@ -44,3 +44,14 @@ class Update_Item(Form):
 		for category in getCategories():
 			category_choices.append((str(category['id']), str(category['name'])))
 		self.category.choices = category_choices
+
+class Register_Barcode(Form):
+	item = SelectField('Item', choices=[], coerce=str)
+	barcode = StringField('Barcode', [validators.required()])
+
+	def __init__(self, *args, **kwargs):
+		super(Register_Barcode, self).__init__(*args, **kwargs)
+		item_choices = []
+		for item in getItems():
+			item_choices.append((str(item['id']), str(item['name'])))
+		self.item.choices = item_choices

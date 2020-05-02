@@ -4,8 +4,8 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory
-from .register import Register_Category, Register_Item, Update_Item
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem
+from .register import Register_Category, Register_Item, Update_Item, Register_Barcode
 
 USERNAME="Talal"
 
@@ -25,6 +25,7 @@ def register():
 def register_with_param(type):
     form_category = Register_Category(request.form)
     form_item = Register_Item(request.form)
+    form_barcode = Register_Barcode(request.form)
 
     if type == 'category':
         if request.method == 'POST' and form_category.category.data and form_category.validate():
@@ -39,6 +40,13 @@ def register_with_param(type):
             return redirect('/view')
 
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_item, categories=getCategories())
+
+    elif type == 'barcode':
+        if request.method == 'POST' and form_barcode.validate():
+            insertBarcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
+            return redirect('/view')
+
+        return render_template('register:' + type + '.html', USER=USERNAME, form=form_barcode, categories=getCategories())
 
     else:
         return redirect('/dashboard')
@@ -84,10 +92,8 @@ def edit_item(uuid):
 
 @app.route('/view/item/<string:uuid>')
 def view_item(uuid):
-    return render_template('view:item.html', USER=USERNAME, item=getItemForId(uuid))
+    return render_template('view:item.html', USER=USERNAME, item=getItemForId(uuid), barcodes=getBarcodesForItem(uuid))
 
 @app.route('/view')
 def view():
-    print(getCategories())
-    print(getItems())
     return render_template('view.html', USER=USERNAME, categories=getCategories(), items=getItems())
