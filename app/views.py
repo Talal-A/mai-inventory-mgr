@@ -47,6 +47,19 @@ def register_with_param(type):
     else:
         return redirect('/dashboard')
 
+@app.route('/edit/item/add_barcode/<string:uuid>', methods=['GET', 'POST'])
+def register_barcode_for_item(uuid):
+    form_barcode = Register_Barcode(request.form)
+    form_barcode.item.data = str(uuid)
+    form_barcode.item.render_kw = {'disabled':'disabled'}
+
+    print(form_barcode.item.data)
+    if request.method == 'POST' and form_barcode.validate():
+        insertBarcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
+        return redirect('/view/item/' + uuid)
+
+    return render_template('register:' + 'barcode' + '.html', USER=USERNAME, form=form_barcode)
+
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])
 def edit_category(uuid):
     form_category = Register_Category(request.form)
