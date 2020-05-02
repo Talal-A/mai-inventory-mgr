@@ -88,7 +88,7 @@ def edit_item(uuid):
 
     if request.method == 'POST' and form_item.validate():
         updateItem(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data)
-        return redirect('/view')
+        return redirect('/view/item/' + uuid)
     else:
         current_item = getItemForId(uuid)
         form_item.category.data = current_item['category_id']
