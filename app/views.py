@@ -74,6 +74,11 @@ def edit_item(uuid):
         return redirect('/view')
     else:
         current_item = getItemForId(uuid)
+        form_item.category.data = current_item['category_id']
+        form_item.location.data = current_item['location']
+        form_item.quantity_active.data = current_item['quantity_active']
+        form_item.quantity_expired.data = current_item['quantity_expired']
+        form_item.notes.data = current_item['notes']
 
     return render_template('edit:item.html', USER=USERNAME, form=form_item, item_name=current_item['name'])
 
