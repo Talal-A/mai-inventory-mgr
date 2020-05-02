@@ -106,16 +106,38 @@ def getBarcodesForItem(item_id):
             result.append(barcode)
     return result
 
+def barcodeItemNameLookup(item_id, items):
+    for item in items:
+        if str(item_id) == str(item['id']):
+            return item['name']
+    return ""
+
 def getBarcodes():
+    result = []
+    items = getItems()
+    for barcode in BARCODE_DB.find():
+        result.append({
+            "id": str(barcode["_id"]),
+            "barcode": barcode['barcode'],
+            "item_id": barcode['item_id'],
+            "item_name": barcodeItemNameLookup(barcode['item_id'], items)
+        })
+    return result
+
+def getBarcodeNames():
     result = []
     for item in BARCODE_DB.find():
         result.append(item['barcode'])
     return result
 
 def insertBarcode(newBarcode, itemId):
-    if str(newBarcode).strip() not in getBarcodes():
+    if str(newBarcode).strip() not in getBarcodeNames():
         BARCODE_DB.insert_one({
             "barcode": str(newBarcode).strip(),
             "item_id": str(itemId).strip()
         })
+
+def deleteBarcode(barcode_id):
+    query = {'_id': ObjectId(barcode_id)}
+    BARCODE_DB.delete_one(query)
 
