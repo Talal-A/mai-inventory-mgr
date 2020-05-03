@@ -33,7 +33,7 @@ class Register_Item(Form):
 class Update_Item(Form):
 	category = SelectField('Category', choices=[], coerce=str)
 	location = StringField('Location', [validators.required()])
-	url = StringField('URL', [validators.required()])
+	url = StringField('URL')
 	quantity_active = IntegerField('Quantity - Active', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")])
 	quantity_expired = IntegerField('Quantity - Expired', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")])
 	notes = TextAreaField('Notes')
