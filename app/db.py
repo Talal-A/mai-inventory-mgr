@@ -66,13 +66,20 @@ def getItemsForCategory(category_id):
             result.append(item)
     return result
 
+def getCategoryIdToNameMapping():
+    result = {}
+    for category in getCategories():
+        result[str(category['id'])] = category['name']
+    return result
+
 def getItems(): # TODO: Add url field
     result = []
+    categoryNameMap = getCategoryIdToNameMapping()
     for item in ITEM_DB.find():
         result.append({
             'id': item['_id'],
             'category_id': item['category_id'],
-            'category_name': getCategoryForId(item['category_id'])['name'],
+            'category_name': categoryNameMap[item['category_id']],
             'name': item['name'], 
             'location': item['location'], 
             'quantity_active': item['quantity_active'], 
