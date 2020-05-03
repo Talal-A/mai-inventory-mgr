@@ -6,6 +6,13 @@
 
 {% from "includes/_formhelpers.html" import render_field %}
 
+<input type=button OnClick="scan();" value="Scan Barcode">
+<script>
+function scan(){
+     window.location="pic2shop://scan?callback=" + window.location.origin + window.location.pathname
+}
+</script>
+
 <form method="POST" action="">
 	<div class="form-group">
 		{{render_field(form.item, class_="form-control")}}
@@ -17,5 +24,11 @@
 
 </form>
 
+<script>
+	let searchParams = new URLSearchParams(window.location.search);
+	if (searchParams.has('ean')) {
+		document.forms[0]["barcode"].value = searchParams.get('ean');
+	}
+</script> 
 
 {% endblock %}
