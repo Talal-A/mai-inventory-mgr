@@ -78,7 +78,7 @@ def getItems(): # TODO: Add url field
             'quantity_active': item['quantity_active'], 
             'quantity_expired': item['quantity_expired'], 
             'notes': item['notes'], 
-            'barcodes': item['barcodes']})
+            'url': item['url']})
     return result
 
 def getItemNames():
@@ -97,16 +97,17 @@ def deleteItem(item_id):
     query = {'_id': ObjectId(item_id)}
     ITEM_DB.delete_one(query)
 
-def updateItem(uuid, category_id, location, quantity_active, quantity_expired, notes):
+def updateItem(uuid, category_id, location, quantity_active, quantity_expired, notes, url):
     ITEM_DB.update_one({'_id': ObjectId(uuid)}, {"$set": {
         "category_id": str(category_id).strip(),
         "location": str(location).strip(),
         "quantity_active": int(quantity_active),
         "quantity_expired": int(quantity_expired),
-        "notes": str(notes)
+        "notes": str(notes),
+        "url": str(url).strip()
         }})
 
-def insertItem(category_id, name, location="", quantity_active=0, quantity_expired=0, notes="", barcodes=[]):
+def insertItem(category_id, name, location="", quantity_active=0, quantity_expired=0, notes="", url=""):
     if str(name).strip() not in getItemNames(): ITEM_DB.insert_one({
             "category_id": str(category_id).strip(),
             "name": str(name).strip(),
@@ -114,7 +115,7 @@ def insertItem(category_id, name, location="", quantity_active=0, quantity_expir
             "quantity_active": 0,
             "quantity_expired": 0,
             "notes": notes,
-            "barcodes": barcodes})
+            "url": url})
 
 def getBarcodesForItem(item_id):
     result = []

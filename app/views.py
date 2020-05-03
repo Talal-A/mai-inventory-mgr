@@ -26,21 +26,21 @@ def register_with_param(type):
     if type == 'category':
         if request.method == 'POST' and form_category.category.data and form_category.validate():
             insertCategory(form_category.category.data)
-            return redirect('/register')
+            return redirect('/dashboard')
 
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_category)
 
     elif type == 'item':
         if request.method == 'POST' and form_item.category.data and form_item.item.data and form_item.validate():
             insertItem(str(form_item.category.data).strip(), str(form_item.item.data).strip(), str(form_item.location.data).strip())
-            return redirect('/register')
+            return redirect('/dashboard')
 
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_item, categories=getCategories())
 
     elif type == 'barcode':
         if request.method == 'POST' and form_barcode.validate():
             insertBarcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
-            return redirect('/register')
+            return redirect('/dashboard')
 
         return render_template('register:' + type + '.html', USER=USERNAME, form=form_barcode, categories=getCategories())
 
@@ -100,7 +100,7 @@ def edit_item(uuid):
     form_item = Update_Item(request.form)
 
     if request.method == 'POST' and form_item.validate():
-        updateItem(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data)
+        updateItem(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
         return redirect('/view/item/' + uuid)
     else:
         current_item = getItemForId(uuid)
@@ -109,6 +109,7 @@ def edit_item(uuid):
         form_item.quantity_active.data = current_item['quantity_active']
         form_item.quantity_expired.data = current_item['quantity_expired']
         form_item.notes.data = current_item['notes']
+        form_item.url.data = current_item['url']
 
     return render_template('edit:item.html', USER=USERNAME, form=form_item, item_name=current_item['name'])
 
