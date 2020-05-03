@@ -52,6 +52,12 @@ def validateBarcode(form, field):
 	if field.data.strip() in getBarcodeNames():
 		raise ValidationError('Barcode already exists')
 
+def validateBarcodeExists(form, field):
+	if len(field.data.strip()) == 0:
+		raise ValidationError('Barcode cannot be empty')
+	if field.data.strip() not in getBarcodeNames():
+		raise ValidationError('Barcode does not exist.')
+
 class Register_Barcode(Form):
 	item = SelectField('Item', choices=[], coerce=str)
 	barcode = StringField('Barcode', [validators.required(), validateBarcode])
@@ -62,3 +68,7 @@ class Register_Barcode(Form):
 		for item in getItems():
 			item_choices.append((str(item['id']), str(item['name'])))
 		self.item.choices = item_choices
+
+class Barcode_Lookup(Form):
+	barcode = StringField('Barcode', [validators.required(), validateBarcodeExists])
+	submit = SubmitField('Submit')

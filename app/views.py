@@ -4,8 +4,8 @@ from flask import render_template, request, redirect
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem
-from .register import Register_Category, Register_Item, Update_Item, Register_Barcode
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity
+from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup
 
 USERNAME="Talal"
 
@@ -128,3 +128,32 @@ def view_item(uuid):
 @app.route('/view')
 def view():
     return render_template('view.html', USER=USERNAME, categories=getCategories())
+
+@app.route('/barcode/check_in', methods=['GET', 'POST'])
+def barcode_check_in_item():
+    form_barcode = Barcode_Lookup(request.form)
+    if request.method == 'POST' and form_barcode.validate():
+        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, 1):
+            item_id = getBarcode(form_barcode.barcode.data)['item_id']
+            return redirect('/view/item/' + item_id)
+
+    return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check in")
+
+@app.route('/barcode/check_out', methods=['GET', 'POST'])
+def barcode_check_out_item():
+    form_barcode = Barcode_Lookup(request.form)
+    if request.method == 'POST' and form_barcode.validate():
+        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, -1):
+            item_id = getBarcode(form_barcode.barcode.data)['item_id']
+            return redirect('/view/item/' + item_id)
+
+    return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check out")
+
+@app.route('/barcode/lookup', methods=['GET', 'POST'])
+def barcode_look_up_item():
+    form_barcode = Barcode_Lookup(request.form)
+    if request.method == 'POST' and form_barcode.validate():
+        item_id = getBarcode(form_barcode.barcode.data)['item_id']
+        return redirect('/view/item/' + item_id)
+
+    return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Look up")

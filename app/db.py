@@ -166,3 +166,21 @@ def deleteBarcode(barcode_id):
     query = {'_id': ObjectId(barcode_id)}
     BARCODE_DB.delete_one(query)
 
+def getBarcode(barcode_id):
+    query = {'barcode': str(barcode_id)}
+    return BARCODE_DB.find_one(query)
+
+def scanBarcodeAndUpdateQuantity(barcode_id, amount):
+    barcode = BARCODE_DB.find_one({'barcode': str(barcode_id)})
+    item = ITEM_DB.find_one({'_id': ObjectId(barcode['item_id'])})
+    if item == None:
+        return False
+    else:
+        currentQuantity = item['quantity_active']
+        currentQuantity += amount
+        if currentQuantity <= 0:
+            return False
+        else:
+            # Perform update and return true
+            ITEM_DB.update_one({'_id': item['_id']}, {"$set": {"quantity_active": int(currentQuantity)}})
+            return True
