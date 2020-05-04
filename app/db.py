@@ -178,7 +178,7 @@ def scanBarcodeAndUpdateQuantity(barcode_id, amount):
     else:
         currentQuantity = item['quantity_active']
         currentQuantity += amount
-        if currentQuantity <= 0:
+        if currentQuantity < 0:
             return False
         else:
             # Perform update and return true
