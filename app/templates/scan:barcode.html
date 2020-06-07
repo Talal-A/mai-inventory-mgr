@@ -6,6 +6,10 @@
 
 {% from "includes/_formhelpers.html" import render_field %}
 
+<div class="alert alert-warning" role="alert">
+  The pic2shop app (available on both <a href="https://play.google.com/store/apps/details?id=com.visionsmarts.pic2shop&hl=en_US">Android</a> and <a href="https://apps.apple.com/app/id308740640">iOS</a>) must be installed in order to scan barcodes.
+</div>
+
 <input type=button OnClick="scan();" value="Scan Barcode">
 <script>
 function scan(){
