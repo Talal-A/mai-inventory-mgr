@@ -1,0 +1,26 @@
+image: docker:19.03.12
+
+variables:
+  IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  - docker info
+
+build_image:
+  stage: build
+  script:
+    - docker build -t $IMAGE_TAG -f docker/Dockerfile .
+  tags:
+    - general
+
+deploy_image:
+  stage: deploy
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker push $IMAGE_TAG
+  tags:
+    - general
