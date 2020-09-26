@@ -5,15 +5,28 @@
 
 <h4><label id="greet"></label> {{USER}}, what would you like to do?</h4>
 
+<h5>Browse</h5>
 <div class="list-group">
   <a href="/view" class="list-group-item list-group-item-action">View the database</a>
-  <a href="/register/category" class="list-group-item list-group-item-action">Create a new category</a>
-  <a href="/register/item" class="list-group-item list-group-item-action">Add a new item</a>
-  <a href="/barcode/check_in" class="list-group-item list-group-item-action">Scan and check in an item</a>
-  <a href="/barcode/check_out" class="list-group-item list-group-item-action">Scan and check out an item</a>
   <a href="/barcode/lookup" class="list-group-item list-group-item-action">Scan and lookup an item</a>
-  <a href="/delete/category" class="list-group-item list-group-item-action"><div style="color:red">Delete a category</div></a>
-  <a href="/delete/barcode" class="list-group-item list-group-item-action"><div style="color:red">Delete a barcode</div></a>
+</div>
+
+<br>
+
+<h5>Update</h5>
+<div class="list-group">
+    <a href="/register/item" class="list-group-item list-group-item-action">Add a new item</a>
+    <a href="/barcode/check_in" class="list-group-item list-group-item-action">Scan and check in an item</a>
+    <a href="/barcode/check_out" class="list-group-item list-group-item-action">Scan and check out an item</a>
+</div>
+
+<br>
+
+<h5>Administrate</h5>
+<div class="list-group">
+    <a href="/register/category" class="list-group-item list-group-item-action">Create a new category</a>
+    <a href="/delete/category" class="list-group-item list-group-item-action"><div style="color:red">Delete a category</div></a>
+    <a href="/delete/barcode" class="list-group-item list-group-item-action"><div style="color:red">Delete a barcode</div></a>
 </div>
 
 <script>
