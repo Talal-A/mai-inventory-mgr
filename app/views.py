@@ -137,21 +137,23 @@ def view():
 def barcode_check_in_item():
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, 1):
+        print("okay...")
+        print(form_barcode.quantity.data)
+        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = getBarcode(form_barcode.barcode.data)['item_id']
             return redirect('/view/item/' + item_id)
 
-    return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check in")
+    return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check in", defaultQuantity=1)
 
 @app.route('/barcode/check_out', methods=['GET', 'POST'])
 def barcode_check_out_item():
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, -1):
+        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = getBarcode(form_barcode.barcode.data)['item_id']
             return redirect('/view/item/' + item_id)
 
-    return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check out")
+    return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check out", defaultQuantity=-1)
 
 @app.route('/barcode/lookup', methods=['GET', 'POST'])
 def barcode_look_up_item():

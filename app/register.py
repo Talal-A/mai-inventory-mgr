@@ -71,4 +71,5 @@ class Register_Barcode(Form):
 
 class Barcode_Lookup(Form):
 	barcode = StringField('Barcode', [validators.required(), validateBarcodeExists])
+	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)
 	submit = SubmitField('Submit')

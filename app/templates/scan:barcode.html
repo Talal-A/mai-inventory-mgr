@@ -20,6 +20,9 @@ function scan(){
 <form method="POST" action="">
 	<div class="form-group">
 		{{render_field(form.barcode, class_="form-control")}}
+		{% if defaultQuantity is defined %}
+			{{render_field(form.quantity, class_="form-control")}}
+		{% endif %}
 	</div>
 	<p><input type="submit" class="btn btn-primary" value="Submit"></p>
 
@@ -30,6 +33,7 @@ function scan(){
 	if (searchParams.has('ean')) {
 		document.forms[0]["barcode"].value = searchParams.get('ean');
 	}
+	document.forms[0]["quantity"].value = {{ defaultQuantity }};
 </script> 
 
 {% endblock %}
