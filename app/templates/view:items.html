@@ -2,6 +2,12 @@
 {% block body %}
 <h4>{{category}}</h4>
 
+<div>
+    <p align="center">
+        <input type="text" class="form-control" id="search" placeholder="Type to search">
+    </p>
+</div>
+
 <table class="table table-hover">
     <thead>
         <tr>
@@ -12,7 +18,7 @@
             <th scope="col"></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="table">
         {% for item in items %}
         <tr>
             <td>{{item.category_name}}</td>
@@ -28,4 +34,16 @@
     </tbody>
 </table>
 
+<script>
+    window.onload = function() {
+        $("#search").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#table tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    }
+</script>
+
 {% endblock %}
+
