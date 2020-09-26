@@ -28,12 +28,24 @@ function scan(){
 
 </form>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-danger" role="alert">
+		{{ message }}
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 <script>
 	let searchParams = new URLSearchParams(window.location.search);
 	if (searchParams.has('ean')) {
 		document.forms[0]["barcode"].value = searchParams.get('ean');
 	}
-	document.forms[0]["quantity"].value = {{ defaultQuantity }};
+	if (document.forms[0]["quantity"].value == 0) {
+		document.forms[0]["quantity"].value = {{ defaultQuantity }};
+	}
 </script> 
 
 {% endblock %}

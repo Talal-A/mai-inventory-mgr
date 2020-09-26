@@ -1,6 +1,6 @@
 # views.py
 
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, flash
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
@@ -142,6 +142,8 @@ def barcode_check_in_item():
         if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = getBarcode(form_barcode.barcode.data)['item_id']
             return redirect('/view/item/' + item_id)
+        else:
+            flash("An error occurred when handling your request. Please validate the barcode and quantity.")
 
     return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check in", defaultQuantity=1)
 
@@ -152,6 +154,8 @@ def barcode_check_out_item():
         if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = getBarcode(form_barcode.barcode.data)['item_id']
             return redirect('/view/item/' + item_id)
+        else:
+            flash("An error occurred when handling your request. Please validate the barcode and quantity.")
 
     return render_template('scan:barcode.html', USER=USERNAME, form=form_barcode, action="Check out", defaultQuantity=-1)
 
