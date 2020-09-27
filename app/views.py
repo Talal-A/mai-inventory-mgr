@@ -4,9 +4,10 @@ from flask import render_template, request, redirect, flash
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity, getUsers, updateUserRole
 from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup
 import requests
+import base64
 
 from oauthlib.oauth2 import WebApplicationClient
 import os 
@@ -276,6 +277,24 @@ def view_item(uuid):
 @app.route('/view')
 def view():
     return render_template('view.html', USER=current_user, categories=getCategories())
+
+@app.route('/view/users')
+@login_required
+def view_users():
+    if not validate_admin():
+        return returnPermissionError()
+    return render_template('view:users.html', USER=current_user, users=getUsers())
+
+@app.route('/api/edit/user/<string:user_id>/<string:new_role>')
+@login_required
+def edit_user_role(user_id, new_role):
+    if not validate_admin():
+        return returnPermissionError()
+    print("Updating for:")
+    print(str(base64.b64decode(user_id).decode('utf-8')))
+    print(new_role)
+    updateUserRole(str(base64.b64decode(user_id).decode('utf-8')), new_role)
+    return ""
 
 @app.route('/barcode/check_in', methods=['GET', 'POST'])
 @login_required

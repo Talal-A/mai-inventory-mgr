@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block body %}
+<h4>Manage users</h4>
+
+<div>
+    <p align="center">
+        <input type="text" class="form-control" id="search" placeholder="Type to search">
+    </p>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">User</th>
+            <th scope="col">Role - User</th>
+            <th scope="col">Role - Member</th>
+            <th scope="col">Role - Admin</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody id="table">
+        {% for item in users %}
+            {% if item.user_id != USER.id %}
+                <tr>
+                    <td>{{item.user_email}}</td>
+                    <td><button class="btn" id="btnSetRoleUser" onclick='setRole("{{item.user_id}}", 0)'><i class="material-icons">{{ 'check_box' if item.user_role == 0 else 'check_box_outline_blank'}}</i></button></td>
+                    <td><button class="btn" id="btnSetRoleMember" onclick='setRole("{{item.user_id}}", 5)'><i class="material-icons">{{ 'check_box' if item.user_role == 5 else 'check_box_outline_blank'}}</i></button></td>
+                    <td><button class="btn" id="btnSetRoleAdmin" onclick='setRole("{{item.user_id}}", 10)'><i class="material-icons">{{ 'check_box' if item.user_role == 10 else 'check_box_outline_blank'}}</i></button></td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript" language="javascript">
+    async function setRole(user_id, new_role) {
+        await fetch("/api/edit/user/" + btoa(user_id) + "/" + new_role);
+        location.reload();
+    }
+</script>
+
+<script>
+    window.onload = function() {
+        $("#search").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#table tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    }
+</script>
+
+
+{% endblock %}
+
