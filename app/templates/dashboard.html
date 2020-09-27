@@ -15,6 +15,7 @@
 
 <br>
 
+{% if USER.is_authenticated and USER.role >= 5 %}
 <h5>Update</h5>
 <div class="list-group">
     <a href="/register/item" class="list-group-item list-group-item-action">Add a new item</a>
@@ -23,13 +24,16 @@
 </div>
 
 <br>
+{% endif %}
 
+{% if USER.is_authenticated and USER.role >= 10 %}
 <h5>Administrate</h5>
 <div class="list-group">
     <a href="/register/category" class="list-group-item list-group-item-action">Create a new category</a>
     <a href="/delete/category" class="list-group-item list-group-item-action"><div style="color:red">Delete a category</div></a>
     <a href="/delete/barcode" class="list-group-item list-group-item-action"><div style="color:red">Delete a barcode</div></a>
 </div>
+{% endif %}
 
 <script>
     var myDate = new Date();
