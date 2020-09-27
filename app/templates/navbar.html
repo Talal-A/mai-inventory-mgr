@@ -18,8 +18,17 @@
     <div class="nav navbar-nav mr-auto">
       <a class="nav-item nav-link" href="/dashboard">Dashboard</a>
       <a class="nav-item nav-link" href="/view">View database</a>
+      {% if USER.is_authenticated %}
+        <a class="nav-item nav-link" href="/logout">Logout</a>
+      {% endif %}
+
     </div>
-    <div id="nav-profile" class="d-flex justify-content-end navbar-text"> Welcome,&nbsp;{{USER}}</div>
+    {% if USER.is_authenticated %}
+      <div id="nav-profile" class="d-flex justify-content-end navbar-text"> Welcome,&nbsp;{{USER.name}}</div>
+    {% else %}
+      <a class="nav-item nav-link" href="/login">Login</a>
+    {% endif %}
+
     <div id="nav-image" class="navbar-brand-image"></div>
   </div>
 </nav>

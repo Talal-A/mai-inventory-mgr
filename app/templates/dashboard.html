@@ -2,8 +2,10 @@
 
 {% block body %}
 
+{% if USER.is_authenticated %}
+<h4><label id="greet"></label> {{USER.name}}, what would you like to do?</h4>
+{% endif %}
 
-<h4><label id="greet"></label> {{USER}}, what would you like to do?</h4>
 
 <h5>Browse</h5>
 <div class="list-group">
