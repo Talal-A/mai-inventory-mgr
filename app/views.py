@@ -35,6 +35,14 @@ def get_google_provider_cfg():
 
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
+def validate_user():
+    return current_user.is_authenticated and current_user.role >= 5
+
+def validate_admin():
+    return current_user.is_authenticated and current_user.role >= 10
+
+def returnPermissionError():
+    return "Error: you do not have permission to access this resource.", 401
 
 # END WIP AUTH
 
@@ -118,7 +126,6 @@ def logout():
 
 @app.route('/dashboard')
 def dashboard():
-    print(str(current_user.is_authenticated))
     return render_template('dashboard.html', USER=current_user)
 
 @app.route('/feedback')
@@ -126,12 +133,18 @@ def feedback():
     return render_template('feedback.html', USER=current_user)
 
 @app.route('/register/<string:type>', methods=['GET', 'POST'])
+@login_required
 def register_with_param(type):
+    if not validate_user():
+        return returnPermissionError()
     form_category = Register_Category(request.form)
     form_item = Register_Item(request.form)
     form_barcode = Register_Barcode(request.form)
 
     if type == 'category':
+        if not validate_admin():
+            return returnPermissionError()
+
         if request.method == 'POST' and form_category.category.data and form_category.validate():
             insertCategory(form_category.category.data)
             return redirect('/dashboard')
@@ -156,7 +169,11 @@ def register_with_param(type):
         return redirect('/dashboard')
 
 @app.route('/edit/item/add_barcode/<string:uuid>', methods=['GET', 'POST'])
+@login_required
 def register_barcode_for_item(uuid):
+    if not validate_user():
+        return returnPermissionError()
+
     form_barcode = Register_Barcode(request.form)
     form_barcode.item.data = str(uuid)
     form_barcode.item.render_kw = {'disabled':'disabled'}
@@ -169,7 +186,11 @@ def register_barcode_for_item(uuid):
     return render_template('register:' + 'barcode' + '.html', USER=current_user, form=form_barcode)
 
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])
+@login_required
 def edit_category(uuid):
+    if not validate_user():
+        return returnPermissionError()
+
     form_category = Register_Category(request.form)
 
     if request.method == 'POST' and form_category.category.data and form_category.validate():
@@ -181,30 +202,49 @@ def edit_category(uuid):
     return render_template('edit:category.html', USER=current_user, form=form_category)
 
 @app.route('/delete/barcode')
+@login_required
 def delete_barcode_view():
+    if not validate_admin():
+        return returnPermissionError()
     return render_template('delete:barcode.html', USER=current_user, barcodes=getBarcodes())
 
 @app.route('/delete/barcode/<string:uuid>')
+@login_required
 def delete_barcode(uuid):
+    if not validate_admin():
+        return returnPermissionError()
     deleteBarcode(uuid)
     return redirect('/delete/barcode')
 
 @app.route('/delete/item/<string:uuid>')
+@login_required
 def delete_item(uuid):
+    if not validate_admin():
+        return returnPermissionError()
     deleteItem(uuid)
     return redirect('/view')
 
 @app.route('/delete/category')
+@login_required
 def delete_category_view():
+    if not validate_admin():
+        return returnPermissionError()
     return render_template('delete:category.html', USER=current_user, categories=getDeletableCategories())
 
 @app.route('/delete/category/<string:uuid>')
+@login_required
 def delete_category(uuid):
+    if not validate_admin():
+        return returnPermissionError()
     deleteCategory(uuid)
     return redirect('/delete/category')
 
 @app.route('/edit/item/<string:uuid>', methods=['GET', 'POST'])
+@login_required
 def edit_item(uuid):
+    if not validate_user():
+        return returnPermissionError()
+
     form_item = Update_Item(request.form)
 
     if request.method == 'POST' and form_item.validate():
@@ -238,7 +278,11 @@ def view():
     return render_template('view.html', USER=current_user, categories=getCategories())
 
 @app.route('/barcode/check_in', methods=['GET', 'POST'])
+@login_required
 def barcode_check_in_item():
+    if not validate_user():
+        return returnPermissionError()
+
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
         print("okay...")
@@ -252,7 +296,11 @@ def barcode_check_in_item():
     return render_template('scan:barcode.html', USER=current_user, form=form_barcode, action="Check in", defaultQuantity=1)
 
 @app.route('/barcode/check_out', methods=['GET', 'POST'])
+@login_required
 def barcode_check_out_item():
+    if not validate_user():
+        return returnPermissionError()
+
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
         if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
