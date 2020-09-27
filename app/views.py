@@ -100,12 +100,13 @@ def login_callback():
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         users_name = userinfo_response.json()["given_name"]
-        user = User(id_=unique_id, name=users_name, email=users_email)
-        login_user(user)
 
-        print(unique_id)
-        print(users_email)
-        print(users_name)
+        user = User.get(unique_id)
+        if not user:
+            User.create(unique_id, users_name, users_email, 0)
+            user = User(id_=unique_id, name=users_name, email=users_email, role=0)
+
+        login_user(user)
     else:
         return "User email not available or not verified by Google.", 400
 
@@ -119,6 +120,9 @@ def logout():
 
 @app.route('/dashboard')
 def dashboard():
+    print(str(current_user.is_authenticated))
+    print(current_user.name)
+    print(current_user.role)
     return render_template('dashboard.html', USER=USERNAME)
 
 @app.route('/feedback')
