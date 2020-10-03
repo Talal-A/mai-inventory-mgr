@@ -205,14 +205,14 @@ def edit_category(uuid):
 @app.route('/delete/barcode')
 @login_required
 def delete_barcode_view():
-    if not validate_admin():
+    if not validate_user():
         return returnPermissionError()
     return render_template('delete:barcode.html', USER=current_user, barcodes=getBarcodes())
 
 @app.route('/delete/barcode/<string:uuid>')
 @login_required
 def delete_barcode(uuid):
-    if not validate_admin():
+    if not validate_user():
         return returnPermissionError()
     deleteBarcode(uuid)
     return redirect('/delete/barcode')
