@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<h4>{{action}} an item</h4>
+
+{% from "includes/_formhelpers.html" import render_field %}
+
+<body>
+
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js" defer></script>
+
+<form method="POST" action="">
+	<div class="form-group">
+        <div >
+            {{ form.selectInput }}
+        </div>
+		{% if defaultQuantity is defined %}
+			{{render_field(form.quantity, class_="form-control")}}
+		{% endif %}
+	</div>
+	<p><input type="submit" class="btn btn-primary" value="Submit"></p>
+
+</form>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+	{% for message in messages %}
+	<div class="alert alert-danger" role="alert">
+		{{ message }}
+	</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<script>
+    $(document).ready(function() {
+        $('#selectInput').select2({  // init Select2 on form's select field
+            placeholder: "{{ form.selectInput.label.text }}",
+            allowClear: true,
+            "box-sizing": "border-box",
+            "width": "100%" 
+
+        });
+    });
+</script>
+
+<script>
+	if (document.forms[0]["quantity"].value == 0) {
+		document.forms[0]["quantity"].value = {{ defaultQuantity }};
+	}
+</script> 
+
+{% endblock %}

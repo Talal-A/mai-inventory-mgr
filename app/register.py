@@ -73,3 +73,13 @@ class Barcode_Lookup(Form):
 	barcode = StringField('Barcode', [validators.required(), validateBarcodeExists])
 	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)
 	submit = SubmitField('Submit')
+
+class Search_QuantityUpdate(Form): 
+	selectInput = SelectField('Select an item:', choices=[], validators=[validators.InputRequired()])
+	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)
+	submit = SubmitField('Submit')
+
+	def __init__(self, *args, **kwargs):
+		super(Search_QuantityUpdate, self).__init__(*args, **kwargs)
+		item_choices = [("", "")] + [(str(item['id']), str(item['name'])) for item in getItems()]
+		self.selectInput.choices = item_choices

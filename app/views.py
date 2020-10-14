@@ -4,8 +4,8 @@ from flask import render_template, request, redirect, flash
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity, getUsers, updateUserRole
-from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity, getUsers, updateUserRole, searchAndUpdateQuantity
+from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup, Search_QuantityUpdate
 import requests
 import base64
 
@@ -304,7 +304,6 @@ def barcode_check_in_item():
 
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        print("okay...")
         print(form_barcode.quantity.data)
         if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = getBarcode(form_barcode.barcode.data)['item_id']
@@ -329,6 +328,38 @@ def barcode_check_out_item():
             flash("An error occurred when handling your request. Please validate the barcode and quantity.")
 
     return render_template('scan:barcode.html', USER=current_user, form=form_barcode, action="Check out", defaultQuantity=-1)
+
+@app.route('/search/check_out', methods=['GET', 'POST'])
+@login_required
+def search_check_out_item():
+    if not validate_user():
+        return returnPermissionError()
+    
+    form_search = Search_QuantityUpdate(request.form)
+
+    if request.method == 'POST' and form_search.validate():
+        if searchAndUpdateQuantity(form_search.selectInput.data, form_search.quantity.data):
+            return redirect('/view/item/' + form_search.selectInput.data)
+        else:
+            flash("An error occurred when handling your request. Please validate the selection and quantity.")
+
+    return render_template('search:updateqty.html', USER=current_user, form=form_search, action="Check out", defaultQuantity=-1)
+
+@app.route('/search/check_in', methods=['GET', 'POST'])
+@login_required
+def search_check_in_item():
+    if not validate_user():
+        return returnPermissionError()
+    
+    form_search = Search_QuantityUpdate(request.form)
+
+    if request.method == 'POST' and form_search.validate():
+        if searchAndUpdateQuantity(form_search.selectInput.data, form_search.quantity.data):
+            return redirect('/view/item/' + form_search.selectInput.data)
+        else:
+            flash("An error occurred when handling your request. Please validate the selection and quantity.")
+
+    return render_template('search:updateqty.html', USER=current_user, form=form_search, action="Check in", defaultQuantity=1)
 
 @app.route('/barcode/lookup', methods=['GET', 'POST'])
 def barcode_look_up_item():

@@ -186,6 +186,20 @@ def scanBarcodeAndUpdateQuantity(barcode_id, amount):
             ITEM_DB.update_one({'_id': item['_id']}, {"$set": {"quantity_active": int(currentQuantity)}})
             return True
 
+def searchAndUpdateQuantity(item_id, amount):
+    item = ITEM_DB.find_one({'_id': ObjectId(item_id)})
+    if item == None:
+        return False
+    else:
+        currentQuantity = item['quantity_active']
+        currentQuantity += amount
+        if currentQuantity < 0:
+            return False
+        else:
+            # Perform update and return true
+            ITEM_DB.update_one({'_id': item['_id']}, {"$set": {"quantity_active": int(currentQuantity)}})
+            return True
+
 def getUsers():
     result = []
     for item in USER_DB.find():
