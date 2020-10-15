@@ -43,9 +43,14 @@ function scan(){
 	if (searchParams.has('ean')) {
 		document.forms[0]["barcode"].value = searchParams.get('ean');
 	}
-	if (document.forms[0]["quantity"].value == 0) {
-		document.forms[0]["quantity"].value = {{ defaultQuantity }};
-	}
 </script> 
+
+{% if defaultQuantity is defined %}
+    <script>
+        if (document.forms[0]["quantity"].value == 0) {
+            document.forms[0]["quantity"].value = {{ defaultQuantity }};
+        }
+    </script>
+{% endif %}
 
 {% endblock %}
