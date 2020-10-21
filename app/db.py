@@ -124,8 +124,8 @@ def insertItem(category_id, name, location="", quantity_active=0, quantity_expir
             "category_id": str(category_id).strip(),
             "name": str(name).strip(),
             "location": location,
-            "quantity_active": 0,
-            "quantity_expired": 0,
+            "quantity_active": quantity_active,
+            "quantity_expired": quantity_expired,
             "notes": notes,
             "url": url})
 
