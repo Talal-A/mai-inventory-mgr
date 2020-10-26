@@ -120,7 +120,7 @@ def updateItem(uuid, category_id, location, quantity_active, quantity_expired, n
         }})
 
 def insertItem(category_id, name, location="", quantity_active=0, quantity_expired=0, notes="", url=""):
-    if str(name).strip() not in getItemNames(): ITEM_DB.insert_one({
+    return ITEM_DB.insert_one({
             "category_id": str(category_id).strip(),
             "name": str(name).strip(),
             "location": location,
