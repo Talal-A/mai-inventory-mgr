@@ -81,5 +81,5 @@ class Search_QuantityUpdate(Form):
 
 	def __init__(self, *args, **kwargs):
 		super(Search_QuantityUpdate, self).__init__(*args, **kwargs)
-		item_choices = [("", "")] + [(str(item['id']), str(item['name'])) for item in getItems()]
+		item_choices = [("", "")] + [(str(item['id']), str(item['name']) + " [" + str(item['location']) + "]") for item in getItems()]
 		self.selectInput.choices = item_choices
