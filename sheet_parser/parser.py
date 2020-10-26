@@ -100,13 +100,10 @@ for item in results:
             categoryId = cat["id"]
 
     # Insert the item
-    db.insertItem(categoryId, item["name"], item["location"], item["quantity"], item["exp_quantity"], item["notes"], item["url"])
+    result = db.insertItem(categoryId, item["name"], item["location"], item["quantity"], item["exp_quantity"], item["notes"], item["url"])
 
     # Get the item id
-    itemId = ""
-    for curItem in db.getItems():
-        if curItem["name"] == item["name"]:
-            itemId = curItem["id"]
+    itemId = result.inserted_id
 
     # Insert the barcodes
     for barcode in item["barcodes"]:
