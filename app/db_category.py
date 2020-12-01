@@ -6,27 +6,20 @@ client = resources.dynamo_client()
 TABLE_NAME = 'mai-category'
 
 def get_all_categories():
-    result = []
+    result = {}
     response = client.scan(
         TableName = TABLE_NAME,
         AttributesToGet = ['id', 'name']
     )
 
     for item in response['Items']:
-        current_result = {
-            'id': item['id']['S'],
-            'name': item['name']['S'],
-        }
-        result.append(current_result)
+        result[item['id']['S']] = item['name']['S']
 
     return result
 
 def category_name_exists(category_name):
     category_name = category_name.strip()
-    for item in get_all_categories():
-        if item['name'] == category_name:
-            return True
-    return False
+    return category_name in get_all_categories().values()
 
 def category_id_exists(category_id):
     response = client.get_item(
