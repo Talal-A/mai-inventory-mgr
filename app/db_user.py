@@ -52,7 +52,11 @@ def get_user_for_id(user_id):
 
     return result
 
-def create_user(user_id, user_name, user_email, user_role):
+def insert_user(user_id, user_name, user_email, user_role):
+    if user_id_exists(user_id):
+        print("Error: attempting to create a user which already exists.")
+        return
+
     response = client.put_item(
         TableName = TABLE_NAME,
         Item = {
@@ -68,6 +72,28 @@ def create_user(user_id, user_name, user_email, user_role):
             'role': {
                 'N': str(user_role)
             },
+        }
+    )
+    return response is not None
+
+def update_user_role(user_id, user_role):
+    if not user_id_exists(user_id):
+        print("Error: attempting to update a non-existent user's role.")
+        return
+    
+    response = client.update_item(
+        TableName = TABLE_NAME,
+        Key = {
+            'id': {
+                'S': user_id
+            }
+        },
+        AttributeUpdates = {
+            'role': {
+                'Value': {
+                    'N': str(user_role)
+                }
+            }
         }
     )
     return response is not None
