@@ -6,3 +6,4 @@ oauthlib
 requests
 pytz
 datetime
+boto3
