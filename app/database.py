@@ -55,3 +55,32 @@ def __check_table(db_connection):
 
     db_connection.commit()
     cursor.close()
+
+#####################
+# BARCODE FUNCTIONS #
+#####################
+
+# Insert a new barcode
+def insert_barcode():
+    return None
+
+# Get item_id associated with a given barcode
+def get_barcode():
+    return None
+
+# Return all barcodes associated with an item_id
+def get_barcodes_for_item():
+    return None
+
+# Return all barcodes
+def get_all_barcodes():
+    return None
+
+# Delete a single barcode
+def delete_barcode():
+    return None
+
+# Delete all barcodes associated with an item_id
+def delete_barcodes_for_item():
+    return None
+
