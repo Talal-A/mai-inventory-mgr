@@ -152,3 +152,32 @@ def update_user_role():
 # Delete a user for a given user_id
 def delete_user():
     return None
+
+##################
+# ITEM FUNCTIONS #
+##################
+
+# Insert an item
+def insert_item():
+    return None
+
+# Return true if item_id already exists
+def exists_item_id():
+    return None
+
+# Get an item for a given item_id
+def get_item():
+    return None
+
+# Get all items
+def get_all_items():
+    return None
+
+# Update an item with new values
+def update_item():
+    return None
+
+# Delete an item for a given item_id
+# TODO: Delete barcodes associated with item
+def delete_item():
+    return None
