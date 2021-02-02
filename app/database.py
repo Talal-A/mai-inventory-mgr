@@ -84,3 +84,14 @@ def delete_barcode():
 def delete_barcodes_for_item():
     return None
 
+#####################
+# HISTORY FUNCTIONS #
+#####################
+
+# Insert a new history event
+def insert_history():
+    return None
+
+# Get all history events
+def get_history():
+    return None
