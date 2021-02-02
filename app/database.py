@@ -64,6 +64,10 @@ def __check_table(db_connection):
 def insert_barcode():
     return None
 
+# Return true if barcode already exists
+def exists_barcode():
+    return None
+
 # Get item_id associated with a given barcode
 def get_barcode():
     return None
