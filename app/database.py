@@ -124,3 +124,31 @@ def get_all_categories():
 # TODO: Only delete if no items are actively using this category_id
 def delete_category():
     return None
+
+###################
+# USER FUNCTIONS #
+###################
+
+# Insert a new user
+def insert_user():
+    return None
+
+# Return true if user id already exists
+def exists_user_id():
+    return None
+
+# Get a user for a given user_id
+def get_user():
+    return None
+
+# Get all users
+def get_all_users():
+    return None
+
+# Update the role for a given user_id
+def update_user_role():
+    return None
+
+# Delete a user for a given user_id
+def delete_user():
+    return None
