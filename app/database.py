@@ -44,5 +44,14 @@ def __check_table(db_connection):
         )
         """
     )
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user (
+            user_id text, user_name text, user_email text, user_role int,
+            UNIQUE(user_id)
+        )
+        """
+    )
+
     db_connection.commit()
     cursor.close()
