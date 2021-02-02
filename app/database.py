@@ -95,3 +95,32 @@ def insert_history():
 # Get all history events
 def get_history():
     return None
+
+######################
+# CATEGORY FUNCTIONS #
+######################
+
+# Insert a new category
+def insert_category():
+    return None
+
+# Return true if a category with the same name already exists
+def exists_category_name():
+    return None
+
+# Return true if the category id already exists
+def exists_category_id():
+    return None
+
+# Get a category for a given category_id
+def get_category():
+    return None
+
+# Get all categories
+def get_all_categories():
+    return None
+
+# Delete a category for a given category_id
+# TODO: Only delete if no items are actively using this category_id
+def delete_category():
+    return None
