@@ -71,32 +71,116 @@ def __format_timestamp(time):
 #####################
 
 # Insert a new barcode
-def insert_barcode():
-    return None
+def insert_barcode(barcode, item_id):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO barcode (barcode, item_id)
+        VALUES(?, ?)""", (
+            str(barcode).strip(),
+            str(item_id)
+        ))
+    
+    # Save (commit) the changes
+    db_connection.commit()
+    cursor.close()
 
 # Return true if barcode already exists
-def exists_barcode():
-    return None
+def exists_barcode(barcode):
+    cursor = __get_db().cursor()
+
+    query_result = cursor.execute("""
+        SELECT EXISTS(SELECT 1 FROM barcode WHERE barcode=? LIMIT 1)""", (
+            str(barcode).strip(),
+    ))
+    
+    for row in query_result:
+        exists = (row[0] == 1)
+        cursor.close()
+        return exists
 
 # Get item_id associated with a given barcode
-def get_barcode():
-    return None
+def get_barcode(barcode):
+    result = None
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM barcode WHERE barcode=?""", (
+            str(barcode).strip(),
+    ))
+
+    for row in query_results:
+        result = {
+            'barcode': str(row[0]),
+            'item_id': str(row[1])
+        }
+
+    cursor.close()
+    return result
 
 # Return all barcodes associated with an item_id
-def get_barcodes_for_item():
-    return None
+def get_barcodes_for_item(item_id):
+    result = []
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM barcode WHERE item_id=? """, (
+            str(item_id),
+    ))
+
+    for row in query_results:
+        result.append({
+            'barcode': str(row[0]),
+            'item_id': str(row[1])
+        })
+
+    cursor.close()
+    return result
 
 # Return all barcodes
 def get_all_barcodes():
-    return None
+    result = []
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM barcode"""
+    )
+
+    for row in query_results:
+        result.append({
+            'barcode': str(row[0]),
+            'item_id': str(row[1])
+        })
+
+    cursor.close()
+    return result
 
 # Delete a single barcode
-def delete_barcode():
-    return None
+def delete_barcode(barcode):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    query_results = cursor.execute("""
+        DELETE FROM barcode WHERE barcode=?""", (
+            str(barcode).strip(),
+    ))
+
+    db_connection.commit()
+    cursor.close()
 
 # Delete all barcodes associated with an item_id
-def delete_barcodes_for_item():
-    return None
+def delete_barcodes_for_item(item_id):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    query_results = cursor.execute("""
+        DELETE FROM barcode WHERE item_id=?""", (
+            str(item_id),
+    ))
+
+    db_connection.commit()
+    cursor.close()
 
 #####################
 # HISTORY FUNCTIONS #
