@@ -10,7 +10,6 @@ mydb = myclient["MAI_UCLA_DB"]
 CATEGORY_DB = mydb["category"]
 ITEM_DB = mydb["item"]
 BARCODE_DB = mydb["barcode"]
-USER_DB = mydb["user"]
 HISTORY_DB = mydb["history"]
 
 def getDeletableCategories():
@@ -203,19 +202,3 @@ def searchAndUpdateQuantity(item_id, amount):
             # Perform update and return true
             ITEM_DB.update_one({'_id': item['_id']}, {"$set": {"quantity_active": int(currentQuantity)}})
             return True
-
-def getUsers():
-    result = []
-    for item in USER_DB.find():
-        result.append({
-            "user_id": item["user_id"],
-            "user_email": item["user_email"],
-            "user_role": item["user_role"],
-        })
-    return result
-
-def updateUserRole(user_id, new_role):
-    USER_DB.update_one({'user_id': user_id}, {"$set": {
-        "user_role": int(new_role)
-    }})
-    return

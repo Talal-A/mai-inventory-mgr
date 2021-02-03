@@ -4,7 +4,7 @@ from flask import render_template, request, redirect, flash
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity, getUsers, updateUserRole, searchAndUpdateQuantity
+from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity, searchAndUpdateQuantity
 from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup, Search_QuantityUpdate
 from . import database
 import requests
@@ -313,7 +313,7 @@ def view_users():
     database.insert_history("PAGE_VISIT", current_user, "Viewed users page")
     if not validate_admin():
         return returnPermissionError()
-    return render_template('view:users.html', USER=current_user, users=getUsers())
+    return render_template('view:users.html', USER=current_user, users=database.get_all_users())
 
 @app.route('/api/edit/user/<string:user_id>/<string:new_role>')
 @login_required
@@ -324,7 +324,7 @@ def edit_user_role(user_id, new_role):
     print("Updating for:")
     print(str(base64.b64decode(user_id).decode('utf-8')))
     print(new_role)
-    updateUserRole(str(base64.b64decode(user_id).decode('utf-8')), new_role)
+    database.update_user_role(str(base64.b64decode(user_id).decode('utf-8')), new_role)
     database.insert_history("EDIT", current_user, "Edited user. UserId: " + str(user_id) + ", Role: " + str(new_role))
     return ""
 
