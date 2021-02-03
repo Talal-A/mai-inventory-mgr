@@ -10,7 +10,6 @@ mydb = myclient["MAI_UCLA_DB"]
 CATEGORY_DB = mydb["category"]
 ITEM_DB = mydb["item"]
 BARCODE_DB = mydb["barcode"]
-HISTORY_DB = mydb["history"]
 
 def getDeletableCategories():
     items = getItems()
