@@ -219,37 +219,3 @@ def updateUserRole(user_id, new_role):
         "user_role": int(new_role)
     }})
     return
-
-def insertHistory(eventType, user, event):
-    currentDateTime = datetime.now(pytz.timezone('America/Los_Angeles'))
-    timeString = currentDateTime.strftime("%H:%M:%S on %m/%d/%y")
-    username = ""
-    if user.is_authenticated:
-        username = user.email
-    else:
-        ipAddress = ""
-        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-            ipAddress = str(request.environ['REMOTE_ADDR'])
-        else:
-            ipAddress = str(request.environ['HTTP_X_FORWARDED_FOR']) # if behind a proxy
-        username = "guest - " + ipAddress
-        
-    HISTORY_DB.insert_one({
-        "date": str(timeString).strip(),
-        "type": str(eventType).strip(),
-        "user": str(username).strip(),
-        "event": str(event).strip(),
-    })
-    return
-
-def getHistory():
-    result = []
-    for item in HISTORY_DB.find():
-        result.append({
-            "date": item["date"],
-            "type": item["type"],
-            "user": item["user"],
-            "event": item["event"]
-        })
-    result.reverse()
-    return result
