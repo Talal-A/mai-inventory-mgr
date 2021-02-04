@@ -575,6 +575,32 @@ def get_all_items():
     cursor.close()
     return result
 
+# Get all items under a given category
+def get_all_items_for_category(category_id):
+    result = []
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM item WHERE category_id=?""", (
+            str(category_id).strip(),
+    ))
+
+    for row in query_results:
+        result.append({
+            'id': str(row[0]),
+            'category_id': str(row[1]),
+            'category_name': get_category(str(row[1]))['name'],
+            'name': str(row[2]),
+            'location': str(row[3]),
+            'quantity_active': str(row[4]),
+            'quantity_expired': str(row[5]),
+            'notes': str(row[6]),
+            'url': str(row[7])
+        })
+
+    cursor.close()
+    return result
+
 # Update an item with new values
 def update_item(item_id, category_id, location, quantity_active, quantity_expired, notes, url):
     db_connection = __get_db()
