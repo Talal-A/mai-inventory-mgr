@@ -30,3 +30,4 @@ build
 mai-ucla.code-workspace
 data
 sheet_parser
+.secrets
