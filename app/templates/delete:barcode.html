@@ -6,13 +6,13 @@
 
 <div class="list-group">
     {% for barcode in barcodes %}
-      <a onclick="confirmDelete('{{barcode.id}}', '{{barcode.barcode}}', '{{barcode.item_name}}')" class="list-group-item list-group-item-action">
+      <a onclick="confirmDelete('{{barcode.barcode}}', '{{barcode.item_name}}')" class="list-group-item list-group-item-action">
         <code>{{barcode.barcode}}</code> registered to <strong>{{barcode.item_name}}</strong>
       </a>
         <script>
-          function confirmDelete(id, barcode, name) {
+          function confirmDelete(barcode, name) {
             if (confirm("Are you sure you want to delete barcode [" + barcode + "] for item [" + name + "]?")) {
-              window.location.href = "/delete/barcode/" + id
+              window.location.href = "/delete/barcode/" + barcode
             }
           }
         </script>
