@@ -558,6 +558,11 @@ def get_item(item_id):
 def get_all_items():
     result = []
     cursor = __get_db().cursor()
+    
+    # # Cache list of categories
+    cached_categories = {}
+    for category in get_all_categories():
+        cached_categories[category['id']] = category['name']
 
     query_results = cursor.execute("""
         SELECT * FROM item""", (
@@ -567,7 +572,7 @@ def get_all_items():
         result.append({
             'id': str(row[0]),
             'category_id': str(row[1]),
-            'category_name': get_category(str(row[1]))['name'],
+            'category_name': cached_categories[str(row[1])],
             'name': str(row[2]),
             'location': str(row[3]),
             'quantity_active': int(row[4]),
@@ -584,6 +589,9 @@ def get_all_items_for_category(category_id):
     result = []
     cursor = __get_db().cursor()
 
+    # Cache category name
+    cached_category_name = get_category(str(category_id).strip())['name']
+
     query_results = cursor.execute("""
         SELECT * FROM item WHERE category_id=?""", (
             str(category_id).strip(),
@@ -593,7 +601,7 @@ def get_all_items_for_category(category_id):
         result.append({
             'id': str(row[0]),
             'category_id': str(row[1]),
-            'category_name': get_category(str(row[1]))['name'],
+            'category_name': cached_category_name,
             'name': str(row[2]),
             'location': str(row[3]),
             'quantity_active': int(row[4]),
