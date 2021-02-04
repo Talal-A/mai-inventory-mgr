@@ -1,5 +1,6 @@
 import sqlite3
 import json 
+import uuid
 from datetime import datetime
 from flask import request
 
@@ -244,29 +245,100 @@ def get_history():
 ######################
 
 # Insert a new category
-def insert_category():
-    return None
+def insert_category(category_name):
+    category_id = str(uuid.uuid4())
+
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO category (category_id, name)
+        VALUES(?, ?)""", (
+            str(category_id).strip(),
+            str(category_name).strip()
+        ))
+
+    db_connection.commit()
+    cursor.close()
 
 # Return true if a category with the same name already exists
-def exists_category_name():
-    return None
+def exists_category_name(category_name):
+    cursor = __get_db().cursor()
+
+    query_result = cursor.execute("""
+        SELECT EXISTS(SELECT 1 FROM category WHERE name=? LIMIT 1)""", (
+            str(category_name).strip(),
+    ))
+    
+    for row in query_result:
+        exists = (row[0] == 1)
+        cursor.close()
+        return exists
 
 # Return true if the category id already exists
-def exists_category_id():
-    return None
+def exists_category_id(category_id):
+    cursor = __get_db().cursor()
+
+    query_result = cursor.execute("""
+        SELECT EXISTS(SELECT 1 FROM category WHERE category_id=? LIMIT 1)""", (
+            str(category_id).strip(),
+    ))
+    
+    for row in query_result:
+        exists = (row[0] == 1)
+        cursor.close()
+        return exists
 
 # Get a category for a given category_id
-def get_category():
-    return None
+def get_category(category_id):
+    result = None
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM category WHERE category_id=?""", (
+            str(category_id).strip(),
+    ))
+
+    for row in query_results:
+        result = {
+            'id': str(row[0]),
+            'name': str(row[1])
+        }
+
+    cursor.close()
+    return result
 
 # Get all categories
 def get_all_categories():
-    return None
+    result = []
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM category""", (
+    ))
+
+    for row in query_results:
+        result.append({
+            'id': str(row[0]),
+            'name': str(row[1])
+        })
+
+    cursor.close()
+    return result
 
 # Delete a category for a given category_id
 # TODO: Only delete if no items are actively using this category_id
-def delete_category():
-    return None
+def delete_category(category_id):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    query_results = cursor.execute("""
+        DELETE FROM category WHERE category_id=?""", (
+            str(category_id).strip(),
+    ))
+
+    db_connection.commit()
+    cursor.close()
 
 ###################
 # USER FUNCTIONS #
