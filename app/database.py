@@ -463,26 +463,139 @@ def delete_user(user_id):
 ##################
 
 # Insert an item
-def insert_item():
-    return None
+def insert_item(category_id, name, location="", quantity_active=0, quantity_expired=0, notes="", url=""):
+    item_id = str(uuid.uuid4())
+
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO item (item_id, category_id, name, location, quantity_active, quantity_expired, notes, url)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (
+            str(item_id).strip(),
+            str(category_id).strip(),
+            str(name).strip(),
+            str(location).strip(),
+            int(quantity_active),
+            int(quantity_expired),
+            str(notes),
+            str(url).strip()
+        ))
+
+    db_connection.commit()
+    cursor.close()
 
 # Return true if item_id already exists
-def exists_item_id():
-    return None
+def exists_item_id(item_id):
+    cursor = __get_db().cursor()
+
+    query_result = cursor.execute("""
+        SELECT EXISTS(SELECT 1 FROM item WHERE item_id=? LIMIT 1)""", (
+            str(item_id).strip(),
+    ))
+    
+    for row in query_result:
+        exists = (row[0] == 1)
+        cursor.close()
+        return exists
 
 # Get an item for a given item_id
-def get_item():
-    return None
+def get_item(item_id):
+    result = None
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM item WHERE item_id=?""", (
+            str(item_id).strip(),
+    ))
+
+    for row in query_results:
+        result = {
+            'id': str(row[0]),
+            'category_id': str(row[1]),
+            'category_name': get_category(str(row[1]))['name'],
+            'name': str(row[2]),
+            'location': str(row[3]),
+            'quantity_active': str(row[4]),
+            'quantity_expired': str(row[5]),
+            'notes': str(row[6]),
+            'url': str(row[7])
+        }
+
+    cursor.close()
+    return result
 
 # Get all items
 def get_all_items():
-    return None
+    result = []
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM item""", (
+    ))
+
+    for row in query_results:
+        result.append({
+            'id': str(row[0]),
+            'category_id': str(row[1]),
+            'category_name': get_category(str(row[1]))['name'],
+            'name': str(row[2]),
+            'location': str(row[3]),
+            'quantity_active': str(row[4]),
+            'quantity_expired': str(row[5]),
+            'notes': str(row[6]),
+            'url': str(row[7])
+        })
+
+    cursor.close()
+    return result
 
 # Update an item with new values
-def update_item():
-    return None
+def update_item(item_id, category_id, location, quantity_active, quantity_expired, notes, url):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        UPDATE item SET category_id=?, location=?, quantity_active=?, quantity_expired=?, notes=?, url=? WHERE item_id=?""", (
+            str(category_id).strip(),
+            str(location).strip(),
+            int(quantity_active),
+            int(quantity_expired),
+            str(notes),
+            str(url).strip(),
+            str(item_id).strip()
+        ))
+    
+    # Save (commit) the changes
+    db_connection.commit()
+    cursor.close()
+
+# Update an item's active quantity
+def update_item_quantity(item_id, new_active_quantity):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        UPDATE item SET quantity_active=? WHERE item_id=?""", (
+            int(new_active_quantity),
+            str(item_id).strip()
+        ))
+    
+    # Save (commit) the changes
+    db_connection.commit()
+    cursor.close()
 
 # Delete an item for a given item_id
-# TODO: Delete barcodes associated with item
-def delete_item():
-    return None
+def delete_item(item_id):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    query_results = cursor.execute("""
+        DELETE FROM item WHERE item_id=?""", (
+            str(item_id).strip(),
+    ))
+
+    db_connection.commit()
+    cursor.close()
+
+    delete_barcodes_for_item(item_id)
