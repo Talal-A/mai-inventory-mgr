@@ -541,8 +541,8 @@ def get_item(item_id):
             'category_name': get_category(str(row[1]))['name'],
             'name': str(row[2]),
             'location': str(row[3]),
-            'quantity_active': str(row[4]),
-            'quantity_expired': str(row[5]),
+            'quantity_active': int(row[4]),
+            'quantity_expired': int(row[5]),
             'notes': str(row[6]),
             'url': str(row[7])
         }
@@ -566,8 +566,8 @@ def get_all_items():
             'category_name': get_category(str(row[1]))['name'],
             'name': str(row[2]),
             'location': str(row[3]),
-            'quantity_active': str(row[4]),
-            'quantity_expired': str(row[5]),
+            'quantity_active': int(row[4]),
+            'quantity_expired': int(row[5]),
             'notes': str(row[6]),
             'url': str(row[7])
         })
@@ -592,8 +592,8 @@ def get_all_items_for_category(category_id):
             'category_name': get_category(str(row[1]))['name'],
             'name': str(row[2]),
             'location': str(row[3]),
-            'quantity_active': str(row[4]),
-            'quantity_expired': str(row[5]),
+            'quantity_active': int(row[4]),
+            'quantity_expired': int(row[5]),
             'notes': str(row[6]),
             'url': str(row[7])
         })
@@ -650,3 +650,40 @@ def delete_item(item_id):
     cursor.close()
 
     delete_barcodes_for_item(item_id)
+
+##################
+# SCAN FUNCTIONS #
+##################
+
+# Safely update quantity for an item, using a barcode
+def scan_barcode_update_quantity(barcode_id, diff):
+    barcode = get_barcode(barcode_id)
+    if barcode == None:
+        return False
+    item = get_item(barcode['item_id'])
+    if item == None:
+        return False
+    else:
+        new_quantity = item['quantity_active']
+        new_quantity += diff
+        if new_quantity < 0:
+            return False
+        else:
+            # Perform update and return true
+            update_item_quantity(item['id'], new_quantity)
+            return True
+
+# Safely update quantity for an item
+def search_item_update_quantity(item_id, diff):
+    item = get_item(item_id)
+    if item == None:
+        return False
+    else:
+        new_quantity = item['quantity_active']
+        new_quantity += diff
+        if new_quantity < 0:
+            return False
+        else:
+            # Perform update and return true
+            update_item_quantity(item['id'], new_quantity)
+            return True
