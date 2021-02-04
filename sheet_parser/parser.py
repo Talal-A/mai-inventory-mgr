@@ -7,7 +7,7 @@ import pymongo
 from bson.objectid import ObjectId
 sys.path.append('/Users/talal/dev/mai-ucla-2/app/')
 
-import db
+import database
 
 print("Running sheet parser on inputs:")
 print('Argument List:', str(sys.argv))
@@ -88,24 +88,43 @@ print("Total rows: " + str(rowCount))
 html_file.close()
 tsv_file.close()
 
+database.__init_db()
 
 for item in results:
     # Create the category
-    db.insertCategory(item["category"])
+    if not database.exists_category_name(item["category"]):
+        database.insert_category(item["category"])
 
     # Get the category id
     categoryId = ""
-    for cat in db.getCategories():
+    for cat in database.get_all_categories():
         if cat["name"] == item["category"]:
             categoryId = cat["id"]
 
     # Insert the item
-    result = db.insertItem(categoryId, item["name"], item["location"], item["quantity"], item["exp_quantity"], item["notes"], item["url"])
+    result = database.insert_item(categoryId, item["name"], item["location"], item["quantity"], item["exp_quantity"], item["notes"], item["url"])
 
-    # Get the item id
-    itemId = result.inserted_id
+    # Get the item id (Note this is a temp change to database.insert_item. Have it return the generated id.)
+    itemId = result
 
     # Insert the barcodes
     for barcode in item["barcodes"]:
-        db.insertBarcode(barcode, itemId)
+        database.insert_barcode(barcode, itemId)
     
+## Also migrate the user information from mongo
+
+import pymongo
+
+myclient = pymongo.MongoClient("mongodb://nerv:9201/")
+mydb = myclient["MAI_UCLA_DB"]
+
+CATEGORY_DB = mydb["category"]
+ITEM_DB = mydb["item"]
+BARCODE_DB = mydb["barcode"]
+USER_DB = mydb["user"]
+HISTORY_DB = mydb["history"]
+
+# Quickly migrate all users...
+for item in USER_DB.find():
+    database.insert_user(item['user_id'], item['user_name'], item['user_email'], item['user_role'])
+
