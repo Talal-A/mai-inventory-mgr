@@ -289,6 +289,10 @@ def exists_category_id(category_id):
         cursor.close()
         return exists
 
+# Return true if category is actively used by an item
+def exists_category_usage(category_id):
+    return True
+
 # Get a category for a given category_id
 def get_category(category_id):
     result = None
@@ -325,6 +329,15 @@ def get_all_categories():
 
     cursor.close()
     return result
+
+# Get all categories which can be deleted safely (not referenced by any items)
+def get_deletable_categories():
+    all_categories = get_all_categories()
+    deletable_categories = []
+    for category in all_categories:
+        if not exists_category_usage(category['id']):
+            deletable_categories.append(category)
+    return deletable_categories
 
 # Delete a category for a given category_id
 # TODO: Only delete if no items are actively using this category_id
