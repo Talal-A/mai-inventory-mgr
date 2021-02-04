@@ -151,7 +151,8 @@ def get_all_barcodes():
     for row in query_results:
         result.append({
             'barcode': str(row[0]),
-            'item_id': str(row[1])
+            'item_id': str(row[1]),
+            'item_name': get_item(str(row[1]))['name']
         })
 
     cursor.close()
