@@ -366,8 +366,11 @@ def update_category_name(category_id, new_name):
     cursor.close()
 
 # Delete a category for a given category_id
-# TODO: Only delete if no items are actively using this category_id
 def delete_category(category_id):
+    if exists_category_usage(category_id):
+        # Cannot delete an actively used category
+        return 
+    
     db_connection = __get_db()
     cursor = db_connection.cursor()
 
