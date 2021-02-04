@@ -114,7 +114,8 @@ for item in results:
 ## Also migrate the user information from mongo
 
 import pymongo
-
+import datetime 
+import time
 myclient = pymongo.MongoClient("mongodb://nerv:9201/")
 mydb = myclient["MAI_UCLA_DB"]
 
@@ -128,3 +129,30 @@ HISTORY_DB = mydb["history"]
 for item in USER_DB.find():
     database.insert_user(item['user_id'], item['user_name'], item['user_email'], item['user_role'])
 
+# Migrate all history...
+
+# Custom history insert function
+def insert_history(timestamp, type, user, event):
+    db_connection = database.__get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO history (date, type, user, event)
+        VALUES(?, ?, ?, ?)""", (
+            int(timestamp), 
+            str(type), 
+            str(user), 
+            str(event)
+        ))
+    
+    # Save (commit) the changes
+    db_connection.commit()
+    cursor.close()
+
+for item in HISTORY_DB.find():
+    insert_history(
+        time.mktime(datetime.datetime.strptime(item['date'],"%H:%M:%S on %m/%d/%y").timetuple()), 
+        item['type'],
+        item['user'],
+        item['event']
+    )
