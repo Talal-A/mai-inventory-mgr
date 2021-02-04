@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from flask import request
 
-DB_PATH = './data/mai.db'
+DB_PATH = '/data/mai.db'
 
 # To be called ONCE from application startup
 def __init_db():
