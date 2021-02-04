@@ -291,7 +291,17 @@ def exists_category_id(category_id):
 
 # Return true if category is actively used by an item
 def exists_category_usage(category_id):
-    return True
+    cursor = __get_db().cursor()
+
+    query_result = cursor.execute("""
+        SELECT EXISTS(SELECT 1 FROM item WHERE category_id=? LIMIT 1)""", (
+            str(category_id).strip(),
+    ))
+    
+    for row in query_result:
+        exists = (row[0] == 1)
+        cursor.close()
+        return exists
 
 # Get a category for a given category_id
 def get_category(category_id):
