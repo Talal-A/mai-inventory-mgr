@@ -1,9 +1,7 @@
 Flask==1.0.2
 wtforms
-pymongo
 Flask-Login
 oauthlib
 requests
 pytz
 datetime
-boto3
