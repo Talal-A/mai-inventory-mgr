@@ -349,6 +349,21 @@ def get_deletable_categories():
             deletable_categories.append(category)
     return deletable_categories
 
+# Update the name for a given category_id
+def update_category_name(category_id, new_name):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        UPDATE category SET name=? WHERE category_id=?""", (
+            str(new_name).strip(),
+            str(category_id).strip()
+        ))
+    
+    # Save (commit) the changes
+    db_connection.commit()
+    cursor.close()
+
 # Delete a category for a given category_id
 # TODO: Only delete if no items are actively using this category_id
 def delete_category(category_id):
