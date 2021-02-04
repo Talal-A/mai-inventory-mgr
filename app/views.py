@@ -4,7 +4,6 @@ from flask import render_template, request, redirect, flash
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField
 
 from app import app
-from .db import insertCategory, getCategories, getCategoryForId, updateCategory, insertItem, getItems, getItemForId, updateItem, getDeletableCategories, deleteCategory, insertBarcode, getBarcodesForItem, getBarcodes, deleteBarcode, getItemsForCategory, deleteItem, getBarcode, scanBarcodeAndUpdateQuantity, searchAndUpdateQuantity
 from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup, Search_QuantityUpdate
 from . import database
 import requests
@@ -155,7 +154,7 @@ def register_with_param(type):
             return returnPermissionError()
 
         if request.method == 'POST' and form_category.category.data and form_category.validate():
-            insertCategory(form_category.category.data)
+            database.insert_category(form_category.category.data)
             database.insert_history("REGISTER", current_user, "Registered category: " + str(form_category.category.data))
             return redirect('/dashboard')
 
@@ -163,19 +162,19 @@ def register_with_param(type):
 
     elif type == 'item':
         if request.method == 'POST' and form_item.category.data and form_item.item.data and form_item.validate():
-            insertItem(str(form_item.category.data).strip(), str(form_item.item.data).strip(), str(form_item.location.data).strip())
+            database.insert_item(str(form_item.category.data).strip(), str(form_item.item.data).strip(), str(form_item.location.data).strip())
             database.insert_history("REGISTER", current_user, "Registered item. Category: " + str(form_item.category.data).strip() + ", Item: " + str(form_item.item.data).strip() + ", Location: " + str(form_item.location.data).strip())
             return redirect('/dashboard')
 
-        return render_template('register:' + type + '.html', USER=current_user, form=form_item, categories=getCategories())
+        return render_template('register:' + type + '.html', USER=current_user, form=form_item, categories=database.get_all_categories())
 
     elif type == 'barcode':
         if request.method == 'POST' and form_barcode.validate():
-            insertBarcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
+            database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
             database.insert_history("REGISTER", current_user, "Registered barcode. Item: " + str(form_barcode.item.data).strip() + ", Barcode: " + str(form_barcode.barcode.data).strip())
             return redirect('/dashboard')
 
-        return render_template('register:' + type + '.html', USER=current_user, form=form_barcode, categories=getCategories())
+        return render_template('register:' + type + '.html', USER=current_user, form=form_barcode, categories=database.get_all_categories())
 
     else:
         return redirect('/dashboard')
@@ -193,7 +192,7 @@ def register_barcode_for_item(uuid):
 
     print(form_barcode.item.data)
     if request.method == 'POST' and form_barcode.validate():
-        insertBarcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
+        database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
         database.insert_history("REGISTER", current_user, "Registered barcode. Item: " + str(form_barcode.item.data).strip() + ", Barcode: " + str(form_barcode.barcode.data).strip())
         return redirect('/view/item/' + uuid)
 
@@ -209,11 +208,11 @@ def edit_category(uuid):
     form_category = Register_Category(request.form)
 
     if request.method == 'POST' and form_category.category.data and form_category.validate():
-        updateCategory(uuid, form_category.category.data)
+        database.update_category_name(uuid, form_category.category.data)
         database.insert_history("EDIT", current_user, "Updated category. UUID: " + str(uuid).strip() + ", Category: " + str(form_category.category.data).strip())
         return redirect('/view')
     else:
-        form_category.category.data = getCategoryForId(uuid)['name']
+        form_category.category.data = database.get_category(uuid)['name']
 
     return render_template('edit:category.html', USER=current_user, form=form_category)
 
@@ -223,7 +222,7 @@ def delete_barcode_view():
     database.insert_history("PAGE_VISIT", current_user, "Viewed delete barcode view.")
     if not validate_user():
         return returnPermissionError()
-    return render_template('delete:barcode.html', USER=current_user, barcodes=getBarcodes())
+    return render_template('delete:barcode.html', USER=current_user, barcodes=database.get_all_barcodes())
 
 @app.route('/delete/barcode/<string:uuid>')
 @login_required
@@ -231,7 +230,7 @@ def delete_barcode(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed delete barcode.")
     if not validate_user():
         return returnPermissionError()
-    deleteBarcode(uuid)
+    database.delete_barcode(uuid)
     database.insert_history("DELETE", current_user, "Deleted barcode. UUID: " + str(uuid))
     return redirect('/delete/barcode')
 
@@ -241,7 +240,7 @@ def delete_item(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed delete item.")
     if not validate_admin():
         return returnPermissionError()
-    deleteItem(uuid)
+    database.delete_item(uuid)
     database.insert_history("DELETE", current_user, "Deleted item. UUID: " + str(uuid))
     return redirect('/view')
 
@@ -251,7 +250,7 @@ def delete_category_view():
     database.insert_history("PAGE_VISIT", current_user, "Viewed delete category view.")
     if not validate_admin():
         return returnPermissionError()
-    return render_template('delete:category.html', USER=current_user, categories=getDeletableCategories())
+    return render_template('delete:category.html', USER=current_user, categories=database.get_deletable_categories())
 
 @app.route('/delete/category/<string:uuid>')
 @login_required
@@ -259,7 +258,7 @@ def delete_category(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed delete category.")
     if not validate_admin():
         return returnPermissionError()
-    deleteCategory(uuid)
+    database.delete_category(uuid)
     database.insert_history("DELETE", current_user, "Deleted category. UUID: " + str(uuid))
     return redirect('/delete/category')
 
@@ -273,11 +272,11 @@ def edit_item(uuid):
     form_item = Update_Item(request.form)
 
     if request.method == 'POST' and form_item.validate():
-        updateItem(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
+        database.update_item(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
         database.insert_history("EDIT", current_user, "Edited item. UUID: " + str(uuid) + ", Category: " + str(form_item.category.data) + ", Location: " + str(form_item.location.data) + ", Quantity_Active: " + str(form_item.quantity_active.data) + ", Quantity Expired: " + str(form_item.quantity_expired.data) + ", Notes: " + str(form_item.notes.data) + ", URL: " + str(form_item.url.data))
         return redirect('/view/item/' + uuid)
     else:
-        current_item = getItemForId(uuid)
+        current_item = database.get_item(uuid)
         form_item.category.data = current_item['category_id']
         form_item.location.data = current_item['location']
         form_item.quantity_active.data = current_item['quantity_active']
@@ -290,22 +289,22 @@ def edit_item(uuid):
 @app.route('/view/category/<string:uuid>')
 def view_category(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed category " + str(uuid))
-    return render_template('view:items.html', USER=current_user, category=getCategoryForId(uuid)['name'], items=getItemsForCategory(uuid))
+    return render_template('view:items.html', USER=current_user, category=database.get_category(uuid)['name'], items=database.get_all_items_for_category(uuid))
 
 @app.route('/view/all')
 def view_all_items():
     database.insert_history("PAGE_VISIT", current_user, "Viewed all items page")
-    return render_template('view:items.html', USER=current_user, category='All items', items=getItems())
+    return render_template('view:items.html', USER=current_user, category='All items', items=database.get_all_items())
 
 @app.route('/view/item/<string:uuid>')
 def view_item(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed item " + str(uuid))
-    return render_template('view:item.html', USER=current_user, item=getItemForId(uuid), barcodes=getBarcodesForItem(uuid))
+    return render_template('view:item.html', USER=current_user, item=database.get_item(uuid), barcodes=database.get_barcodes_for_item(uuid))
 
 @app.route('/view')
 def view():
     database.insert_history("PAGE_VISIT", current_user, "Viewed /view")
-    return render_template('view.html', USER=current_user, categories=getCategories())
+    return render_template('view.html', USER=current_user, categories=database.get_all_categories())
 
 @app.route('/view/users')
 @login_required
@@ -338,8 +337,8 @@ def barcode_check_in_item():
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
         print(form_barcode.quantity.data)
-        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
-            item_id = getBarcode(form_barcode.barcode.data)['item_id']
+        if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data):
+            item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
             database.insert_history("EDIT", current_user, "Check in with barcode. Barcode: " + str(form_barcode.barcode.data) + ", Quantity: " + str(form_barcode.quantity.data))
             return redirect('/view/item/' + item_id)
         else:
@@ -356,8 +355,8 @@ def barcode_check_out_item():
 
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        if scanBarcodeAndUpdateQuantity(form_barcode.barcode.data, form_barcode.quantity.data):
-            item_id = getBarcode(form_barcode.barcode.data)['item_id']
+        if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data):
+            item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
             database.insert_history("EDIT", current_user, "Check out with barcode. Barcode: " + str(form_barcode.barcode.data) + ", Quantity: " + str(form_barcode.quantity.data))
             return redirect('/view/item/' + item_id)
         else:
@@ -375,7 +374,7 @@ def search_check_out_item():
     form_search = Search_QuantityUpdate(request.form)
 
     if request.method == 'POST' and form_search.validate():
-        if searchAndUpdateQuantity(form_search.selectInput.data, form_search.quantity.data):
+        if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data):
             database.insert_history("EDIT", current_user, "Check out with search. ItemId: " + str(form_search.selectInput.data) + ", Quantity: " + str(form_search.quantity.data))
             return redirect('/view/item/' + form_search.selectInput.data)
         else:
@@ -393,7 +392,7 @@ def search_check_in_item():
     form_search = Search_QuantityUpdate(request.form)
 
     if request.method == 'POST' and form_search.validate():
-        if searchAndUpdateQuantity(form_search.selectInput.data, form_search.quantity.data):
+        if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data):
             database.insert_history("EDIT", current_user, "Check in with search. ItemId: " + str(form_search.selectInput.data) + ", Quantity: " + str(form_search.quantity.data))
             return redirect('/view/item/' + form_search.selectInput.data)
         else:
@@ -406,7 +405,7 @@ def barcode_look_up_item():
     database.insert_history("PAGE_VISIT", current_user, "Viewed barcode lookup")
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        item_id = getBarcode(form_barcode.barcode.data)['item_id']
+        item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
         database.insert_history("EDIT", current_user, "Barcode lookup. Barcode: " + str(form_barcode.barcode.data))
         return redirect('/view/item/' + item_id)
 

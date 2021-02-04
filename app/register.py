@@ -1,10 +1,10 @@
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField, SelectField, IntegerField, FieldList, FormField
-from .db import getCategoryNames, getItemNames, getCategories, getItems, getBarcodeNames
+from . import database
 
 def validateCategory(form, field):
 	if len(field.data.strip()) == 0:
 		raise ValidationError('Category cannot be empty')
-	if field.data.strip() in getCategoryNames():
+	if database.exists_category_name(field.data.strip()):
 		raise ValidationError('Category already exists')
 
 class Register_Category(Form):
@@ -14,8 +14,6 @@ class Register_Category(Form):
 def validateItem(form, field):
 	if len(field.data.strip()) == 0:
 		raise ValidationError('Item cannot be empty')
-	if field.data.strip() in getItemNames():
-		raise ValidationError('Item already exists')
 
 class Register_Item(Form):
 	category = SelectField('Category', choices=[], coerce=str)
@@ -26,7 +24,7 @@ class Register_Item(Form):
 	def __init__(self, *args, **kwargs):
 		super(Register_Item, self).__init__(*args, **kwargs)
 		category_choices = []
-		for category in getCategories():
+		for category in database.get_all_categories():
 			category_choices.append((str(category['id']), str(category['name'])))
 		self.category.choices = category_choices
 
@@ -42,20 +40,20 @@ class Update_Item(Form):
 	def __init__(self, *args, **kwargs):
 		super(Update_Item, self).__init__(*args, **kwargs)
 		category_choices = []
-		for category in getCategories():
+		for category in database.get_all_categories():
 			category_choices.append((str(category['id']), str(category['name'])))
 		self.category.choices = category_choices
 
 def validateBarcode(form, field):
 	if len(field.data.strip()) == 0:
 		raise ValidationError('Barcode cannot be empty')
-	if field.data.strip() in getBarcodeNames():
+	if database.exists_barcode(field.data.strip()):
 		raise ValidationError('Barcode already exists')
 
 def validateBarcodeExists(form, field):
 	if len(field.data.strip()) == 0:
 		raise ValidationError('Barcode cannot be empty')
-	if field.data.strip() not in getBarcodeNames():
+	if not database.exists_barcode(field.data.strip()):
 		raise ValidationError('Barcode does not exist.')
 
 class Register_Barcode(Form):
@@ -65,7 +63,7 @@ class Register_Barcode(Form):
 	def __init__(self, *args, **kwargs):
 		super(Register_Barcode, self).__init__(*args, **kwargs)
 		item_choices = []
-		for item in getItems():
+		for item in database.get_all_items():
 			item_choices.append((str(item['id']), str(item['name'])))
 		self.item.choices = item_choices
 
@@ -81,5 +79,5 @@ class Search_QuantityUpdate(Form):
 
 	def __init__(self, *args, **kwargs):
 		super(Search_QuantityUpdate, self).__init__(*args, **kwargs)
-		item_choices = [("", "")] + [(str(item['id']), str(item['name']) + " [" + str(item['location']) + "]") for item in getItems()]
+		item_choices = [("", "")] + [(str(item['id']), str(item['name']) + " [" + str(item['location']) + "]") for item in database.get_all_items()]
 		self.selectInput.choices = item_choices
