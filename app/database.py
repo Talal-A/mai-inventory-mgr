@@ -55,6 +55,14 @@ def __check_table(db_connection):
         """
     )
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS image (
+            image_id text, image_url text, deletion_hash text, item_id text,
+            UNIQUE(image_id)
+        )
+        """
+    )
+
     db_connection.commit()
     cursor.close()
 
@@ -699,3 +707,128 @@ def search_item_update_quantity(item_id, diff):
             # Perform update and return true
             update_item_quantity(item['id'], new_quantity)
             return True
+
+###################
+# IMAGE FUNCTIONS #
+###################
+
+# Insert an image
+def insert_image(image_url, deletion_hash, item_id):
+    image_id = str(uuid.uuid4())
+
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO image (image_id, image_url, deletion_hash, item_id)
+        VALUES(?, ?, ?, ?)""", (
+            str(image_id).strip(),
+            str(image_url).strip(),
+            str(deletion_hash).strip(),
+            str(item_id).strip()
+        ))
+
+    db_connection.commit()
+    cursor.close()
+
+# Return true if image_id already exists
+def exists_item_id(image_id):
+    cursor = __get_db().cursor()
+
+    query_result = cursor.execute("""
+        SELECT EXISTS(SELECT 1 FROM image WHERE image_id=? LIMIT 1)""", (
+            str(image_id).strip(),
+    ))
+    
+    for row in query_result:
+        exists = (row[0] == 1)
+        cursor.close()
+        return exists
+
+# Get an image for a given image_id
+def get_image(image_id):
+    result = None
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM image WHERE image_id=?""", (
+            str(image_id).strip(),
+    ))
+
+    for row in query_results:
+        result = {
+            'image_id': str(row[0]),
+            'image_url': str(row[1]),
+            'deletion_hash': str(row[2]),
+            'item_id': str(row[3])
+        }
+
+    cursor.close()
+    return result
+
+# Get all images
+def get_all_images():
+    result = []
+    cursor = __get_db().cursor()
+    
+    query_results = cursor.execute("""
+        SELECT * FROM image""", (
+    ))
+
+    for row in query_results:
+        result.append({
+            'image_id': str(row[0]),
+            'image_url': str(row[1]),
+            'deletion_hash': str(row[2]),
+            'item_id': str(row[3])
+        })
+
+    cursor.close()
+    return result
+
+# Get all images for an item
+def get_all_images_for_item(item_id):
+    result = []
+    cursor = __get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM image WHERE item_id=?""", (
+            str(item_id).strip(),
+    ))
+
+    for row in query_results:
+        result.append({
+            'image_id': str(row[0]),
+            'image_url': str(row[1]),
+            'deletion_hash': str(row[2]),
+            'item_id': str(row[3])
+        })
+
+    cursor.close()
+    return result
+
+# Delete an image for a given image_id
+def delete_item(image_id):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    query_results = cursor.execute("""
+        DELETE FROM image WHERE image_id=?""", (
+            str(image_id).strip(),
+    ))
+
+    db_connection.commit()
+    cursor.close()
+
+# Delete all images for a given item_id
+def delete_images_for_item(item_id):
+    db_connection = __get_db()
+    cursor = db_connection.cursor()
+
+    query_results = cursor.execute("""
+        DELETE FROM image WHERE item_id=?""", (
+            str(item_id).strip(),
+    ))
+
+    db_connection.commit()
+    cursor.close()
