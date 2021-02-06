@@ -131,11 +131,19 @@
 
 <script>
     var loadFile = function(event) {
-        var image = document.getElementById('output');
         // TODO: Image has been obtained. Downsize it (max 5MB?) and send to server. Server will then upload to imgur.
-        // image.src = URL.createObjectURL(event.target.files[0]);
+        var reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", '/edit/item/upload_photo/{{item.id}}', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify({
+                img: reader.result
+            }));
+        };
     };
-    </script>
+</script>
     
 
 {% endblock %}

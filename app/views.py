@@ -198,6 +198,16 @@ def register_barcode_for_item(uuid):
 
     return render_template('register:' + 'barcode' + '.html', USER=current_user, form=form_barcode)
 
+@app.route('/edit/item/upload_photo/<string:uuid>', methods=['POST'])
+@login_required
+def upload_photo_for_item(uuid):
+    database.insert_history("PAGE_VISIT", current_user, "Uploaded image for item.")
+    if not validate_user():
+        return returnPermissionError()
+
+    print(request.get_json())
+    return
+
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])
 @login_required
 def edit_category(uuid):
