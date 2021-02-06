@@ -205,8 +205,19 @@ def upload_photo_for_item(uuid):
     if not validate_user():
         return returnPermissionError()
 
-    print(request.get_json())
-    return
+    try:
+        result = requests.post(
+            url='https://api.imgur.com/3/image',
+            data={'image': request.get_json()['img'].split(',')[1]},
+            headers={'Authorization': 'Client-ID a451880f6ae3cb7'}
+            ).json()
+        
+        image_url = result['data']['link']
+        delete_hash = result['data']['deletehash']
+        success = result['success']
+        return str(success)
+    except:
+        return str(False)
 
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])
 @login_required
