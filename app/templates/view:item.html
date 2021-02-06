@@ -65,23 +65,15 @@
 </div>
 
 <br>
-<p><input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;"></p>
-<p><label for="file" style="cursor: pointer;">Upload Image</label></p>
-<p><img id="output" width="200" /></p>
-
-<script>
-var loadFile = function(event) {
-	var image = document.getElementById('output');
-    image.src = URL.createObjectURL(event.target.files[0]);
-    console.log(image.src)
-};
-</script>
 
 <div class="card">
     <div class="card-header">
           <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">photo</i> Photos</span>
           {% if USER.is_authenticated and USER.role >= 5 %}
-          <span class="font-weight-bold padding-bottom-3 vertical-align-middle" style="text-align:right;float:right;"><a href="/edit/item/upload_photo/{{item.id}}"><i class="material-icons">add</i></a></span>  
+          <input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;">
+          <label for="file" style="cursor: pointer; text-align:right;float:right;" class="font-weight-bold padding-bottom-3 vertical-align-middle">
+            <i class="material-icons">add</i>        
+        </label>
           {% endif %}
     </div>
     <div class="card-body">
@@ -136,5 +128,14 @@ var loadFile = function(event) {
     }
   }
 </script>
+
+<script>
+    var loadFile = function(event) {
+        var image = document.getElementById('output');
+        // TODO: Image has been obtained. Downsize it (max 5MB?) and send to server. Server will then upload to imgur.
+        // image.src = URL.createObjectURL(event.target.files[0]);
+    };
+    </script>
+    
 
 {% endblock %}
