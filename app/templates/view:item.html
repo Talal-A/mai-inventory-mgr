@@ -77,12 +77,10 @@
           {% endif %}
     </div>
     <div class="card-body">
-      <!-- <blockquote class="blockquote mb-0">
-          {% set list1 = item.notes.split('\n') %}
-              {% for list in list1 %}
-              <p>{{ list }}</p>
-          {% endfor %}
-      </blockquote> -->
+        {% for image in images %}
+            <img src="{{image.image_url}}">
+            <br>
+        {% endfor %}
     </div>
   </div>
 <br>

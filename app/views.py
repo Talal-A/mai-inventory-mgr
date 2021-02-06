@@ -215,6 +215,8 @@ def upload_photo_for_item(uuid):
         image_url = result['data']['link']
         delete_hash = result['data']['deletehash']
         success = result['success']
+        if success:
+            database.insert_image(image_url, delete_hash, uuid)
         return str(success)
     except:
         return str(False)
@@ -320,7 +322,7 @@ def view_all_items():
 @app.route('/view/item/<string:uuid>')
 def view_item(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed item " + str(uuid))
-    return render_template('view:item.html', USER=current_user, item=database.get_item(uuid), barcodes=database.get_barcodes_for_item(uuid))
+    return render_template('view:item.html', USER=current_user, item=database.get_item(uuid), barcodes=database.get_barcodes_for_item(uuid), images=database.get_all_images_for_item(uuid))
 
 @app.route('/view')
 def view():
