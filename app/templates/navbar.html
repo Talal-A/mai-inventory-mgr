@@ -1,34 +1,31 @@
-<style>
-  #nav-profile {
-    margin-right: 15px;
-  }
-
-  #nav-image {
-    display: inline-block;
-    width: 72px;
-    height: 72px;
-    background: no-repeat url("/static/mai_logo.png") center/cover;
-  }
-</style>
-
 <nav class="navbar navbar-light navbar-expand-lg bg-light sticky-top mb-4 pr-0 pt-0 pb-0">
+  <a class="navbar-brand" href="/">
+    <img src='/static/mai_logo.png' alt="Avatar" style="border-radius: 50%;height:30px;margin-right:5px;"/> 
+    MAI Inventory<sup>Beta</sup></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-  <a class="navbar-brand" href="/">MAI Inventory<sup>Beta</sup></a>
-  <div class="collapse navbar-collapse">
-    <div class="nav navbar-nav mr-auto">
-      <a class="nav-item nav-link" href="/dashboard">Dashboard</a>
-      <a class="nav-item nav-link" href="/view">View database</a>
-      {% if USER.is_authenticated %}
-        <a class="nav-item nav-link" href="/logout">Logout</a>
-      {% endif %}
-
-    </div>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="/dashboard">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="/view">View database</a>
+      </li>
+    </ul>
     {% if USER.is_authenticated %}
-      <div id="nav-profile" class="d-flex justify-content-end navbar-text"> Welcome,&nbsp;{{USER.name}}</div>
+    <div class="nav-item dropdown">
+      <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {{USER.name}}
+      </a>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+        <a class="dropdown-item" href="/logout">Logout</a>
+      </div>
+  </div>
     {% else %}
-      <a class="nav-item nav-link" href="/login">Login</a>
-    {% endif %}
-
-    <div id="nav-image" class="navbar-brand-image"></div>
+    <a href="/login" class="btn btn-outline-success my-2 my-sm-0" style="margin-right:5px">Login</a>   
+  {% endif %} 
   </div>
 </nav>

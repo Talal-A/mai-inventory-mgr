@@ -15,13 +15,11 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   </head>
+  {% include "navbar.html" %}
   <body>
     <div class="container">
-      {% include "navbar.html" %}
-
       {% block body %}
       {% endblock %}
-
       <!-- Optional JavaScript -->
       <!-- jQuery first, then Popper.js, then Bootstrap JS -->
       <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
@@ -33,4 +31,5 @@
       </footer>
     </div> <!-- /container -->
   </body>
+  {% include "footer.html" %}
 </html>
