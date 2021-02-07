@@ -257,6 +257,25 @@ def delete_barcode(uuid):
     database.insert_history("DELETE", current_user, "Deleted barcode. UUID: " + str(uuid))
     return redirect('/delete/barcode')
 
+@app.route('/delete/image')
+@login_required
+def delete_image_view():
+    database.insert_history("PAGE_VISIT", current_user, "Viewed delete image view.")
+    if not validate_user():
+        return returnPermissionError()
+    return render_template('delete:image.html', USER=current_user, images=database.get_all_images())
+
+@app.route('/delete/image/<string:uuid>')
+@login_required
+def delete_image(uuid):
+    database.insert_history("PAGE_VISIT", current_user, "Viewed delete image.")
+    if not validate_user():
+        return returnPermissionError()
+    # TK.. Delete image from DB and from imgur.
+    # database.delete_barcode(uuid)
+    # database.insert_history("DELETE", current_user, "Deleted barcode. UUID: " + str(uuid))
+    return redirect('/delete/image')
+
 @app.route('/delete/item/<string:uuid>')
 @login_required
 def delete_item(uuid):

@@ -780,7 +780,8 @@ def get_all_images():
             'image_id': str(row[0]),
             'image_url': str(row[1]),
             'deletion_hash': str(row[2]),
-            'item_id': str(row[3])
+            'item_id': str(row[3]),
+            'item_name': get_item(str(row[3]))['name']
         })
 
     cursor.close()
