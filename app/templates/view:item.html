@@ -192,19 +192,21 @@
         reader.readAsDataURL(event.target.files[0]);
         reader.onload = function () {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", '/edit/item/upload_photo/{{item.id}}', false);
+            xhr.open("POST", '/edit/item/upload_photo/{{item.id}}', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({
                 img: reader.result
             }));
-            result = xhr.response;
-            document.getElementById("loader").style.display = "none";
-            document.getElementById("page").style.display = "block";
-            document.getElementById("footer").style.display = "block";
-            if (result === "True") { 
-                location.reload();
-            } else {
-                alert("There was an issue uploading your photo. Please try again, or use a smaller photo.");
+            xhr.onload = function () {
+                result = xhr.response;
+                document.getElementById("loader").style.display = "none";
+                document.getElementById("page").style.display = "block";
+                document.getElementById("footer").style.display = "block";
+                if (result === "True") { 
+                    location.reload();
+                } else {
+                    alert("There was an issue uploading your photo. Please try again, or use a smaller photo.");
+                }
             }
         };
     };
