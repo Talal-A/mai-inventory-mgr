@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
+<div id="page">
 <h4 style="text-align:left;float:left;">{{item.name}}</h4> 
 <a style="text-align:right;float:right;">
     {% if USER.is_authenticated and USER.role >= 5 %}
@@ -20,6 +21,35 @@
     }
 </style>
 
+<style>
+    /* Center the loader */
+    #loader {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 1;
+      width: 120px;
+      height: 120px;
+      margin: -76px 0 0 -76px;
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+    
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+</style>
+    
 <div class="list-group mt-3">
 
     <div class="d-flex list-group-item flex-row ">
@@ -139,6 +169,11 @@
     </div>
   </div>
 <br>
+
+</div>
+
+<div id="loader" style="display:none;"></div>
+
 <script>
   function confirmDelete(id, name) {
     if (confirm("Are you sure you want to delete item [" + name + "]? This action is not reversible.")) {
@@ -150,15 +185,27 @@
 <script>
     var loadFile = function(event) {
         // TODO: Image has been obtained. Downsize it (max 5MB?) and send to server. Server will then upload to imgur.
+        document.getElementById("loader").style.display = "block";
+        document.getElementById("page").style.display = "none";
+        document.getElementById("footer").style.display = "none";
         var reader = new FileReader();
         reader.readAsDataURL(event.target.files[0]);
         reader.onload = function () {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", '/edit/item/upload_photo/{{item.id}}', true);
+            xhr.open("POST", '/edit/item/upload_photo/{{item.id}}', false);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({
                 img: reader.result
             }));
+            result = xhr.response;
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("page").style.display = "block";
+            document.getElementById("footer").style.display = "block";
+            if (result === "True") { 
+                location.reload();
+            } else {
+                alert("There was an issue uploading your photo. Please try again, or use a smaller photo.");
+            }
         };
     };
 </script>
