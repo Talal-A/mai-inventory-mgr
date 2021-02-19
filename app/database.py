@@ -810,7 +810,7 @@ def get_all_images_for_item(item_id):
     return result
 
 # Delete an image for a given image_id
-def delete_item(image_id):
+def delete_image(image_id):
     db_connection = __get_db()
     cursor = db_connection.cursor()
 
