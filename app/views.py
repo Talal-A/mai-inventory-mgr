@@ -271,9 +271,8 @@ def delete_image(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed delete image.")
     if not validate_user():
         return returnPermissionError()
-    # TK.. Delete image from DB and from imgur.
-    # database.delete_barcode(uuid)
-    # database.insert_history("DELETE", current_user, "Deleted barcode. UUID: " + str(uuid))
+    database.delete_image(uuid)
+    database.insert_history("DELETE", current_user, "Deleted image. UUID: " + str(uuid))
     return redirect('/delete/image')
 
 @app.route('/delete/item/<string:uuid>')

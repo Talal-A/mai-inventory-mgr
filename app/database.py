@@ -3,6 +3,7 @@ import json
 import uuid
 from datetime import datetime
 from flask import request
+import requests 
 
 DB_PATH = '/data/mai.db'
 
@@ -671,6 +672,7 @@ def delete_item(item_id):
     cursor.close()
 
     delete_barcodes_for_item(item_id)
+    delete_images_for_item(item_id)
 
 ##################
 # SCAN FUNCTIONS #
@@ -811,26 +813,35 @@ def get_all_images_for_item(item_id):
 
 # Delete an image for a given image_id
 def delete_image(image_id):
-    db_connection = __get_db()
-    cursor = db_connection.cursor()
+    image = get_image(image_id)
+    
+    if __delete_image_from_imgur(image['deletion_hash']):
+        db_connection = __get_db()
+        cursor = db_connection.cursor()
 
-    query_results = cursor.execute("""
-        DELETE FROM image WHERE image_id=?""", (
-            str(image_id).strip(),
-    ))
+        query_results = cursor.execute("""
+            DELETE FROM image WHERE image_id=?""", (
+                str(image_id).strip(),
+        ))
 
-    db_connection.commit()
-    cursor.close()
+        db_connection.commit()
+        cursor.close()
 
 # Delete all images for a given item_id
 def delete_images_for_item(item_id):
-    db_connection = __get_db()
-    cursor = db_connection.cursor()
+    for image in get_all_images_for_item(item_id):
+        delete_image(image['image_id'])
 
-    query_results = cursor.execute("""
-        DELETE FROM image WHERE item_id=?""", (
-            str(item_id).strip(),
-    ))
-
-    db_connection.commit()
-    cursor.close()
+# Delete an image from the imgur api
+def __delete_image_from_imgur(deletion_hash):
+    try:
+        result = requests.delete(
+            url='https://api.imgur.com/3/image/' + str(deletion_hash),
+            headers={'Authorization': 'Client-ID a451880f6ae3cb7'}
+            ).json()
+        print(result)
+        success = result['success']
+        return success
+    except:
+        return False
+    
