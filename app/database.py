@@ -521,6 +521,7 @@ def insert_item(category_id, name, location="", quantity_active=0, quantity_expi
 
     db_connection.commit()
     cursor.close()
+    return item_id
 
 # Return true if item_id already exists
 def exists_item_id(item_id):
