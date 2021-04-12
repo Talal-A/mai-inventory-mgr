@@ -87,10 +87,12 @@
         <span class="flex-fill text-right">{{item.quantity_expired}}</span>
     </div>
 
+    {% if item.url %}
     <div class="d-flex list-group-item flex-row ">
         <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">link</i> URL</span>
-        <span class="flex-fill text-right"><a href="{{item.url}}">{{item.url}}</a></span>
+        <span class="flex-fill text-right"><a href="{{item.url}}">Click here</a></span>
     </div>
+    {% endif %}
 
 </div>
 
