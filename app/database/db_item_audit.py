@@ -22,3 +22,25 @@ def insert_item_audit_event(item_id, event, before, after):
     db_connection.commit()
     cursor.close()
 
+def get_item_audit(item_id):
+    result = []
+    cursor = db.get_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM item_audit WHERE item_id=? ORDER BY date DESC""", (
+            str(item_id).strip(),    
+    ))
+
+    for row in query_results:
+        result.append({
+            'date_raw': int(row[0]),
+            'date': db.format_timestamp(int(row[0])),
+            'item_id': str(row[1]),
+            'user': str(row[2]),
+            'event': str(row[3]),
+            'before': str(row[4]),
+            'after': str(row[5])
+        })
+
+    cursor.close()
+    return result
