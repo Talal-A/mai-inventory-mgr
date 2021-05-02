@@ -7,7 +7,7 @@ import pymongo
 from bson.objectid import ObjectId
 sys.path.append('/Users/talal/dev/mai-ucla-2/app/')
 
-import database
+from app.database import db_interface as database
 
 print("Running sheet parser on inputs:")
 print('Argument List:', str(sys.argv))
@@ -88,7 +88,7 @@ print("Total rows: " + str(rowCount))
 html_file.close()
 tsv_file.close()
 
-database.__init_db()
+database.init_db()
 
 for item in results:
     # Create the category
@@ -133,7 +133,7 @@ for item in USER_DB.find():
 
 # Custom history insert function
 def insert_history(timestamp, type, user, event):
-    db_connection = database.__get_db()
+    db_connection = database.get_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""

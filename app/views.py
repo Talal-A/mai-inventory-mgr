@@ -5,7 +5,7 @@ from wtforms import Form, StringField, validators, ValidationError, SubmitField,
 
 from app import app
 from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup, Search_QuantityUpdate
-from . import database
+from .database import db_interface as database
 import requests
 import base64
 
