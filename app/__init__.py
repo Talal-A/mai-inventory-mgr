@@ -27,12 +27,6 @@ app = Flask(__name__, instance_relative_config=True)
 app.secret_key = os.environ.get("MAI_SECRET_KEY") or os.urandom(24)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
-GOOGLE_CLIENT_ID = os.environ.get("MAI_GOOGLE_CLIENT_ID", None)
-GOOGLE_CLIENT_SECRET = os.environ.get("MAI_GOOGLE_CLIENT_SECRET", None)
-GOOGLE_DISCOVERY_URL = (
-    "https://accounts.google.com/.well-known/openid-configuration"
-)
-
 # Auth
 login_manager = LoginManager()
 login_manager.init_app(app)
