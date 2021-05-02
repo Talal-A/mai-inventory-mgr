@@ -1,5 +1,5 @@
 from wtforms import Form, StringField, validators, ValidationError, SubmitField, TextAreaField, SelectField, IntegerField, FieldList, FormField
-from . import database
+from .database import db_interface as database
 
 def validateCategory(form, field):
 	if len(field.data.strip()) == 0:

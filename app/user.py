@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from . import database
+from .database import db_interface as database
 
 # ROLE BREAKDOWN:
 #   00 = guest
