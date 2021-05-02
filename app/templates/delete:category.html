@@ -4,7 +4,13 @@
 
 <h4>Which category would you like to delete?</h4>
 
-<div class="list-group">
+<div>
+  <p align="center">
+      <input type="text" class="form-control" id="search" placeholder="Type to search">
+  </p>
+</div>
+
+<div class="list-group" id="categoryList">
     {% for category in categories %}
         <a onclick="confirmDelete('{{category.id}}', '{{category.name}}')" class="list-group-item list-group-item-action">{{category.name}}</a>
         <script>
@@ -17,5 +23,16 @@
 
     {% endfor %}
 </div>
+
+<script>
+  window.onload = function() {
+      $("#search").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#categoryList a").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  }
+</script>
 
 {% endblock %}
