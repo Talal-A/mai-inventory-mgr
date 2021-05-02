@@ -6,11 +6,14 @@ from flask import request
 import requests 
 
 DB_PATH = '/data/mai.db'
+DB_NAME = 'mai-db'
+DB_VERSION = 1
 
 # To be called ONCE from application startup
 def __init_db():
     db_connection = sqlite3.connect(DB_PATH)
     __check_table(db_connection)
+    __upgrade_db(db_connection)
 
 def __get_db():
     db_connection = sqlite3.connect(DB_PATH)
@@ -64,6 +67,46 @@ def __check_table(db_connection):
         """
     )
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS version (
+            db_name text, db_version int,
+            UNIQUE(db_name)
+        )"""
+    )
+
+    cursor.execute("""
+        INSERT OR IGNORE INTO version (db_name, db_version)
+        VALUES(?, ?)""", (
+            DB_NAME,
+            DB_VERSION
+    ))
+
+    db_connection.commit()
+    cursor.close()
+
+def __upgrade_db(db_connection):
+    current_version = -1
+    cursor = db_connection.cursor()
+
+    # Get current db version
+    query_results = cursor.execute("""
+        SELECT db_version FROM version WHERE db_name=?""", (
+            str(DB_NAME),
+    ))
+
+    for row in query_results:
+        current_version = int(row[0])
+
+    print("Latest database version: " + str(current_version))
+    print("Expected database version: " + str(DB_VERSION))
+
+    if current_version == -1:
+        raise Exception("Error: was not able to pull the current db version")
+    
+    if current_version == DB_VERSION:
+        return
+
+    # Finally, commit the changes and close the cursor.
     db_connection.commit()
     cursor.close()
 
