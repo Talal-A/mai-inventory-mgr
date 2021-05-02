@@ -6,6 +6,7 @@ from wtforms import Form, StringField, validators, ValidationError, SubmitField,
 from app import app
 from .register import Register_Category, Register_Item, Update_Item, Register_Barcode, Barcode_Lookup, Search_QuantityUpdate
 from .database import db_interface as database
+import config
 import requests
 import base64
 
@@ -24,18 +25,12 @@ from flask_login import (
 from .user import User
 
 # WIP AUTH
-GOOGLE_CLIENT_ID = os.environ.get("MAI_GOOGLE_CLIENT_ID", None)
-GOOGLE_CLIENT_SECRET = os.environ.get("MAI_GOOGLE_CLIENT_SECRET", None)
-IMGUR_CLIENT_ID = os.environ.get("MAI_IMGUR_CLIENT_ID", None)
-GOOGLE_DISCOVERY_URL = (
-    "https://accounts.google.com/.well-known/openid-configuration"
-)
 
 def get_google_provider_cfg():
-    return requests.get(GOOGLE_DISCOVERY_URL).json()
+    return requests.get(config.GOOGLE_DISCOVERY_URL).json()
 
 
-client = WebApplicationClient(GOOGLE_CLIENT_ID)
+client = WebApplicationClient(config.GOOGLE_CLIENT_ID)
 
 def validate_user():
     return current_user.is_authenticated and current_user.role >= 5
@@ -90,7 +85,7 @@ def login_callback():
         token_url,
         headers=headers,
         data=body,
-        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
+        auth=(config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET),
     )
 
     # Parse the tokens!
@@ -210,7 +205,7 @@ def upload_photo_for_item(uuid):
         result = requests.post(
             url='https://api.imgur.com/3/image',
             data={'image': request.get_json()['img'].split(',')[1]},
-            headers={'Authorization': 'Client-ID ' + IMGUR_CLIENT_ID}
+            headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID}
             ).json()
         
         image_url = result['data']['link']

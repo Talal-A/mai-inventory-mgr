@@ -1,5 +1,6 @@
 import uuid
 import requests
+import config
 
 from . import db_util as db
 from . import db_item
@@ -131,7 +132,7 @@ def __delete_image_from_imgur(deletion_hash):
     try:
         result = requests.delete(
             url='https://api.imgur.com/3/image/' + str(deletion_hash),
-            headers={'Authorization': 'Client-ID a451880f6ae3cb7'} # TODO - missed this when migrating.
+            headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID}
             ).json()
         print(result)
         success = result['success']
