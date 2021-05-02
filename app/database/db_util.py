@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from flask import request
 
 DB_PATH = '/data/mai.db'
 DB_NAME = 'mai-db'
@@ -68,6 +69,13 @@ def __check_table(db_connection):
     )
 
     cursor.execute("""
+        CREATE TABLE IF NOT EXISTS item_audit (
+            date int, item_id text, user text, event text, before text, after text
+        )
+        """
+    )
+
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS version (
             db_name text, db_version int,
             UNIQUE(db_name)
@@ -118,3 +126,24 @@ def __upgrade_db(db_connection):
 def format_timestamp(time):
     dt_object = datetime.fromtimestamp(time)
     return dt_object.strftime('%d-%b-%Y %H:%M:%S')    
+
+# Get user if authenticated, otherwise fall back to ip address
+def get_username(user):
+    username = ""
+
+    if not user:
+        return "unknown"
+
+    try:
+        if user.is_authenticated:
+            username = user.email
+        else:
+            ip_address = ""
+            if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+                ip_address = str(request.environ['REMOTE_ADDR'])
+            else:
+                ip_address = str(request.environ['HTTP_X_FORWARDED_FOR']) # if behind a proxy
+            username = "guest - " + ip_address
+        return username
+    except:
+        return "unknown"

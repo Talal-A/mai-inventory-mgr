@@ -1,7 +1,7 @@
 import uuid
 
 from . import db_util as db
-from . import db_barcode, db_category, db_image
+from . import db_barcode, db_category, db_image, db_item_audit
 
 ##################
 # ITEM FUNCTIONS #
@@ -29,6 +29,10 @@ def insert_item(category_id, name, location="", quantity_active=0, quantity_expi
 
     db_connection.commit()
     cursor.close()
+
+    # Log the creation of the new item.
+    db_item_audit.insert_item_audit_event(item_id, "Created item.", "", get_item(item_id))
+
     return item_id
 
 # Return true if item_id already exists
@@ -134,6 +138,7 @@ def get_all_items_for_category(category_id):
 def update_item(item_id, category_id, location, quantity_active, quantity_expired, notes, url):
     db_connection = db.get_db()
     cursor = db_connection.cursor()
+    item_before = get_item(item_id)
 
     cursor.execute("""
         UPDATE item SET category_id=?, location=?, quantity_active=?, quantity_expired=?, notes=?, url=? WHERE item_id=?""", (
@@ -150,10 +155,13 @@ def update_item(item_id, category_id, location, quantity_active, quantity_expire
     db_connection.commit()
     cursor.close()
 
+    db_item_audit.insert_item_audit_event(item_id, "Edited item.", item_before, get_item(item_id))
+
 # Update an item's active quantity
 def update_item_quantity(item_id, new_active_quantity):
     db_connection = db.get_db()
     cursor = db_connection.cursor()
+    item_before = get_item(item_id)
 
     cursor.execute("""
         UPDATE item SET quantity_active=? WHERE item_id=?""", (
@@ -165,10 +173,13 @@ def update_item_quantity(item_id, new_active_quantity):
     db_connection.commit()
     cursor.close()
 
+    db_item_audit.insert_item_audit_event(item_id, "Updated quantity.", item_before, get_item(item_id))
+
 # Delete an item for a given item_id
 def delete_item(item_id):
     db_connection = db.get_db()
     cursor = db_connection.cursor()
+    item_before = get_item(item_id)
 
     query_results = cursor.execute("""
         DELETE FROM item WHERE item_id=?""", (
@@ -178,6 +189,7 @@ def delete_item(item_id):
     db_connection.commit()
     cursor.close()
 
+    db_item_audit.insert_item_audit_event(item_id, "Deleted item.", item_before, "")
+
     db_barcode.delete_barcodes_for_item(item_id)
     db_image.delete_images_for_item(item_id)
-

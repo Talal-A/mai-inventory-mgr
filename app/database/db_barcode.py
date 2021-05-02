@@ -1,5 +1,5 @@
 from . import db_util as db
-from . import db_item
+from . import db_item, db_item_audit
 
 #####################
 # BARCODE FUNCTIONS #
@@ -20,6 +20,8 @@ def insert_barcode(barcode, item_id):
     # Save (commit) the changes
     db_connection.commit()
     cursor.close()
+
+    db_item_audit.insert_item_audit_event(item_id, "Added barcode.", "", get_barcode(barcode))
 
 # Return true if barcode already exists
 def exists_barcode(barcode):
@@ -96,6 +98,7 @@ def get_all_barcodes():
 def delete_barcode(barcode):
     db_connection = db.get_db()
     cursor = db_connection.cursor()
+    barcode_before = get_barcode(barcode)
 
     query_results = cursor.execute("""
         DELETE FROM barcode WHERE barcode=?""", (
@@ -105,10 +108,13 @@ def delete_barcode(barcode):
     db_connection.commit()
     cursor.close()
 
+    db_item_audit.insert_item_audit_event(barcode_before['item_id'], "Deleted barcode.", barcode_before, "")
+
 # Delete all barcodes associated with an item_id
 def delete_barcodes_for_item(item_id):
     db_connection = db.get_db()
     cursor = db_connection.cursor()
+    barcodes_before = get_barcodes_for_item(item_id)
 
     query_results = cursor.execute("""
         DELETE FROM barcode WHERE item_id=?""", (
@@ -117,3 +123,5 @@ def delete_barcodes_for_item(item_id):
 
     db_connection.commit()
     cursor.close()
+
+    db_item_audit.insert_item_audit_event(item_id, "Deleted all barcodes.", barcodes_before, "")

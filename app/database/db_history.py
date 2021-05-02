@@ -1,5 +1,4 @@
 from datetime import datetime
-from flask import request
 
 from . import db_util as db
 
@@ -7,22 +6,8 @@ from . import db_util as db
 # HISTORY FUNCTIONS #
 #####################
 
-# Get user if authenticated, otherwise fall back to ip address
-def __get_user(user):
-    username = ""
-    if user.is_authenticated:
-        username = user.email
-    else:
-        ip_address = ""
-        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-            ip_address = str(request.environ['REMOTE_ADDR'])
-        else:
-            ip_address = str(request.environ['HTTP_X_FORWARDED_FOR']) # if behind a proxy
-        username = "guest - " + ip_address
-
-    return username
-
 # Insert a new history event
+# TODO: can we just import current_user and use it directly here, instead of passing it in as a parameter?
 def insert_history(type, user, event):
     db_connection = db.get_db()
     cursor = db_connection.cursor()
@@ -32,7 +17,7 @@ def insert_history(type, user, event):
         VALUES(?, ?, ?, ?)""", (
             datetime.now().timestamp(), 
             str(type), 
-            str(__get_user(user)), 
+            str(db.get_username(user)), 
             str(event)
         ))
     

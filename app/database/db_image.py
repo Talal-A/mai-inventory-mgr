@@ -3,7 +3,7 @@ import requests
 import config
 
 from . import db_util as db
-from . import db_item
+from . import db_item, db_item_audit
 
 
 ###################
@@ -28,6 +28,8 @@ def insert_image(image_url, deletion_hash, item_id):
 
     db_connection.commit()
     cursor.close()
+
+    db_item_audit.insert_item_audit_event(item_id, "Added image.", "", get_image(image_id))
 
 # Return true if image_id already exists
 def exists_item_id(image_id):
@@ -121,6 +123,8 @@ def delete_image(image_id):
 
         db_connection.commit()
         cursor.close()
+
+        db_item_audit.insert_item_audit_event(image['item_id'], "Deleted image.", image, "")
 
 # Delete all images for a given item_id
 def delete_images_for_item(item_id):
