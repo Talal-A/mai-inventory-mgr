@@ -4,7 +4,13 @@
 
 <h4>Which image would you like to delete?</h4>
 
-<div class="list-group">
+<div>
+  <p align="center">
+      <input type="text" class="form-control" id="search" placeholder="Type to search">
+  </p>
+</div>
+
+<div class="list-group" id="imageList">
     {% for image in images %}
       <a onclick="confirmDelete('{{image.image_id}}', '{{image.item_name}}')" class="list-group-item list-group-item-action">
         <img src={{image.image_url}} style="width:100px;height:100px;">
@@ -20,5 +26,16 @@
 
     {% endfor %}
 </div>
+
+<script>
+  window.onload = function() {
+      $("#search").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#imageList a").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  }
+</script>
 
 {% endblock %}
