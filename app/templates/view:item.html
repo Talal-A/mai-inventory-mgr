@@ -172,6 +172,7 @@
   </div>
 <br>
 
+{% if USER.is_authenticated and USER.role >= 5 %}
 <div class="card">
     <div class="card-header">
           <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">fingerprint</i> Audit</span>
@@ -200,6 +201,7 @@
     </div>
   </div>
 <br>
+{% endif %}
 
 </div>
 
