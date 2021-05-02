@@ -1,6 +1,7 @@
 from . import db_util as db
 from flask_login import current_user
 from datetime import datetime
+import json
 
 # Insert a new item audit event
 def insert_item_audit_event(item_id, event, before, after):
@@ -14,8 +15,8 @@ def insert_item_audit_event(item_id, event, before, after):
             str(item_id), 
             str(db.get_username(current_user)), 
             str(event),
-            str(before),
-            str(after)
+            json.dumps(before),
+            json.dumps(after)
         ))
 
     # Save (commit) the changes
