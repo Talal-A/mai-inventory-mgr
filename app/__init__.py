@@ -1,14 +1,7 @@
-# app/__init__.py
-
 from flask import Flask
-from flask_login import (
-    LoginManager,
-    current_user,
-    login_required,
-    login_user,
-    logout_user,
-)
-from .user import User
+from flask_login import LoginManager
+
+from app.user import User
 
 import os
 
@@ -36,7 +29,17 @@ def load_user(user_id):
     return User.get(user_id)
 
 # Load the views
-from app import views
+from app.views import (
+    view_api,
+    view_auth,
+    view_barcode,
+    view_delete,
+    view_edit,
+    view_general,
+    view_register,
+    view_search,
+    view_view
+)
 
 # Load the config file
 app.config.from_object('config')
