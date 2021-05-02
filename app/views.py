@@ -26,6 +26,7 @@ from .user import User
 # WIP AUTH
 GOOGLE_CLIENT_ID = os.environ.get("MAI_GOOGLE_CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.environ.get("MAI_GOOGLE_CLIENT_SECRET", None)
+IMGUR_CLIENT_ID = os.environ.get("MAI_IMGUR_CLIENT_ID", None)
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
@@ -209,7 +210,7 @@ def upload_photo_for_item(uuid):
         result = requests.post(
             url='https://api.imgur.com/3/image',
             data={'image': request.get_json()['img'].split(',')[1]},
-            headers={'Authorization': 'Client-ID a451880f6ae3cb7'}
+            headers={'Authorization': 'Client-ID ' + IMGUR_CLIENT_ID}
             ).json()
         
         image_url = result['data']['link']
