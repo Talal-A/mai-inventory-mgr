@@ -7,11 +7,12 @@ from .database import db_interface as database
 #   10 = admin
 
 class User(UserMixin):
-    def __init__(self, id_, name, email, role):
+    def __init__(self, id_, name, email, role, picture):
         self.id = id_
         self.name = name
         self.email = email
         self.role = role
+        self.picture = picture
 
     @staticmethod
     def get(user_id):
@@ -23,9 +24,9 @@ class User(UserMixin):
         result = database.get_user(user_id)
 
         return User(
-            id_=result['user_id'], name=result['user_name'], email=result['user_email'], role=result['user_role']
+            id_=result['user_id'], name=result['user_name'], email=result['user_email'], role=result['user_role'], picture=result['user_picture']
         )
 
     @staticmethod
-    def create(id_, name, email, role):
-        database.insert_user(id_, name, email, role)
+    def create(id_, name, email, role, picture):
+        database.insert_user(id_, name, email, role, picture)

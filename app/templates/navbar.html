@@ -18,6 +18,7 @@
     {% if USER.is_authenticated %}
     <div class="nav-item dropdown">
       <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <img src='{{USER.picture}}' alt="Avatar" style="border-radius: 50%;height:30px;margin-right:5px;"/> 
           {{USER.name}}
       </a>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">

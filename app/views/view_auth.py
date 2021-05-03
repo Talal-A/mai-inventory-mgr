@@ -72,11 +72,17 @@ def login_callback():
         unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         users_name = userinfo_response.json()["given_name"]
+        users_picture = userinfo_response.json()["picture"]
 
-        user = User.get(unique_id)
-        if not user:
-            User.create(unique_id, users_name, users_email, 0)
-            user = User(id_=unique_id, name=users_name, email=users_email, role=0)
+        user = None
+
+        if not database.exists_user_id(unique_id):
+            User.create(unique_id, users_name, users_email, 0, users_picture)
+            user = User(id_=unique_id, name=users_name, email=users_email, role=0, picture=users_picture)
+        else:
+            # Returning user, refresh their data first
+            database.update_user_info(unique_id, users_name, users_email, users_picture)
+            user = User.get(unique_id)
 
         login_user(user)
         database.insert_history("LOGIN", user, "Logged in.")

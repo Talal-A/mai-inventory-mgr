@@ -4,7 +4,7 @@ from flask import request
 
 DB_PATH = '/data/mai.db'
 DB_NAME = 'mai-db'
-DB_VERSION = 1
+DB_VERSION = 2
 
 ##################
 # CORE FUNCTIONS #
@@ -54,7 +54,7 @@ def __check_table(db_connection):
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS user (
-            user_id text, user_name text, user_email text, user_role int,
+            user_id text, user_name text, user_email text, user_role int, user_picture text,
             UNIQUE(user_id)
         )
         """
@@ -113,6 +113,22 @@ def __upgrade_db(db_connection):
     
     if current_version == DB_VERSION:
         return
+
+    if current_version <= 2:
+        # Upgrade to v2.0
+        print("Upgrading database to 2.0")
+
+        cursor.execute("""
+            ALTER TABLE user ADD COLUMN user_picture text DEFAULT '/static/mai_logo.png'
+        
+        """)
+    
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DB_NAME,
+                2
+        ))
 
     # Finally, commit the changes and close the cursor.
     db_connection.commit()

@@ -5,17 +5,18 @@ from . import db_util as db
 ###################
 
 # Insert a new user
-def insert_user(user_id, user_name, user_email, user_role):
+def insert_user(user_id, user_name, user_email, user_role, user_picture):
     db_connection = db.get_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
-        INSERT OR IGNORE INTO user (user_id, user_name, user_email, user_role)
-        VALUES(?, ?, ?, ?)""", (
+        INSERT OR IGNORE INTO user (user_id, user_name, user_email, user_role, user_picture)
+        VALUES(?, ?, ?, ?, ?)""", (
             str(user_id).strip(),
             str(user_name).strip(),
             str(user_email).strip(),
-            int(user_role)
+            int(user_role),
+            str(user_picture).strip()
         ))
     
     # Save (commit) the changes
@@ -51,7 +52,8 @@ def get_user(user_id):
             'user_id': str(row[0]),
             'user_name': str(row[1]),
             'user_email': str(row[2]),
-            'user_role': int(row[3])
+            'user_role': int(row[3]),
+            'user_picture': str(row[4])
         }
 
     cursor.close()
@@ -71,7 +73,8 @@ def get_all_users():
             'user_id': str(row[0]),
             'user_name': str(row[1]),
             'user_email': str(row[2]),
-            'user_role': int(row[3])
+            'user_role': int(row[3]),
+            'user_picture': str(row[4])
         })
 
     cursor.close()
@@ -85,6 +88,23 @@ def update_user_role(user_id, new_role):
     cursor.execute("""
         UPDATE user SET user_role=? WHERE user_id=?""", (
             int(new_role),
+            str(user_id).strip()
+        ))
+    
+    # Save (commit) the changes
+    db_connection.commit()
+    cursor.close()
+
+# Update the user information
+def update_user_info(user_id, user_name, user_email, user_picture):
+    db_connection = db.get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        UPDATE user SET user_name=?, user_email=?, user_picture=? WHERE user_id=?""", (
+            str(user_name).strip(),
+            str(user_email).strip(),
+            str(user_picture).strip(),
             str(user_id).strip()
         ))
     
