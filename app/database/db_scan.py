@@ -1,4 +1,4 @@
-from . import db_item
+from . import db_item, db_barcode
 
 ##################
 # SCAN FUNCTIONS #
@@ -6,7 +6,7 @@ from . import db_item
 
 # Safely update quantity for an item, using a barcode
 def scan_barcode_update_quantity(barcode_id, diff):
-    barcode = db_item.get_barcode(barcode_id)
+    barcode = db_barcode.get_barcode(barcode_id)
     if barcode == None:
         return False
     item = db_item.get_item(barcode['item_id'])
