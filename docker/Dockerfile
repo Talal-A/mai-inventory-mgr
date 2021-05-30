@@ -24,6 +24,27 @@ RUN python3.7 -m pip list
 
 COPY . /app
 
-ENTRYPOINT [ "python3.7" ]
+# Download litestream
+ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.4/litestream-v0.3.4-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
+RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
 
-CMD [ "run.py" ]
+# Install s6-overlay
+ADD https://github.com/just-containers/s6-overlay/releases/download/v2.2.0.3/s6-overlay-amd64-installer /tmp/
+RUN chmod +x /tmp/s6-overlay-amd64-installer
+RUN /tmp/s6-overlay-amd64-installer /
+
+# Copy s6 init & service definitions.
+COPY etc/cont-init.d /etc/cont-init.d
+COPY etc/services.d /etc/services.d
+
+# Copy Litestream configuration file.
+COPY etc/litestream.yml /etc/litestream.yml
+
+# The kill grace time is set to zero because our app handles shutdown through SIGTERM.
+ENV S6_KILL_GRACETIME=0
+
+# Sync disks is enabled so that data is properly flushed.
+ENV S6_SYNC_DISKS=1
+
+# Run the s6 init process on entry.
+ENTRYPOINT [ "/init" ]

@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+
+# Restore the database if it does not already exist.
+if [ -f /data/mai.db ]; then
+	echo "Database already exists, skipping restore"
+else
+	echo "No database found, restoring from replica if exists"
+	exec litestream restore -v -if-replica-exists -replica s3 /data/mai.db 
+fi
