@@ -17,6 +17,13 @@ function scan(){
 }
 </script>
 
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js" defer></script>
+
 <form method="POST" action="">
 	<div class="form-group">
 		{{render_field(form.item, class_="form-control")}}
@@ -34,5 +41,17 @@ function scan(){
 		document.forms[0]["barcode"].value = searchParams.get('ean');
 	}
 </script> 
+
+<script>
+    $(document).ready(function() {
+        $('#item').select2({  // init Select2 on form's select field
+            placeholder: "{{ form.item.label.text }}",
+            allowClear: true,
+            "box-sizing": "border-box",
+            "width": "100%" 
+
+        });
+    });
+</script>
 
 {% endblock %}
