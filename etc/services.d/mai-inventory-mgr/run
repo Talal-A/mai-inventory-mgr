@@ -1,3 +1,11 @@
 #!/usr/bin/with-contenv bash
 sleep 5 # Give litestream a chance to start
-exec python3.7 /app/run.py
+
+mkdir -p /var/log
+exec gunicorn run-website:app \
+    --chdir /app --workers 4 --bind 0.0.0.0:9205 \
+    --access-logfile /var/log/gunicorn.access.log \
+    --error-logfile /var/log/gunicorn.error.log \
+    --log-file /var/log/gunicorn.log \
+    --capture-output \
+    --log-level INFO 

@@ -11,3 +11,5 @@ if __name__ == '__main__':
         app.run(host='0.0.0.0', port=9205, ssl_context="adhoc")
     else:
         app.run(host='0.0.0.0', port=9205)
+else:
+    database.init_db()
