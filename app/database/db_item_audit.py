@@ -5,7 +5,7 @@ import json
 
 # Insert a new item audit event
 def insert_item_audit_event(item_id, event, before, after):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -25,7 +25,7 @@ def insert_item_audit_event(item_id, event, before, after):
 
 def get_item_audit(item_id):
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM item_audit WHERE item_id=? ORDER BY date DESC""", (

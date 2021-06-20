@@ -23,6 +23,16 @@ LOGGING_CONFIGURATION = {
             "formatter": "default",
             "level": "ERROR",
         },
+        "db_application": {
+            "class": "app.logging.db_handler.ApplicationLoggingHandler",
+            "formatter": "default",
+            "level": "INFO",
+        },
+        "db_access": {
+            "class": "app.logging.db_handler.AccessLoggingHandler",
+            "formatter": "default",
+            "level": "INFO",
+        },
         "error_file": {
             "class": "logging.handlers.RotatingFileHandler",
             "formatter": "default",
@@ -42,18 +52,18 @@ LOGGING_CONFIGURATION = {
     },
     "loggers": {
         "gunicorn.error": {
-            "handlers": ["console"] if config.DEBUG else ["slack", "error_file"],
+            "handlers": ["console"] if config.DEBUG else ["slack", "error_file", "db_application"],
             "level": "INFO",
             "propagate": False,
         },
         "gunicorn.access": {
-            "handlers": ["console"] if config.DEBUG else ["access_file"],
+            "handlers": ["console"] if config.DEBUG else ["access_file", "db_access"],
             "level": "INFO",
             "propagate": False,
         }
     },
     "root": {
         "level": "DEBUG" if config.DEBUG else "INFO",
-        "handlers": ["console"] if config.DEBUG else ["console", "slack"],
+        "handlers": ["console"] if config.DEBUG else ["console", "slack", "db_application"],
     }
 }

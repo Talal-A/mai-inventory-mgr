@@ -7,7 +7,7 @@ from . import db_item, db_item_audit
 
 # Insert a new barcode
 def insert_barcode(barcode, item_id):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -25,7 +25,7 @@ def insert_barcode(barcode, item_id):
 
 # Return true if barcode already exists
 def exists_barcode(barcode):
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
         SELECT EXISTS(SELECT 1 FROM barcode WHERE barcode=? LIMIT 1)""", (
@@ -40,7 +40,7 @@ def exists_barcode(barcode):
 # Get item_id associated with a given barcode
 def get_barcode(barcode):
     result = None
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM barcode WHERE barcode=?""", (
@@ -59,7 +59,7 @@ def get_barcode(barcode):
 # Return all barcodes associated with an item_id
 def get_barcodes_for_item(item_id):
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM barcode WHERE item_id=? """, (
@@ -78,7 +78,7 @@ def get_barcodes_for_item(item_id):
 # Return all barcodes
 def get_all_barcodes():
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM barcode"""
@@ -96,7 +96,7 @@ def get_all_barcodes():
 
 # Delete a single barcode
 def delete_barcode(barcode):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     barcode_before = get_barcode(barcode)
 
@@ -112,7 +112,7 @@ def delete_barcode(barcode):
 
 # Delete all barcodes associated with an item_id
 def delete_barcodes_for_item(item_id):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     barcodes_before = get_barcodes_for_item(item_id)
 

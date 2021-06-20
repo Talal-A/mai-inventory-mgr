@@ -9,7 +9,7 @@ from . import db_util as db
 # Insert a new history event
 # TODO: can we just import current_user and use it directly here, instead of passing it in as a parameter?
 def insert_history(type, user, event):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -28,7 +28,7 @@ def insert_history(type, user, event):
 # Get all history events
 def get_history():
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM history ORDER BY date DESC"""

@@ -11,7 +11,7 @@ from . import db_barcode, db_category, db_image, db_item_audit
 def insert_item(category_id, name, location="", quantity_active=0, quantity_expired=0, notes="", url=""):
     item_id = str(uuid.uuid4())
 
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -37,7 +37,7 @@ def insert_item(category_id, name, location="", quantity_active=0, quantity_expi
 
 # Return true if item_id already exists
 def exists_item_id(item_id):
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
         SELECT EXISTS(SELECT 1 FROM item WHERE item_id=? LIMIT 1)""", (
@@ -52,7 +52,7 @@ def exists_item_id(item_id):
 # Get an item for a given item_id
 def get_item(item_id):
     result = None
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM item WHERE item_id=?""", (
@@ -78,7 +78,7 @@ def get_item(item_id):
 # Get all items
 def get_all_items():
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
     
     # # Cache list of categories
     cached_categories = {}
@@ -108,7 +108,7 @@ def get_all_items():
 # Get all items under a given category
 def get_all_items_for_category(category_id):
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     # Cache category name
     cached_category_name = db_category.get_category(str(category_id).strip())['name']
@@ -136,7 +136,7 @@ def get_all_items_for_category(category_id):
 
 # Update an item with new values
 def update_item(item_id, category_id, location, quantity_active, quantity_expired, notes, url):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     item_before = get_item(item_id)
 
@@ -159,7 +159,7 @@ def update_item(item_id, category_id, location, quantity_active, quantity_expire
 
 # Update an item's active quantity
 def update_item_quantity(item_id, new_active_quantity):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     item_before = get_item(item_id)
 
@@ -177,7 +177,7 @@ def update_item_quantity(item_id, new_active_quantity):
 
 # Delete an item for a given item_id
 def delete_item(item_id):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     item_before = get_item(item_id)
 

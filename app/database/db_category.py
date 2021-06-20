@@ -9,7 +9,7 @@ import uuid
 def insert_category(category_name):
     category_id = str(uuid.uuid4())
 
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -24,7 +24,7 @@ def insert_category(category_name):
 
 # Return true if a category with the same name already exists
 def exists_category_name(category_name):
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
         SELECT EXISTS(SELECT 1 FROM category WHERE name=? LIMIT 1)""", (
@@ -38,7 +38,7 @@ def exists_category_name(category_name):
 
 # Return true if the category id already exists
 def exists_category_id(category_id):
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
         SELECT EXISTS(SELECT 1 FROM category WHERE category_id=? LIMIT 1)""", (
@@ -52,7 +52,7 @@ def exists_category_id(category_id):
 
 # Return true if category is actively used by an item
 def exists_category_usage(category_id):
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
         SELECT EXISTS(SELECT 1 FROM item WHERE category_id=? LIMIT 1)""", (
@@ -67,7 +67,7 @@ def exists_category_usage(category_id):
 # Get a category for a given category_id
 def get_category(category_id):
     result = None
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM category WHERE category_id=?""", (
@@ -86,7 +86,7 @@ def get_category(category_id):
 # Get all categories
 def get_all_categories():
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM category""", (
@@ -112,7 +112,7 @@ def get_deletable_categories():
 
 # Update the name for a given category_id
 def update_category_name(category_id, new_name):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -131,7 +131,7 @@ def delete_category(category_id):
         # Cannot delete an actively used category
         return 
     
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     query_results = cursor.execute("""

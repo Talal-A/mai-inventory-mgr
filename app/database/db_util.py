@@ -1,10 +1,15 @@
 import sqlite3
 from datetime import datetime
 from flask import request
+import logging
 
-DB_PATH = '/data/mai.db'
-DB_NAME = 'mai-db'
-DB_VERSION = 2
+DATA_DB_PATH = '/data/mai.db'
+DATA_DB_NAME = 'mai-db'
+DATA_DB_VERSION = 2
+
+LOG_DB_PATH = '/data/mai-log.db'
+LOG_DB_NAME = 'mai-logs'
+LOG_DB_VERSION = 0
 
 ##################
 # CORE FUNCTIONS #
@@ -12,16 +17,24 @@ DB_VERSION = 2
 
 # Initializes the database. To be called ONCE from application startup
 def init_db():
-    db_connection = sqlite3.connect(DB_PATH)
-    __check_table(db_connection)
-    __upgrade_db(db_connection)
+    __init_data_db()
+    __init_log_db()
 
-def get_db():
-    db_connection = sqlite3.connect(DB_PATH)
+#####################
+# DATA DB FUNCTIONS #
+#####################
+
+def __init_data_db():
+    db_connection = sqlite3.connect(DATA_DB_PATH)
+    __check_data_table(db_connection)
+    __upgrade_data_db(db_connection)
+
+def get_data_db():
+    db_connection = sqlite3.connect(DATA_DB_PATH)
     db_connection.execute('pragma journal_mode=wal')
     return db_connection
 
-def __check_table(db_connection):
+def __check_data_table(db_connection):
     cursor = db_connection.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS barcode (
@@ -85,38 +98,38 @@ def __check_table(db_connection):
     cursor.execute("""
         INSERT OR IGNORE INTO version (db_name, db_version)
         VALUES(?, ?)""", (
-            DB_NAME,
-            DB_VERSION
+            DATA_DB_NAME,
+            DATA_DB_VERSION
     ))
 
     db_connection.commit()
     cursor.close()
 
-def __upgrade_db(db_connection):
+def __upgrade_data_db(db_connection):
     current_version = -1
     cursor = db_connection.cursor()
 
     # Get current db version
     query_results = cursor.execute("""
         SELECT db_version FROM version WHERE db_name=?""", (
-            str(DB_NAME),
+            str(DATA_DB_NAME),
     ))
 
     for row in query_results:
         current_version = int(row[0])
 
-    print("Latest database version: " + str(current_version))
-    print("Expected database version: " + str(DB_VERSION))
+    logging.info("Latest data database version: " + str(current_version))
+    logging.info("Expected data database version: " + str(DATA_DB_VERSION))
 
     if current_version == -1:
         raise Exception("Error: was not able to pull the current db version")
     
-    if current_version == DB_VERSION:
+    if current_version == DATA_DB_VERSION:
         return
 
     if current_version <= 2:
         # Upgrade to v2.0
-        print("Upgrading database to 2.0")
+        logging.info("Upgrading data database to 2.0")
 
         cursor.execute("""
             ALTER TABLE user ADD COLUMN user_picture text DEFAULT '/static/mai_logo.png'
@@ -126,9 +139,83 @@ def __upgrade_db(db_connection):
         cursor.execute("""
             INSERT OR REPLACE INTO version (db_name, db_version)
             VALUES(?, ?)""", (
-                DB_NAME,
+                DATA_DB_NAME,
                 2
         ))
+
+    # Finally, commit the changes and close the cursor.
+    db_connection.commit()
+    cursor.close()
+
+####################
+# LOG DB FUNCTIONS #
+####################
+
+def __init_log_db():
+    db_connection = sqlite3.connect(LOG_DB_PATH)
+    __check_log_table(db_connection)
+    __upgrade_log_db(db_connection)
+
+def __get_log_db():
+    db_connection = sqlite3.connect(LOG_DB_PATH)
+    db_connection.execute('pragma journal_mode=wal')
+    return db_connection
+
+def __check_log_table(db_connection):
+    cursor = db_connection.cursor()
+    logging.info("Checking log table...")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS error_log (
+            date int, source text, log_level int, log_level_name text, message text, args text, 
+            module text, function_name text, line_num int, exception text, process int, thread text, thread_name text
+        )"""
+    )
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS access_log (
+            date int, source text, log_level int, log_level_name text, message text, args text, 
+            module text, function_name text, line_num int, exception text, process int, thread text, thread_name text
+        )"""
+    )
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS version (
+            db_name text, db_version int,
+            UNIQUE(db_name)
+        )"""
+    )
+    cursor.execute("""
+        INSERT OR IGNORE INTO version (db_name, db_version)
+        VALUES(?, ?)""", (
+            LOG_DB_NAME,
+            LOG_DB_VERSION
+    ))
+
+    db_connection.commit()
+    cursor.close()
+
+def __upgrade_log_db(db_connection):
+    current_version = -1
+    cursor = db_connection.cursor()
+
+    # Get current db version
+    query_results = cursor.execute("""
+        SELECT db_version FROM version WHERE db_name=?""", (
+            str(LOG_DB_NAME),
+    ))
+
+    for row in query_results:
+        current_version = int(row[0])
+
+    logging.info("Latest log database version: " + str(current_version))
+    logging.info("Expected log database version: " + str(LOG_DB_VERSION))
+
+    if current_version == -1:
+        raise Exception("Error: was not able to pull the current log db version")
+    
+    if current_version == LOG_DB_VERSION:
+        logging.info("No log database update is needed.")
+        return
 
     # Finally, commit the changes and close the cursor.
     db_connection.commit()

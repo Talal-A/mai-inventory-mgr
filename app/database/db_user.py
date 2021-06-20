@@ -6,7 +6,7 @@ from . import db_util as db
 
 # Insert a new user
 def insert_user(user_id, user_name, user_email, user_role, user_picture):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -25,7 +25,7 @@ def insert_user(user_id, user_name, user_email, user_role, user_picture):
 
 # Return true if user id already exists
 def exists_user_id(user_id):
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
         SELECT EXISTS(SELECT 1 FROM user WHERE user_id=? LIMIT 1)""", (
@@ -40,7 +40,7 @@ def exists_user_id(user_id):
 # Get a user for a given user_id
 def get_user(user_id):
     result = None
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM user WHERE user_id=?""", (
@@ -62,7 +62,7 @@ def get_user(user_id):
 # Get all users
 def get_all_users():
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM user""", (
@@ -82,7 +82,7 @@ def get_all_users():
 
 # Update the role for a given user_id
 def update_user_role(user_id, new_role):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -97,7 +97,7 @@ def update_user_role(user_id, new_role):
 
 # Update the user information
 def update_user_info(user_id, user_name, user_email, user_picture):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -114,7 +114,7 @@ def update_user_info(user_id, user_name, user_email, user_picture):
 
 # Delete a user for a given user_id
 def delete_user(user_id):
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     query_results = cursor.execute("""

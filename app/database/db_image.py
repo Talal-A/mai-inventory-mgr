@@ -14,7 +14,7 @@ from . import db_item, db_item_audit
 def insert_image(image_url, deletion_hash, item_id):
     image_id = str(uuid.uuid4())
 
-    db_connection = db.get_db()
+    db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
@@ -33,7 +33,7 @@ def insert_image(image_url, deletion_hash, item_id):
 
 # Return true if image_id already exists
 def exists_item_id(image_id):
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
         SELECT EXISTS(SELECT 1 FROM image WHERE image_id=? LIMIT 1)""", (
@@ -48,7 +48,7 @@ def exists_item_id(image_id):
 # Get an image for a given image_id
 def get_image(image_id):
     result = None
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM image WHERE image_id=?""", (
@@ -69,7 +69,7 @@ def get_image(image_id):
 # Get all images
 def get_all_images():
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
     
     query_results = cursor.execute("""
         SELECT * FROM image""", (
@@ -90,7 +90,7 @@ def get_all_images():
 # Get all images for an item
 def get_all_images_for_item(item_id):
     result = []
-    cursor = db.get_db().cursor()
+    cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
         SELECT * FROM image WHERE item_id=?""", (
@@ -113,7 +113,7 @@ def delete_image(image_id):
     image = get_image(image_id)
     
     if __delete_image_from_imgur(image['deletion_hash']):
-        db_connection = db.get_db()
+        db_connection = db.get_data_db()
         cursor = db_connection.cursor()
 
         query_results = cursor.execute("""
