@@ -6,3 +6,10 @@ dbs:
         path: ${STAGE}/mai-db
         endpoint: https://minio.abouhaiba.com
         forcePathStyle: true
+  - path: /data/mai-log.db
+    replicas:
+      - type: s3
+        bucket: mai
+        path: ${STAGE}/mai-log-db
+        endpoint: https://minio.abouhaiba.com
+        forcePathStyle: true
