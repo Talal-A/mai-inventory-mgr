@@ -1,4 +1,6 @@
 from flask import Flask
+from logging.config import dictConfig
+from app.logging.logging_cfg import LOGGING_CONFIGURATION
 from flask_login import LoginManager
 
 from app.user import User
@@ -43,3 +45,6 @@ from app.views import (
 
 # Load the config file
 app.config.from_object('config')
+
+# Set up logging configuration
+dictConfig(LOGGING_CONFIGURATION)
