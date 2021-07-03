@@ -5,7 +5,7 @@ import logging
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 2
+DATA_DB_VERSION = 3
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -59,7 +59,7 @@ def __check_data_table(db_connection):
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS item (
-            item_id text, category_id text, name text, location text, quantity_active int, quantity_expired int, notes text, url text,
+            item_id text, category_id text, name text, location text, quantity_active int, quantity_expired int, notes text, url text, deleted int,
             UNIQUE(item_id)
         )
         """
@@ -125,9 +125,10 @@ def __upgrade_data_db(db_connection):
         raise Exception("Error: was not able to pull the current db version")
     
     if current_version == DATA_DB_VERSION:
+        logging.info("No data database update is needed.")
         return
 
-    if current_version <= 2:
+    if current_version < 2:
         # Upgrade to v2.0
         logging.info("Upgrading data database to 2.0")
 
@@ -141,6 +142,21 @@ def __upgrade_data_db(db_connection):
             VALUES(?, ?)""", (
                 DATA_DB_NAME,
                 2
+        ))
+
+    if current_version < 3:
+        # Upgrade to v3.0
+        logging.info("Upgrading data database to 3.0")
+
+        cursor.execute("""
+            ALTER TABLE item ADD COLUMN deleted int DEFAULT '0'
+        """)
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                3
         ))
 
     # Finally, commit the changes and close the cursor.

@@ -15,8 +15,8 @@ def insert_item(category_id, name, location="", quantity_active=0, quantity_expi
     cursor = db_connection.cursor()
 
     cursor.execute("""
-        INSERT OR IGNORE INTO item (item_id, category_id, name, location, quantity_active, quantity_expired, notes, url)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", (
+        INSERT OR IGNORE INTO item (item_id, category_id, name, location, quantity_active, quantity_expired, notes, url, deleted)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
             str(item_id).strip(),
             str(category_id).strip(),
             str(name).strip(),
@@ -24,7 +24,8 @@ def insert_item(category_id, name, location="", quantity_active=0, quantity_expi
             int(quantity_active),
             int(quantity_expired),
             str(notes),
-            str(url).strip()
+            str(url).strip(),
+            0
         ))
 
     db_connection.commit()
@@ -69,7 +70,8 @@ def get_item(item_id):
             'quantity_active': int(row[4]),
             'quantity_expired': int(row[5]),
             'notes': str(row[6]),
-            'url': str(row[7])
+            'url': str(row[7]),
+            'deleted': bool(row[8])
         }
 
     cursor.close()
@@ -86,7 +88,7 @@ def get_all_items():
         cached_categories[category['id']] = category['name']
 
     query_results = cursor.execute("""
-        SELECT * FROM item""", (
+        SELECT * FROM item WHERE deleted=0""", (
     ))
 
     for row in query_results:
@@ -99,7 +101,8 @@ def get_all_items():
             'quantity_active': int(row[4]),
             'quantity_expired': int(row[5]),
             'notes': str(row[6]),
-            'url': str(row[7])
+            'url': str(row[7]),
+            'deleted': bool(row[8])
         })
 
     cursor.close()
@@ -114,7 +117,7 @@ def get_all_items_for_category(category_id):
     cached_category_name = db_category.get_category(str(category_id).strip())['name']
 
     query_results = cursor.execute("""
-        SELECT * FROM item WHERE category_id=?""", (
+        SELECT * FROM item WHERE category_id=? and deleted=0""", (
             str(category_id).strip(),
     ))
 
@@ -128,7 +131,8 @@ def get_all_items_for_category(category_id):
             'quantity_active': int(row[4]),
             'quantity_expired': int(row[5]),
             'notes': str(row[6]),
-            'url': str(row[7])
+            'url': str(row[7]),
+            'deleted': bool(row[8])
         })
 
     cursor.close()
@@ -182,14 +186,31 @@ def delete_item(item_id):
     item_before = get_item(item_id)
 
     query_results = cursor.execute("""
-        DELETE FROM item WHERE item_id=?""", (
+        UPDATE item SET deleted=? WHERE item_id=?""", (
+            1,
             str(item_id).strip(),
     ))
 
     db_connection.commit()
     cursor.close()
 
-    db_item_audit.insert_item_audit_event(item_id, "Deleted item.", item_before, "")
+    db_item_audit.insert_item_audit_event(item_id, "Deleted item.", item_before, get_item(item_id))
 
     db_barcode.delete_barcodes_for_item(item_id)
-    db_image.delete_images_for_item(item_id)
+
+# Undo deletion of an item for a given item_id
+def restore_deleted_item(item_id):
+    db_connection = db.get_data_db()
+    cursor = db_connection.cursor()
+    item_before = get_item(item_id)
+
+    query_results = cursor.execute("""
+        UPDATE item SET deleted=? WHERE item_id=?""", (
+            0,
+            str(item_id).strip(),
+    ))
+
+    db_connection.commit()
+    cursor.close()
+
+    db_item_audit.insert_item_audit_event(item_id, "Restored item.", item_before, get_item(item_id))

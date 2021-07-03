@@ -49,7 +49,17 @@ def delete_item(uuid):
         return view_util.returnPermissionError()
     database.delete_item(uuid)
     database.insert_history("DELETE", current_user, "Deleted item. UUID: " + str(uuid))
-    return redirect('/view')
+    return redirect('/view/item/' + uuid)
+
+@app.route('/restore/item/<string:uuid>')
+@login_required
+def restore_item(uuid):
+    database.insert_history("PAGE_VISIT", current_user, "Viewed restore item.")
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    database.restore_deleted_item(uuid)
+    database.insert_history("RESTORE", current_user, "Restored item. UUID: " + str(uuid))
+    return redirect('/view/item/' + uuid)
 
 @app.route('/delete/category')
 @login_required
