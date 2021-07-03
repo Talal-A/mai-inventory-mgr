@@ -52,6 +52,7 @@
     
 <div class="list-group mt-3">
 
+    {% if USER.is_authenticated and USER.role >= 5 %}
     <div class="d-flex list-group-item flex-row ">
         <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">code</i> Item ID</span>
         <span class="flex-fill text-right"><code>{{item.id}}</code></span>
@@ -61,6 +62,7 @@
         <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">code</i> Category ID</span>
         <span class="flex-fill text-right"><code>{{item.category_id}}</code></span>
     </div>
+    {% endif %}
 
     <div class="d-flex list-group-item flex-row ">
         <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">map</i> Location</span>
