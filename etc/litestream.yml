@@ -6,6 +6,8 @@ dbs:
         path: ${STAGE}/mai-db
         endpoint: https://minio.abouhaiba.com
         forcePathStyle: true
+        retention: 720h
+        snapshot-interval: 30m
   - path: /data/mai-log.db
     replicas:
       - type: s3
@@ -13,3 +15,5 @@ dbs:
         path: ${STAGE}/mai-log-db
         endpoint: https://minio.abouhaiba.com
         forcePathStyle: true
+        retention: 720h
+        snapshot-interval: 30m
