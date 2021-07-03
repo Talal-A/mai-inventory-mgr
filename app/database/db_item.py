@@ -108,6 +108,37 @@ def get_all_items():
     cursor.close()
     return result
 
+# Get all deleted items
+def get_all_deleted_items():
+    result = []
+    cursor = db.get_data_db().cursor()
+    
+    # # Cache list of categories
+    cached_categories = {}
+    for category in db_category.get_all_categories():
+        cached_categories[category['id']] = category['name']
+
+    query_results = cursor.execute("""
+        SELECT * FROM item WHERE deleted=1""", (
+    ))
+
+    for row in query_results:
+        result.append({
+            'id': str(row[0]),
+            'category_id': str(row[1]),
+            'category_name': cached_categories[str(row[1])],
+            'name': str(row[2]),
+            'location': str(row[3]),
+            'quantity_active': int(row[4]),
+            'quantity_expired': int(row[5]),
+            'notes': str(row[6]),
+            'url': str(row[7]),
+            'deleted': bool(row[8])
+        })
+
+    cursor.close()
+    return result
+
 # Get all items under a given category
 def get_all_items_for_category(category_id):
     result = []

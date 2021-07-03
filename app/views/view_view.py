@@ -31,6 +31,13 @@ def view_all_items():
     database.insert_history("PAGE_VISIT", current_user, "Viewed all items page")
     return render_template('view:items.html', USER=current_user, category='All items', items=database.get_all_items())
 
+@app.route('/view/deleted')
+def view_all_deleted_items():
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    database.insert_history("PAGE_VISIT", current_user, "Viewed all deleted items page")
+    return render_template('view:items.html', USER=current_user, category='Deleted items', items=database.get_all_deleted_items())
+
 @app.route('/view/category/<string:uuid>')
 def view_category(uuid):
     database.insert_history("PAGE_VISIT", current_user, "Viewed category " + str(uuid))
