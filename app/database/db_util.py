@@ -262,7 +262,7 @@ def get_username(user):
                 ip_address = str(request.environ['REMOTE_ADDR'])
             else:
                 ip_address = str(request.environ['HTTP_X_FORWARDED_FOR']) # if behind a proxy
-            username = "guest - " + ip_address
+            username = ip_address
         return username
     except:
         return "unknown"

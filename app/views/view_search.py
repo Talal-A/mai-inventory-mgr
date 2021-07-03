@@ -9,7 +9,6 @@ from app.views import view_util
 @app.route('/search/check_out', methods=['GET', 'POST'])
 @login_required
 def search_check_out_item():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed search checkout")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     
@@ -27,7 +26,6 @@ def search_check_out_item():
 @app.route('/search/check_in', methods=['GET', 'POST'])
 @login_required
 def search_check_in_item():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed search checkin")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     

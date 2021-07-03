@@ -9,7 +9,6 @@ from app.views import view_util
 @app.route('/register/<string:type>', methods=['GET', 'POST'])
 @login_required
 def register_with_param(type):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed register.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     form_category = Register_Category(request.form)

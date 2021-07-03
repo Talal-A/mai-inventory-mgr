@@ -9,7 +9,6 @@ from app.views import view_util
 @app.route('/barcode/check_in', methods=['GET', 'POST'])
 @login_required
 def barcode_check_in_item():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed barcode checkin")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
@@ -27,7 +26,6 @@ def barcode_check_in_item():
 @app.route('/barcode/check_out', methods=['GET', 'POST'])
 @login_required
 def barcode_check_out_item():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed barcode checkout")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
@@ -45,7 +43,6 @@ def barcode_check_out_item():
 
 @app.route('/barcode/lookup', methods=['GET', 'POST'])
 def barcode_look_up_item():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed barcode lookup")
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
         item_id = database.get_barcode(form_barcode.barcode.data)['item_id']

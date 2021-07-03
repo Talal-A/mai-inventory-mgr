@@ -11,7 +11,6 @@ import base64
 @app.route('/api/edit/user/<string:user_id>/<string:new_role>')
 @login_required
 def edit_user_role(user_id, new_role):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed edit user API")
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.update_user_role(str(base64.b64decode(user_id).decode('utf-8')), new_role)

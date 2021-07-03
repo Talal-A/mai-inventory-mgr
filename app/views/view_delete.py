@@ -8,7 +8,6 @@ from app.views import view_util
 @app.route('/delete/barcode')
 @login_required
 def delete_barcode_view():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed delete barcode view.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     return render_template('delete:barcode.html', USER=current_user, barcodes=database.get_all_barcodes())
@@ -16,7 +15,6 @@ def delete_barcode_view():
 @app.route('/delete/barcode/<string:uuid>')
 @login_required
 def delete_barcode(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed delete barcode.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     database.delete_barcode(uuid)
@@ -26,7 +24,6 @@ def delete_barcode(uuid):
 @app.route('/delete/image')
 @login_required
 def delete_image_view():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed delete image view.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     return render_template('delete:image.html', USER=current_user, images=database.get_all_images())
@@ -34,7 +31,6 @@ def delete_image_view():
 @app.route('/delete/image/<string:uuid>')
 @login_required
 def delete_image(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed delete image.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     database.delete_image(uuid)
@@ -44,7 +40,6 @@ def delete_image(uuid):
 @app.route('/delete/item/<string:uuid>')
 @login_required
 def delete_item(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed delete item.")
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.delete_item(uuid)
@@ -54,7 +49,6 @@ def delete_item(uuid):
 @app.route('/restore/item/<string:uuid>')
 @login_required
 def restore_item(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed restore item.")
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.restore_deleted_item(uuid)
@@ -64,7 +58,6 @@ def restore_item(uuid):
 @app.route('/delete/category')
 @login_required
 def delete_category_view():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed delete category view.")
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     return render_template('delete:category.html', USER=current_user, categories=database.get_deletable_categories())
@@ -72,7 +65,6 @@ def delete_category_view():
 @app.route('/delete/category/<string:uuid>')
 @login_required
 def delete_category(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed delete category.")
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.delete_category(uuid)

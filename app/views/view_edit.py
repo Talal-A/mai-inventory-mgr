@@ -12,7 +12,6 @@ import config
 @app.route('/edit/item/add_barcode/<string:uuid>', methods=['GET', 'POST'])
 @login_required
 def register_barcode_for_item(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed register barcode.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
@@ -30,7 +29,6 @@ def register_barcode_for_item(uuid):
 @app.route('/edit/item/add_barcode', methods=['GET', 'POST'])
 @login_required
 def register_barcode():
-    database.insert_history("PAGE_VISIT", current_user, "Viewed register barcode.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
@@ -46,7 +44,6 @@ def register_barcode():
 @app.route('/edit/item/upload_photo/<string:uuid>', methods=['POST'])
 @login_required
 def upload_photo_for_item(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Uploaded image for item.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
@@ -69,7 +66,6 @@ def upload_photo_for_item(uuid):
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])
 @login_required
 def edit_category(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed edit category.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
@@ -87,7 +83,6 @@ def edit_category(uuid):
 @app.route('/edit/item/<string:uuid>', methods=['GET', 'POST'])
 @login_required
 def edit_item(uuid):
-    database.insert_history("PAGE_VISIT", current_user, "Viewed edit item.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
