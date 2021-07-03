@@ -12,7 +12,6 @@ import config
 @app.route('/edit/item/add_barcode/<string:uuid>', methods=['GET', 'POST'])
 @login_required
 def register_barcode_for_item(uuid):
-    print("HELLO??")
     database.insert_history("PAGE_VISIT", current_user, "Viewed register barcode.")
     if not view_util.validate_user():
         return view_util.returnPermissionError()
@@ -21,7 +20,6 @@ def register_barcode_for_item(uuid):
     form_barcode.item.data = str(uuid)
     form_barcode.item.render_kw = {'disabled':'disabled'}
 
-    print(form_barcode.item.data)
     if request.method == 'POST' and form_barcode.validate():
         database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
         database.insert_history("REGISTER", current_user, "Registered barcode. Item: " + str(form_barcode.item.data).strip() + ", Barcode: " + str(form_barcode.barcode.data).strip())

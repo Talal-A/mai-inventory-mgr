@@ -14,9 +14,6 @@ def edit_user_role(user_id, new_role):
     database.insert_history("PAGE_VISIT", current_user, "Viewed edit user API")
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
-    print("Updating for:")
-    print(str(base64.b64decode(user_id).decode('utf-8')))
-    print(new_role)
     database.update_user_role(str(base64.b64decode(user_id).decode('utf-8')), new_role)
     database.insert_history("EDIT", current_user, "Edited user. UserId: " + str(user_id) + ", Role: " + str(new_role))
     return ""

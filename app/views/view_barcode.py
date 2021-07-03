@@ -15,7 +15,6 @@ def barcode_check_in_item():
 
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        print(form_barcode.quantity.data)
         if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
             database.insert_history("EDIT", current_user, "Check in with barcode. Barcode: " + str(form_barcode.barcode.data) + ", Quantity: " + str(form_barcode.quantity.data))

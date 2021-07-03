@@ -138,7 +138,6 @@ def __delete_image_from_imgur(deletion_hash):
             url='https://api.imgur.com/3/image/' + str(deletion_hash),
             headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID}
             ).json()
-        print(result)
         success = result['success']
         return success
     except:
