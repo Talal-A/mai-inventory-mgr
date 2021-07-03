@@ -116,6 +116,9 @@ def delete_barcodes_for_item(item_id):
     cursor = db_connection.cursor()
     barcodes_before = get_barcodes_for_item(item_id)
 
+    if not barcodes_before:
+        return
+
     query_results = cursor.execute("""
         DELETE FROM barcode WHERE item_id=?""", (
             str(item_id),
