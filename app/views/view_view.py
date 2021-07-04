@@ -29,6 +29,13 @@ def view_history():
 
     return render_template('history.html', USER=current_user, events=database.get_history())
 
+@app.route('/view/audit')
+def view_audit():
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+
+    return render_template('audit.html', USER=current_user, events=database.get_all_audit())
+
 @app.route('/view/all')
 def view_all_items():
     return render_template('view:items.html', USER=current_user, category='All items', items=database.get_all_items())
