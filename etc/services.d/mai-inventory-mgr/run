@@ -1,7 +1,24 @@
 #!/usr/bin/with-contenv bash
+
+echo "Waiting for litestream to start, sleeping for 5 seconds"
 sleep 5 # Give litestream a chance to start
 
+# Prepare the database
+echo "Initializing database"
+python3.7 /app/run_init_db.py
+if [ $? -eq 0 ]; then
+   echo "Database initialization succeeded"
+else
+   echo "Database initialization failed"
+   exit 1
+fi
+
+# Set up log directory if it does not already exist
+echo "Creating /var/log directory if it does not already exist"
 mkdir -p /var/log
+
+# Run the website
+echo "Starting gunicorn"
 exec gunicorn run-website:app \
     --chdir /app --workers 4 --bind 0.0.0.0:9205 \
     --access-logfile /var/log/gunicorn.access.log \
