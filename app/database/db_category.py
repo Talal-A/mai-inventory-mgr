@@ -1,4 +1,5 @@
 from . import db_util as db
+from . import db_audit
 import uuid
 
 ######################
@@ -21,6 +22,9 @@ def insert_category(category_name):
 
     db_connection.commit()
     cursor.close()
+
+    # Log the creation of the new category
+    db_audit.insert_category_audit_event(category_id, "Created category.", "", get_category(category_id))
 
 # Return true if a category with the same name already exists
 def exists_category_name(category_name):
@@ -114,6 +118,7 @@ def get_deletable_categories():
 def update_category_name(category_id, new_name):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
+    category_before = get_category(category_id)
 
     cursor.execute("""
         UPDATE category SET name=? WHERE category_id=?""", (
@@ -125,6 +130,8 @@ def update_category_name(category_id, new_name):
     db_connection.commit()
     cursor.close()
 
+    db_audit.insert_category_audit_event(category_id, "Edited category.", category_before, get_category(category_id))
+
 # Delete a category for a given category_id
 def delete_category(category_id):
     if exists_category_usage(category_id):
@@ -133,6 +140,7 @@ def delete_category(category_id):
     
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
+    category_before = get_category(category_id)
 
     query_results = cursor.execute("""
         DELETE FROM category WHERE category_id=?""", (
@@ -141,3 +149,5 @@ def delete_category(category_id):
 
     db_connection.commit()
     cursor.close()
+
+    db_audit.insert_category_audit_event(category_id, "Deleted category.", category_before, "")

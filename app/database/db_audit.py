@@ -4,9 +4,17 @@ from datetime import datetime
 import json
 
 ITEM_TYPE = 'ITEM'
+CATEGORY_TYPE = 'CATEGORY'
 
 # Insert a new item audit event
 def insert_item_audit_event(item_id, event, before, after):
+    __insert_audit_event(ITEM_TYPE, item_id, event, before, after)
+
+# Insert a new category audit event
+def insert_category_audit_event(category_id, event, before, after):
+    __insert_audit_event(CATEGORY_TYPE, category_id, event, before, after)
+
+def __insert_audit_event(type, id, event, before, after):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
@@ -15,7 +23,7 @@ def insert_item_audit_event(item_id, event, before, after):
         VALUES(?, ?, ?, ?, ?, ?, ?)""", (
             datetime.now().timestamp(), 
             str(ITEM_TYPE),
-            str(item_id), 
+            str(id), 
             str(db.get_username(current_user)), 
             str(event),
             json.dumps(before),
