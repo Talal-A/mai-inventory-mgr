@@ -93,7 +93,7 @@ def get_all_categories():
     cursor = db.get_data_db().cursor()
 
     query_results = cursor.execute("""
-        SELECT * FROM category""", (
+        SELECT * FROM category ORDER BY name COLLATE NOCASE ASC""", (
     ))
 
     for row in query_results:
