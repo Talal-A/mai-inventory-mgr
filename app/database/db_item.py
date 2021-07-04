@@ -88,7 +88,7 @@ def get_all_items():
         cached_categories[category['id']] = category['name']
 
     query_results = cursor.execute("""
-        SELECT * FROM item WHERE deleted=0""", (
+        SELECT * FROM item WHERE deleted=0 ORDER BY name COLLATE NOCASE ASC""", (
     ))
 
     for row in query_results:
@@ -106,6 +106,7 @@ def get_all_items():
         })
 
     cursor.close()
+    result.sort(key=lambda k: str(k['category_name']).lower())
     return result
 
 # Get all deleted items
@@ -119,7 +120,7 @@ def get_all_deleted_items():
         cached_categories[category['id']] = category['name']
 
     query_results = cursor.execute("""
-        SELECT * FROM item WHERE deleted=1""", (
+        SELECT * FROM item WHERE deleted=1 ORDER BY name COLLATE NOCASE ASC""", (
     ))
 
     for row in query_results:
@@ -137,6 +138,7 @@ def get_all_deleted_items():
         })
 
     cursor.close()
+    result.sort(key=lambda k: str(k['category_name']).lower())
     return result
 
 # Get all items under a given category
@@ -148,7 +150,7 @@ def get_all_items_for_category(category_id):
     cached_category_name = db_category.get_category(str(category_id).strip())['name']
 
     query_results = cursor.execute("""
-        SELECT * FROM item WHERE category_id=? and deleted=0""", (
+        SELECT * FROM item WHERE category_id=? and deleted=0 ORDER BY name COLLATE NOCASE ASC""", (
             str(category_id).strip(),
     ))
 
