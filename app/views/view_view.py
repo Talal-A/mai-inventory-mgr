@@ -1,15 +1,21 @@
 from app import app
 from flask_login import current_user, login_required
-from flask import render_template, request
-
+from flask import render_template, request, g
 from app.database import db_interface as database
 from . import view_util
 import logging
+import time 
 
 @app.before_request
 def before_request():
+    g.start = time.time()
     logging.info("Page entry: " + database.get_username(current_user) + " visited " + request.path)
     database.insert_history('PAGE_ENTRY', current_user, request.path)
+
+@app.teardown_request
+def teardown_request(exception=None):
+    diff_ms = (time.time() - g.start) * 1000
+    database.insert_latency_log(request.path, diff_ms)
 
 @app.route('/view')
 def view():

@@ -1,4 +1,5 @@
 from . import db_util as db
+from datetime import datetime
 
 def insert_error_log(record):
     db_connection = db.__get_log_db()
@@ -47,6 +48,21 @@ def insert_access_log(record):
             int(record.process),
             str(record.thread),
             str(record.threadName)
+        ))
+
+    db_connection.commit()
+    cursor.close()
+
+def insert_latency_log(path, time):
+    db_connection = db.__get_log_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("""
+        INSERT OR REPLACE INTO latency_log (date, path, time)
+        VALUES(?, ?, ?)""", (
+            datetime.now().timestamp(),
+            str(path),
+            int(time)
         ))
 
     db_connection.commit()

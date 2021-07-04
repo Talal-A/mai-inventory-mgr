@@ -233,6 +233,12 @@ def __check_log_table(db_connection):
     )
 
     cursor.execute("""
+        CREATE TABLE IF NOT EXISTS latency_log (
+            date int, path text, time int
+        )"""
+    )
+
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS version (
             db_name text, db_version int,
             UNIQUE(db_name)
