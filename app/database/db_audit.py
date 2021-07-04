@@ -5,6 +5,7 @@ import json
 
 ITEM_TYPE = 'ITEM'
 CATEGORY_TYPE = 'CATEGORY'
+USER_TYPE = 'USER'
 
 # Insert a new item audit event
 def insert_item_audit_event(item_id, event, before, after):
@@ -14,7 +15,14 @@ def insert_item_audit_event(item_id, event, before, after):
 def insert_category_audit_event(category_id, event, before, after):
     __insert_audit_event(CATEGORY_TYPE, category_id, event, before, after)
 
+# Insert a new user audit event
+def insert_user_audit_event(user_id, event, before, after):
+    __insert_audit_event(USER_TYPE, user_id, event, before, after)
+
 def __insert_audit_event(type, id, event, before, after):
+    if before == after:
+        return
+
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
@@ -22,7 +30,7 @@ def __insert_audit_event(type, id, event, before, after):
         INSERT OR IGNORE INTO audit (date, type, id, user, event, before, after)
         VALUES(?, ?, ?, ?, ?, ?, ?)""", (
             datetime.now().timestamp(), 
-            str(ITEM_TYPE),
+            str(type),
             str(id), 
             str(db.get_username(current_user)), 
             str(event),

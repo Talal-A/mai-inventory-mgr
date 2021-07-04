@@ -1,4 +1,6 @@
+from app import user
 from . import db_util as db
+from . import db_audit
 
 ###################
 # USER FUNCTIONS #
@@ -22,6 +24,8 @@ def insert_user(user_id, user_name, user_email, user_role, user_picture):
     # Save (commit) the changes
     db_connection.commit()
     cursor.close()
+
+    db_audit.insert_user_audit_event(user_id, "Created user.", "", get_user(user_id))
 
 # Return true if user id already exists
 def exists_user_id(user_id):
@@ -84,6 +88,7 @@ def get_all_users():
 def update_user_role(user_id, new_role):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
+    user_before = get_user(user_id)
 
     cursor.execute("""
         UPDATE user SET user_role=? WHERE user_id=?""", (
@@ -95,10 +100,13 @@ def update_user_role(user_id, new_role):
     db_connection.commit()
     cursor.close()
 
+    db_audit.insert_user_audit_event(user_id, "Updated user role.", user_before, get_user(user_id))
+
 # Update the user information
 def update_user_info(user_id, user_name, user_email, user_picture):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
+    user_before = get_user(user_id)
 
     cursor.execute("""
         UPDATE user SET user_name=?, user_email=?, user_picture=? WHERE user_id=?""", (
@@ -112,10 +120,13 @@ def update_user_info(user_id, user_name, user_email, user_picture):
     db_connection.commit()
     cursor.close()
 
+    db_audit.insert_user_audit_event(user_id, "Updated user info.", user_before, get_user(user_id))
+
 # Delete a user for a given user_id
 def delete_user(user_id):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
+    user_before = get_user(user_id)
 
     query_results = cursor.execute("""
         DELETE FROM user WHERE user_id=?""", (
@@ -124,3 +135,5 @@ def delete_user(user_id):
 
     db_connection.commit()
     cursor.close()
+
+    db_audit.insert_user_audit_event(user_id, "Deleted user.", user_before, get_user(user_id))
