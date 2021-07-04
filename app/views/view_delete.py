@@ -18,7 +18,6 @@ def delete_barcode(uuid):
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     database.delete_barcode(uuid)
-    database.insert_history("DELETE", current_user, "Deleted barcode. UUID: " + str(uuid))
     return redirect('/delete/barcode')
 
 @app.route('/delete/image')
@@ -34,7 +33,6 @@ def delete_image(uuid):
     if not view_util.validate_user():
         return view_util.returnPermissionError()
     database.delete_image(uuid)
-    database.insert_history("DELETE", current_user, "Deleted image. UUID: " + str(uuid))
     return redirect('/delete/image')
 
 @app.route('/delete/item/<string:uuid>')
@@ -43,7 +41,6 @@ def delete_item(uuid):
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.delete_item(uuid)
-    database.insert_history("DELETE", current_user, "Deleted item. UUID: " + str(uuid))
     return redirect('/view/item/' + uuid)
 
 @app.route('/restore/item/<string:uuid>')
@@ -52,7 +49,6 @@ def restore_item(uuid):
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.restore_deleted_item(uuid)
-    database.insert_history("RESTORE", current_user, "Restored item. UUID: " + str(uuid))
     return redirect('/view/item/' + uuid)
 
 @app.route('/delete/category')
@@ -68,5 +64,4 @@ def delete_category(uuid):
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.delete_category(uuid)
-    database.insert_history("DELETE", current_user, "Deleted category. UUID: " + str(uuid))
     return redirect('/delete/category')

@@ -5,7 +5,7 @@ import logging
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 4
+DATA_DB_VERSION = 5
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -47,12 +47,6 @@ def __check_data_table(db_connection):
         CREATE TABLE IF NOT EXISTS category (
             category_id text, name text,
             UNIQUE(category_id)
-        )
-        """
-    )
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS history (
-            date int, type text, user text, event text
         )
         """
     )
@@ -195,6 +189,22 @@ def __upgrade_data_db(db_connection):
             VALUES(?, ?)""", (
                 DATA_DB_NAME,
                 4
+        ))
+
+    if current_version < 5:
+        # Upgrade to v5.0
+        logging.info("Upgrading data database to 5.0")
+
+        # Delete the now-unused table
+        cursor.execute("""
+            DROP TABLE history
+        """)
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                5
         ))
 
     # Finally, commit the changes and close the cursor.

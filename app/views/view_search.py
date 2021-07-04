@@ -16,7 +16,6 @@ def search_check_out_item():
 
     if request.method == 'POST' and form_search.validate():
         if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data):
-            database.insert_history("EDIT", current_user, "Check out with search. ItemId: " + str(form_search.selectInput.data) + ", Quantity: " + str(form_search.quantity.data))
             return redirect('/view/item/' + form_search.selectInput.data)
         else:
             flash("An error occurred when handling your request. Please validate the selection and quantity.")
@@ -33,7 +32,6 @@ def search_check_in_item():
 
     if request.method == 'POST' and form_search.validate():
         if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data):
-            database.insert_history("EDIT", current_user, "Check in with search. ItemId: " + str(form_search.selectInput.data) + ", Quantity: " + str(form_search.quantity.data))
             return redirect('/view/item/' + form_search.selectInput.data)
         else:
             flash("An error occurred when handling your request. Please validate the selection and quantity.")

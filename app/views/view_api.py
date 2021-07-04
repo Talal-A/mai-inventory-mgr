@@ -14,5 +14,4 @@ def edit_user_role(user_id, new_role):
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.update_user_role(str(base64.b64decode(user_id).decode('utf-8')), new_role)
-    database.insert_history("EDIT", current_user, "Edited user. UserId: " + str(user_id) + ", Role: " + str(new_role))
     return ""

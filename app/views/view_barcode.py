@@ -16,7 +16,6 @@ def barcode_check_in_item():
     if request.method == 'POST' and form_barcode.validate():
         if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
-            database.insert_history("EDIT", current_user, "Check in with barcode. Barcode: " + str(form_barcode.barcode.data) + ", Quantity: " + str(form_barcode.quantity.data))
             return redirect('/view/item/' + item_id)
         else:
             flash("An error occurred when handling your request. Please validate the barcode and quantity.")
@@ -33,7 +32,6 @@ def barcode_check_out_item():
     if request.method == 'POST' and form_barcode.validate():
         if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
-            database.insert_history("EDIT", current_user, "Check out with barcode. Barcode: " + str(form_barcode.barcode.data) + ", Quantity: " + str(form_barcode.quantity.data))
             return redirect('/view/item/' + item_id)
         else:
             flash("An error occurred when handling your request. Please validate the barcode and quantity.")
@@ -46,7 +44,6 @@ def barcode_look_up_item():
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
         item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
-        database.insert_history("EDIT", current_user, "Barcode lookup. Barcode: " + str(form_barcode.barcode.data))
         return redirect('/view/item/' + item_id)
 
     return render_template('scan:barcode.html', USER=current_user, form=form_barcode, action="Look up")

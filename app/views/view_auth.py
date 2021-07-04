@@ -85,7 +85,6 @@ def login_callback():
             user = User.get(unique_id)
 
         login_user(user)
-        database.insert_history("LOGIN", user, "Logged in.")
     else:
         return "User email not available or not verified by Google.", 400
 
@@ -94,6 +93,5 @@ def login_callback():
 @app.route('/logout')
 @login_required
 def logout():
-    database.insert_history("LOGOUT", current_user, "Logged out.")
     logout_user()
     return redirect('/dashboard')

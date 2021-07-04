@@ -10,7 +10,6 @@ import time
 def before_request():
     g.start = time.time()
     logging.info("Page entry: " + database.get_username(current_user) + " visited " + request.path)
-    database.insert_history('PAGE_ENTRY', current_user, request.path)
 
 @app.teardown_request
 def teardown_request(exception=None):
@@ -27,13 +26,6 @@ def view_users():
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     return render_template('view:users.html', USER=current_user, users=database.get_all_users())
-
-@app.route('/view/history')
-def view_history():
-    if not view_util.validate_admin():
-        return view_util.returnPermissionError()
-
-    return render_template('history.html', USER=current_user, events=database.get_history())
 
 @app.route('/view/audit')
 def view_audit():

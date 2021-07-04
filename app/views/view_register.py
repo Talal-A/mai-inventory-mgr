@@ -21,7 +21,6 @@ def register_with_param(type):
 
         if request.method == 'POST' and form_category.category.data and form_category.validate():
             database.insert_category(form_category.category.data)
-            database.insert_history("REGISTER", current_user, "Registered category: " + str(form_category.category.data))
             return redirect('/dashboard')
 
         return render_template('register:' + type + '.html', USER=current_user, form=form_category)
@@ -29,7 +28,6 @@ def register_with_param(type):
     elif type == 'item':
         if request.method == 'POST' and form_item.category.data and form_item.item.data and form_item.validate():
             database.insert_item(str(form_item.category.data).strip(), str(form_item.item.data).strip(), str(form_item.location.data).strip())
-            database.insert_history("REGISTER", current_user, "Registered item. Category: " + str(form_item.category.data).strip() + ", Item: " + str(form_item.item.data).strip() + ", Location: " + str(form_item.location.data).strip())
             return redirect('/dashboard')
 
         return render_template('register:' + type + '.html', USER=current_user, form=form_item, categories=database.get_all_categories())
@@ -37,7 +35,6 @@ def register_with_param(type):
     elif type == 'barcode':
         if request.method == 'POST' and form_barcode.validate():
             database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
-            database.insert_history("REGISTER", current_user, "Registered barcode. Item: " + str(form_barcode.item.data).strip() + ", Barcode: " + str(form_barcode.barcode.data).strip())
             return redirect('/dashboard')
 
         return render_template('register:' + type + '.html', USER=current_user, form=form_barcode, categories=database.get_all_categories())

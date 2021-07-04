@@ -21,7 +21,6 @@ def register_barcode_for_item(uuid):
 
     if request.method == 'POST' and form_barcode.validate():
         database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
-        database.insert_history("REGISTER", current_user, "Registered barcode. Item: " + str(form_barcode.item.data).strip() + ", Barcode: " + str(form_barcode.barcode.data).strip())
         return redirect('/view/item/' + uuid)
 
     return render_template('register:' + 'barcode' + '.html', USER=current_user, form=form_barcode)
@@ -36,7 +35,6 @@ def register_barcode():
 
     if request.method == 'POST' and form_barcode.validate():
         database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
-        database.insert_history("REGISTER", current_user, "Registered barcode. Item: " + str(form_barcode.item.data).strip() + ", Barcode: " + str(form_barcode.barcode.data).strip())
         return redirect('/view/item/' + str(form_barcode.item.data).strip())
 
     return render_template('register:' + 'barcode' + '.html', USER=current_user, form=form_barcode)
@@ -73,7 +71,6 @@ def edit_category(uuid):
 
     if request.method == 'POST' and form_category.category.data and form_category.validate():
         database.update_category_name(uuid, form_category.category.data)
-        database.insert_history("EDIT", current_user, "Updated category. UUID: " + str(uuid).strip() + ", Category: " + str(form_category.category.data).strip())
         return redirect('/view')
     else:
         form_category.category.data = database.get_category(uuid)['name']
@@ -90,7 +87,6 @@ def edit_item(uuid):
 
     if request.method == 'POST' and form_item.validate():
         database.update_item(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
-        database.insert_history("EDIT", current_user, "Edited item. UUID: " + str(uuid) + ", Category: " + str(form_item.category.data) + ", Location: " + str(form_item.location.data) + ", Quantity_Active: " + str(form_item.quantity_active.data) + ", Quantity Expired: " + str(form_item.quantity_expired.data) + ", Notes: " + str(form_item.notes.data) + ", URL: " + str(form_item.url.data))
         return redirect('/view/item/' + uuid)
     else:
         current_item = database.get_item(uuid)
