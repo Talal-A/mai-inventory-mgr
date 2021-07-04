@@ -5,7 +5,7 @@ import logging
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 3
+DATA_DB_VERSION = 4
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -82,8 +82,8 @@ def __check_data_table(db_connection):
     )
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS item_audit (
-            date int, item_id text, user text, event text, before text, after text
+        CREATE TABLE IF NOT EXISTS audit (
+            date int, type text, id text, user text, event text, before text, after text
         )
         """
     )
@@ -157,6 +157,39 @@ def __upgrade_data_db(db_connection):
             VALUES(?, ?)""", (
                 DATA_DB_NAME,
                 3
+        ))
+
+    if current_version < 4:
+        # Upgrade to v4.0
+        logging.info("Upgrading data database to 4.0")
+
+        query_results = cursor.execute("""
+                SELECT * FROM item_audit
+            """)
+        
+        result = []
+        for row in query_results:
+            # Temporarily store in result list, can't reuse cursor
+            result.append(row)
+
+        for row in result:
+            cursor.execute("""
+                INSERT OR IGNORE INTO audit (date, type, id, user, event, before, after)
+                VALUES(?, ?, ?, ?, ?, ?, ?)""", (
+                    int(row[0]), 
+                    str("ITEM"),
+                    str(row[1]), 
+                    str(row[2]), 
+                    str(row[3]),
+                    str(row[4]),
+                    str(row[5])
+            ))
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                4
         ))
 
     # Finally, commit the changes and close the cursor.

@@ -1,7 +1,7 @@
 import uuid
 
 from . import db_util as db
-from . import db_barcode, db_category, db_image, db_item_audit
+from . import db_barcode, db_category, db_image, db_audit
 
 ##################
 # ITEM FUNCTIONS #
@@ -32,7 +32,7 @@ def insert_item(category_id, name, location="", quantity_active=0, quantity_expi
     cursor.close()
 
     # Log the creation of the new item.
-    db_item_audit.insert_item_audit_event(item_id, "Created item.", "", get_item(item_id))
+    db_audit.insert_item_audit_event(item_id, "Created item.", "", get_item(item_id))
 
     return item_id
 
@@ -190,7 +190,7 @@ def update_item(item_id, category_id, location, quantity_active, quantity_expire
     db_connection.commit()
     cursor.close()
 
-    db_item_audit.insert_item_audit_event(item_id, "Edited item.", item_before, get_item(item_id))
+    db_audit.insert_item_audit_event(item_id, "Edited item.", item_before, get_item(item_id))
 
 # Update an item's active quantity
 def update_item_quantity(item_id, new_active_quantity):
@@ -208,7 +208,7 @@ def update_item_quantity(item_id, new_active_quantity):
     db_connection.commit()
     cursor.close()
 
-    db_item_audit.insert_item_audit_event(item_id, "Updated quantity.", item_before, get_item(item_id))
+    db_audit.insert_item_audit_event(item_id, "Updated quantity.", item_before, get_item(item_id))
 
 # Delete an item for a given item_id
 def delete_item(item_id):
@@ -225,7 +225,7 @@ def delete_item(item_id):
     db_connection.commit()
     cursor.close()
 
-    db_item_audit.insert_item_audit_event(item_id, "Deleted item.", item_before, get_item(item_id))
+    db_audit.insert_item_audit_event(item_id, "Deleted item.", item_before, get_item(item_id))
 
     db_barcode.delete_barcodes_for_item(item_id)
 
@@ -244,4 +244,4 @@ def restore_deleted_item(item_id):
     db_connection.commit()
     cursor.close()
 
-    db_item_audit.insert_item_audit_event(item_id, "Restored item.", item_before, get_item(item_id))
+    db_audit.insert_item_audit_event(item_id, "Restored item.", item_before, get_item(item_id))

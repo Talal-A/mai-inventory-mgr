@@ -3,7 +3,7 @@ from .db_category import *
 from .db_history import *
 from .db_image import *
 from .db_item import *
-from .db_item_audit import *
+from .db_audit import *
 from .db_scan import *
 from .db_user import * 
 from .db_util import * 
