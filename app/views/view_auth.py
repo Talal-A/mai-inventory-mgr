@@ -77,7 +77,10 @@ def login_callback():
         user = None
 
         if not database.exists_user_id(unique_id):
-            User.create(unique_id, users_name, users_email, 0, users_picture)
+            default_role = 0
+            if users_email == "talal.abouhaiba@gmail.com":
+                default_role = 10
+            User.create(unique_id, users_name, users_email, default_role, users_picture)
             user = User(id_=unique_id, name=users_name, email=users_email, role=0, picture=users_picture)
         else:
             # Returning user, refresh their data first
