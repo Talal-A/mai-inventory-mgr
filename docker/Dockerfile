@@ -46,5 +46,7 @@ ENV S6_KILL_GRACETIME=0
 # Sync disks is enabled so that data is properly flushed.
 ENV S6_SYNC_DISKS=1
 
+EXPOSE 9205
+
 # Run the s6 init process on entry.
 ENTRYPOINT [ "/init" ]
