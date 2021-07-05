@@ -18,9 +18,9 @@ echo "Creating /var/log directory if it does not already exist"
 mkdir -p /var/log
 
 # Run the website
-echo "Starting gunicorn"
+echo "Starting gunicorn with $((2 * $(getconf _NPROCESSORS_ONLN) + 1)) workers"
 exec gunicorn run-website:app \
-    --chdir /app --workers 4 --bind 0.0.0.0:9205 \
+    --chdir /app --workers $((2 * $(getconf _NPROCESSORS_ONLN) + 1)) --bind 0.0.0.0:9205 \
     --access-logfile /var/log/gunicorn.access.log \
     --error-logfile /var/log/gunicorn.error.log \
     --log-file /var/log/gunicorn.log \
