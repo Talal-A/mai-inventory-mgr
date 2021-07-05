@@ -2,14 +2,8 @@
 {% block body %}
 <h4>{{category}}</h4>
 
-<div>
-    <p align="center">
-        <input type="text" class="form-control" id="search" placeholder="Type to search">
-    </p>
-</div>
-
 <div class="table-responsive">
-    <table class="table table-hover">
+    <table class="table table-hover" id="items_table">
         <thead>
             <tr>
                 <th scope="col">Category</th>
@@ -40,12 +34,7 @@
 
 <script>
     window.onload = function() {
-        $("#search").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#table tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
+        $("#items_table").DataTable();
     }
 </script>
 
