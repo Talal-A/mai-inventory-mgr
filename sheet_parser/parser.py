@@ -5,8 +5,7 @@ from bs4 import BeautifulSoup
 import csv
 import pymongo
 from bson.objectid import ObjectId
-sys.path.append('/Users/talal/dev/mai-ucla-2/app/')
-
+sys.path.append('..')
 from app.database import db_interface as database
 
 print("Running sheet parser on inputs:")
@@ -110,49 +109,3 @@ for item in results:
     # Insert the barcodes
     for barcode in item["barcodes"]:
         database.insert_barcode(barcode, itemId)
-    
-## Also migrate the user information from mongo
-
-import pymongo
-import datetime 
-import time
-myclient = pymongo.MongoClient("mongodb://nerv:9201/")
-mydb = myclient["MAI_UCLA_DB"]
-
-CATEGORY_DB = mydb["category"]
-ITEM_DB = mydb["item"]
-BARCODE_DB = mydb["barcode"]
-USER_DB = mydb["user"]
-HISTORY_DB = mydb["history"]
-
-# Quickly migrate all users...
-for item in USER_DB.find():
-    database.insert_user(item['user_id'], item['user_name'], item['user_email'], item['user_role'])
-
-# Migrate all history...
-
-# Custom history insert function
-def insert_history(timestamp, type, user, event):
-    db_connection = database.get_db()
-    cursor = db_connection.cursor()
-
-    cursor.execute("""
-        INSERT OR IGNORE INTO history (date, type, user, event)
-        VALUES(?, ?, ?, ?)""", (
-            int(timestamp), 
-            str(type), 
-            str(user), 
-            str(event)
-        ))
-    
-    # Save (commit) the changes
-    db_connection.commit()
-    cursor.close()
-
-for item in HISTORY_DB.find():
-    insert_history(
-        time.mktime(datetime.datetime.strptime(item['date'],"%H:%M:%S on %m/%d/%y").timetuple()), 
-        item['type'],
-        item['user'],
-        item['event']
-    )
