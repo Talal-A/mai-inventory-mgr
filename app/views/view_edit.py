@@ -86,10 +86,11 @@ def edit_item(uuid):
     form_item = Update_Item(request.form)
 
     if request.method == 'POST' and form_item.validate():
-        database.update_item(uuid, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
+        database.update_item(uuid, form_item.name.data, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
         return redirect('/view/item/' + uuid)
     else:
         current_item = database.get_item(uuid)
+        form_item.name.data = current_item['name']
         form_item.category.data = current_item['category_id']
         form_item.location.data = current_item['location']
         form_item.quantity_active.data = current_item['quantity_active']

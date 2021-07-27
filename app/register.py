@@ -29,6 +29,7 @@ class Register_Item(Form):
 		self.category.choices = category_choices
 
 class Update_Item(Form):
+	name = StringField('Location', [validators.required()])
 	category = SelectField('Category', choices=[], coerce=str)
 	location = StringField('Location', [validators.required()])
 	url = StringField('URL')

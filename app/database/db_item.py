@@ -172,13 +172,14 @@ def get_all_items_for_category(category_id):
     return result
 
 # Update an item with new values
-def update_item(item_id, category_id, location, quantity_active, quantity_expired, notes, url):
+def update_item(item_id, name, category_id, location, quantity_active, quantity_expired, notes, url):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     item_before = get_item(item_id)
 
     cursor.execute("""
-        UPDATE item SET category_id=?, location=?, quantity_active=?, quantity_expired=?, notes=?, url=? WHERE item_id=?""", (
+        UPDATE item SET name=?, category_id=?, location=?, quantity_active=?, quantity_expired=?, notes=?, url=? WHERE item_id=?""", (
+            str(name).strip(),
             str(category_id).strip(),
             str(location).strip(),
             int(quantity_active),
