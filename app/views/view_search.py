@@ -15,7 +15,7 @@ def search_check_out_item():
     form_search = Search_QuantityUpdate(request.form)
 
     if request.method == 'POST' and form_search.validate():
-        if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data):
+        if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data, form_search.quantity_type.data):
             return redirect('/view/item/' + form_search.selectInput.data)
         else:
             flash("An error occurred when handling your request. Please validate the selection and quantity.")
@@ -31,7 +31,7 @@ def search_check_in_item():
     form_search = Search_QuantityUpdate(request.form)
 
     if request.method == 'POST' and form_search.validate():
-        if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data):
+        if database.search_item_update_quantity(form_search.selectInput.data, form_search.quantity.data, form_search.quantity_type.data):
             return redirect('/view/item/' + form_search.selectInput.data)
         else:
             flash("An error occurred when handling your request. Please validate the selection and quantity.")

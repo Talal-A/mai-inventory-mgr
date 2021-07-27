@@ -195,15 +195,22 @@ def update_item(item_id, name, category_id, location, quantity_active, quantity_
 
     db_audit.insert_item_audit_event(item_id, "Edited item.", item_before, get_item(item_id))
 
+# Update an item's quantity
+def update_item_quantity(item_id, new_quantity, type):
+    if type == "quantity_active":
+        return update_item_quantity_active(item_id, new_quantity)
+    else:
+        return update_item_quantity_expired(item_id, new_quantity)
+
 # Update an item's active quantity
-def update_item_quantity(item_id, new_active_quantity):
+def update_item_quantity_active(item_id, new_quantity):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     item_before = get_item(item_id)
 
     cursor.execute("""
         UPDATE item SET quantity_active=? WHERE item_id=?""", (
-            int(new_active_quantity),
+            int(new_quantity),
             str(item_id).strip()
         ))
     
@@ -211,7 +218,25 @@ def update_item_quantity(item_id, new_active_quantity):
     db_connection.commit()
     cursor.close()
 
-    db_audit.insert_item_audit_event(item_id, "Updated quantity.", item_before, get_item(item_id))
+    db_audit.insert_item_audit_event(item_id, "Updated active quantity.", item_before, get_item(item_id))
+
+# Update an item's expired quantity
+def update_item_quantity_expired(item_id, new_quantity):
+    db_connection = db.get_data_db()
+    cursor = db_connection.cursor()
+    item_before = get_item(item_id)
+
+    cursor.execute("""
+        UPDATE item SET quantity_expired=? WHERE item_id=?""", (
+            int(new_quantity),
+            str(item_id).strip()
+        ))
+    
+    # Save (commit) the changes
+    db_connection.commit()
+    cursor.close()
+
+    db_audit.insert_item_audit_event(item_id, "Updated expired quantity.", item_before, get_item(item_id))
 
 # Delete an item for a given item_id
 def delete_item(item_id):
