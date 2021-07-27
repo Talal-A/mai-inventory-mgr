@@ -9,7 +9,8 @@
                 <th scope="col">Category</th>
                 <th scope="col">Item</th>
                 <th scope="col">Location</th>
-                <th scope="col">Quantity</th>
+                <th scope="col">Active Quantity</th>
+                <th scope="col">Expired Quantity</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -20,6 +21,7 @@
                 <td>{{item.name}}</td>
                 <td>{{item.location}}</td>
                 <td>{{item.quantity_active}}</td>
+                <td>{{item.quantity_expired}}</td>
                 <td class="text-right">
                     <a href="/view/item/{{item.id}}"><button class="btn"><i class="material-icons">description</i></button></a>
                     {% if not item.deleted and USER.is_authenticated and USER.role >= 5 %}
