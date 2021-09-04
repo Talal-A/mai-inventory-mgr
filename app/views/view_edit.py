@@ -8,6 +8,7 @@ from app.views import view_util
 
 import requests
 import config
+import logging
 
 @app.route('/edit/item/add_barcode/<string:uuid>', methods=['GET', 'POST'])
 @login_required
@@ -51,14 +52,16 @@ def upload_photo_for_item(uuid):
             data={'image': request.get_json()['img'].split(',')[1]},
             headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID}
             ).json()
-        
         image_url = result['data']['link']
         delete_hash = result['data']['deletehash']
         success = result['success']
         if success:
             database.insert_image(image_url, delete_hash, uuid)
+        else:
+            logging.error("An error occurred while uploading image: " + str(result))
         return str(success)
-    except:
+    except Exception as e:
+        logging.error(e)
         return str(False)
 
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])

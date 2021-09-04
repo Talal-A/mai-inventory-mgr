@@ -262,18 +262,37 @@
 
 <script>
     var loadFile = function(event) {
-        // TODO: Image has been obtained. Downsize it (max 5MB?) and send to server. Server will then upload to imgur.
         document.getElementById("loader").style.display = "block";
         document.getElementById("page").style.display = "none";
         document.getElementById("footer").style.display = "none";
         var reader = new FileReader();
         reader.readAsDataURL(event.target.files[0]);
         reader.onload = function () {
+
+          var image = new Image();
+          image.onload = function() {
+
+            oldWidth = image.width;
+            oldHeight = image.height;
+
+            // Keep the old dimensions, just reduce the quality at the end.
+            newWidth = oldWidth;
+            newHeight = oldHeight;
+
+            canvas = document.createElement("canvas");
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+
+            // Draw the downscaled image on the canvas and return the new data URL.
+            ctx = canvas.getContext("2d");
+            ctx.drawImage(image, 0, 0, newWidth, newHeight);
+            newDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+
             var xhr = new XMLHttpRequest();
             xhr.open("POST", '/edit/item/upload_photo/{{item.id}}', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({
-                img: reader.result
+                img: newDataUrl
             }));
             xhr.onload = function () {
                 result = xhr.response;
@@ -286,6 +305,8 @@
                     alert("There was an issue uploading your photo. Please try again, or use a smaller photo.");
                 }
             }
+          }
+          image.src = reader.result;
         };
     };
 </script>
