@@ -36,6 +36,7 @@
 
 <script>
     window.onload = function() {
+        $.fn.dataTable.moment( 'DD-MMM-YYYY HH:mm:ss' );
         $("#items_table").DataTable({
             "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]
         });
