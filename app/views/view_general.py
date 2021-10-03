@@ -15,3 +15,7 @@ def dashboard():
 @app.route('/feedback')
 def feedback():
     return render_template('feedback.html', USER=current_user)
+
+@app.route('/ping')
+def ping():
+    return "healthy", 200
