@@ -40,7 +40,8 @@ from app.views import (
     view_general,
     view_register,
     view_search,
-    view_view
+    view_view,
+    view_error
 )
 
 # Load the config file
