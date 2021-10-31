@@ -15,26 +15,13 @@ def validateItem(form, field):
 	if len(field.data.strip()) == 0:
 		raise ValidationError('Item cannot be empty')
 
-class Register_Item(Form):
-	category = SelectField('Category', choices=[], coerce=str)
-	item = StringField('Name', [validators.Length(min=1), validators.required(), validateItem])
-	location = StringField('Location', [validators.Length(min=1), validators.required()])
-	submit = SubmitField('Submit')
-
-	def __init__(self, *args, **kwargs):
-		super(Register_Item, self).__init__(*args, **kwargs)
-		category_choices = []
-		for category in database.get_all_categories():
-			category_choices.append((str(category['id']), str(category['name'])))
-		self.category.choices = category_choices
-
 class Update_Item(Form):
 	name = StringField('Name', [validators.required()])
 	category = SelectField('Category', choices=[], coerce=str)
 	location = StringField('Location', [validators.required()])
 	url = StringField('URL')
-	quantity_active = IntegerField('Quantity - Active', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")])
-	quantity_expired = IntegerField('Quantity - Expired', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")])
+	quantity_active = IntegerField('Quantity - Active', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")], default=0)
+	quantity_expired = IntegerField('Quantity - Expired', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")], default=0)
 	notes = TextAreaField('Notes')
 	submit = SubmitField('Submit')
 
