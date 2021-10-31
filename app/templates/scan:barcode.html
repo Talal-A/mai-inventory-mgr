@@ -23,11 +23,6 @@ function scan(){
 		{% if defaultQuantity is defined %}
 			{{render_field(form.quantity, class_="form-control")}}
 		{% endif %}
-		<br> 
-		{% for subfield in form.quantity_type %}
-			{{ subfield }}
-			{{ subfield.label }}
-		{% endfor %}
 		</div>
 
 	  <p><input type="submit" class="btn btn-primary" value="Submit"></p>

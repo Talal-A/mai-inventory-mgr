@@ -196,11 +196,8 @@ def update_item(item_id, name, category_id, location, quantity_active, quantity_
     db_audit.insert_item_audit_event(item_id, "Edited item.", item_before, get_item(item_id))
 
 # Update an item's quantity
-def update_item_quantity(item_id, new_quantity, type):
-    if type == "quantity_active":
+def update_item_quantity(item_id, new_quantity):
         return update_item_quantity_active(item_id, new_quantity)
-    else:
-        return update_item_quantity_expired(item_id, new_quantity)
 
 # Update an item's active quantity
 def update_item_quantity_active(item_id, new_quantity):

@@ -14,7 +14,7 @@ def barcode_check_in_item():
 
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data, form_barcode.quantity_type.data):
+        if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
             return redirect('/view/item/' + item_id)
         else:
@@ -30,7 +30,7 @@ def barcode_check_out_item():
 
     form_barcode = Barcode_Lookup(request.form)
     if request.method == 'POST' and form_barcode.validate():
-        if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data, form_barcode.quantity_type.data):
+        if database.scan_barcode_update_quantity(form_barcode.barcode.data, form_barcode.quantity.data):
             item_id = database.get_barcode(form_barcode.barcode.data)['item_id']
             return redirect('/view/item/' + item_id)
         else:

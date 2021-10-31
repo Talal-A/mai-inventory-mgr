@@ -58,13 +58,11 @@ class Register_Barcode(Form):
 class Barcode_Lookup(Form):
 	barcode = StringField('Barcode', [validators.required(), validateBarcodeExists])
 	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)
-	quantity_type = RadioField('Type', choices=[('quantity_active','Active Quantity'),('quantity_expired','Expired Quantity')], default='quantity_active')
 	submit = SubmitField('Submit')
 
 class Search_QuantityUpdate(Form): 
 	selectInput = SelectField('Select an item:', choices=[], validators=[validators.InputRequired()])
 	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)
-	quantity_type = RadioField('Type', choices=[('quantity_active','Active Quantity'),('quantity_expired','Expired Quantity')], default='quantity_active')
 	submit = SubmitField('Submit')
 
 	def __init__(self, *args, **kwargs):
