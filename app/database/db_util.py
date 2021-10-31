@@ -3,9 +3,11 @@ from datetime import datetime
 from flask import request
 import logging
 
+from . import db_interface
+
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 5
+DATA_DB_VERSION = 6
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -205,6 +207,22 @@ def __upgrade_data_db(db_connection):
             VALUES(?, ?)""", (
                 DATA_DB_NAME,
                 5
+        ))
+
+    # [mai120] Removing expired quantity, adding to active quantity
+    if current_version < 6:
+        # Upgrade to v6.0
+        logging.info("Upgrading data database to 6.0")
+
+        for item in db_interface.db_item.get_all_items():
+            new_quantity = int(item['quantity_active']) + int(item['quantity_expired'])
+            db_interface.db_item.update_item(item['id'], item['name'], item['category_id'], item['location'], int(new_quantity), int(0), item['notes'], item['url'])
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                6
         ))
 
     # Finally, commit the changes and close the cursor.
