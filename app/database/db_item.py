@@ -65,6 +65,7 @@ def get_item(item_id):
             'id': str(row[0]),
             'category_id': str(row[1]),
             'category_name': db_category.get_category(str(row[1]))['name'],
+            'category_status': db_category.get_category(str(row[1]))['deleted'],
             'name': str(row[2]),
             'location': str(row[3]),
             'quantity_active': int(row[4]),

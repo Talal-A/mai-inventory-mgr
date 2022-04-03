@@ -28,7 +28,7 @@ class Update_Item(Form):
 	def __init__(self, *args, **kwargs):
 		super(Update_Item, self).__init__(*args, **kwargs)
 		category_choices = []
-		for category in database.get_all_categories():
+		for category in database.get_all_active_categories():
 			category_choices.append((str(category['id']), str(category['name'])))
 		self.category.choices = category_choices
 

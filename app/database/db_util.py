@@ -7,7 +7,7 @@ from . import db_interface
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 6
+DATA_DB_VERSION = 7
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -47,7 +47,7 @@ def __check_data_table(db_connection):
     )
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS category (
-            category_id text, name text,
+            category_id text, name text, deleted int,
             UNIQUE(category_id)
         )
         """
@@ -223,6 +223,22 @@ def __upgrade_data_db(db_connection):
             VALUES(?, ?)""", (
                 DATA_DB_NAME,
                 6
+        ))
+
+    # [mai127] Do not actually delete categories, simply mark them as "deleted"
+    if current_version < 7:
+        # Upgrade to v7.0
+        logging.info("Upgrading data database to 7.0")
+
+        cursor.execute("""
+            ALTER TABLE category ADD COLUMN deleted int DEFAULT 0
+        """)
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                7
         ))
 
     # Finally, commit the changes and close the cursor.

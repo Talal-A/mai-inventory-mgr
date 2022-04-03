@@ -18,7 +18,7 @@ def teardown_request(exception=None):
 
 @app.route('/view')
 def view():
-    return render_template('view.html', USER=current_user, categories=database.get_all_categories())
+    return render_template('view.html', USER=current_user, categories=database.get_all_active_categories())
 
 @app.route('/view/users')
 @login_required
@@ -37,6 +37,12 @@ def view_audit():
 @app.route('/view/all')
 def view_all_items():
     return render_template('view:items.html', USER=current_user, category='All items', items=database.get_all_items())
+
+@app.route('/view/deleted_categories')
+def view_all_deleted_categories():
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    return render_template('view.html', USER=current_user, categories=database.get_all_deleted_categories())
 
 @app.route('/view/deleted')
 def view_all_deleted_items():

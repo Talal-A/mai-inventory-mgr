@@ -1,18 +1,27 @@
 {% extends "base.html" %}
 {% block body %}
 <div id="page">
+
+{% if item.category_status != 0 %}
+<div class="alert alert-warning" role="alert">
+  <strong>Warning:</strong> This item belongs to a deleted category and cannot be edited.
+</div>
+{% endif %}
+  
 <h4 style="text-align:left;float:left;">{{item.name}}</h4> 
 <a style="text-align:right;float:right;">
+  {% if item.category_status == 0 %}
     {% if item.deleted %}
-      {% if USER.is_authenticated and USER.role >= 5 %}
-      <button class="btn" onclick="confirmRestore('{{item.id}}','{{item.name}}')"><i class="material-icons">restore</i></button>
-      {% endif %}
-  {% else %}
-      {% if USER.is_authenticated and USER.role >= 5 %}
-      <button class="btn" onclick="window.location.href='/edit/item/{{item.id}}';"><i class="material-icons">edit</i></button>
-      <button class="btn" onclick="confirmDelete('{{item.id}}','{{item.name}}')"><i class="material-icons" style="color:red">delete</i></button>
-      {% endif %}
+        {% if USER.is_authenticated and USER.role >= 5 %}
+        <button class="btn" onclick="confirmRestore('{{item.id}}','{{item.name}}')"><i class="material-icons">restore</i></button>
+        {% endif %}
+    {% else %}
+        {% if USER.is_authenticated and USER.role >= 5 %}
+        <button class="btn" onclick="window.location.href='/edit/item/{{item.id}}';"><i class="material-icons">edit</i></button>
+        <button class="btn" onclick="confirmDelete('{{item.id}}','{{item.name}}')"><i class="material-icons" style="color:red">delete</i></button>
+        {% endif %}
     {% endif %}
+  {% endif %}
 </a>
 
 <br>

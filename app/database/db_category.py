@@ -14,10 +14,11 @@ def insert_category(category_name):
     cursor = db_connection.cursor()
 
     cursor.execute("""
-        INSERT OR IGNORE INTO category (category_id, name)
-        VALUES(?, ?)""", (
+        INSERT OR IGNORE INTO category (category_id, name, deleted)
+        VALUES(?, ?, ?)""", (
             str(category_id).strip(),
-            str(category_name).strip()
+            str(category_name).strip(),
+            0
         ))
 
     db_connection.commit()
@@ -59,7 +60,7 @@ def exists_category_usage(category_id):
     cursor = db.get_data_db().cursor()
 
     query_result = cursor.execute("""
-        SELECT EXISTS(SELECT 1 FROM item WHERE category_id=? LIMIT 1)""", (
+        SELECT EXISTS(SELECT 1 FROM item WHERE category_id=? and deleted=0 LIMIT 1)""", (
             str(category_id).strip(),
     ))
     
@@ -81,7 +82,8 @@ def get_category(category_id):
     for row in query_results:
         result = {
             'id': str(row[0]),
-            'name': str(row[1])
+            'name': str(row[1]),
+            'deleted': int(row[2])
         }
 
     cursor.close()
@@ -105,9 +107,46 @@ def get_all_categories():
     cursor.close()
     return result
 
+# Get all active categories
+def get_all_active_categories():
+    result = []
+    cursor = db.get_data_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM category WHERE deleted=0 ORDER BY name COLLATE NOCASE ASC""", (
+    ))
+
+    for row in query_results:
+        result.append({
+            'id': str(row[0]),
+            'name': str(row[1])
+        })
+
+    cursor.close()
+    return result
+
+
+# Get all deleted categories
+def get_all_deleted_categories():
+    result = []
+    cursor = db.get_data_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM category WHERE deleted=1 ORDER BY name COLLATE NOCASE ASC""", (
+    ))
+
+    for row in query_results:
+        result.append({
+            'id': str(row[0]),
+            'name': str(row[1])
+        })
+
+    cursor.close()
+    return result
+
 # Get all categories which can be deleted safely (not referenced by any items)
 def get_deletable_categories():
-    all_categories = get_all_categories()
+    all_categories = get_all_active_categories()
     deletable_categories = []
     for category in all_categories:
         if not exists_category_usage(category['id']):
@@ -143,7 +182,8 @@ def delete_category(category_id):
     category_before = get_category(category_id)
 
     query_results = cursor.execute("""
-        DELETE FROM category WHERE category_id=?""", (
+        UPDATE category SET deleted=? WHERE category_id=?""", (
+            1,
             str(category_id).strip(),
     ))
 
