@@ -38,7 +38,7 @@ def delete_image(uuid):
 @app.route('/delete/item/<string:uuid>')
 @login_required
 def delete_item(uuid):
-    if not view_util.validate_admin():
+    if not view_util.validate_user():
         return view_util.returnPermissionError()
     database.delete_item(uuid)
     return redirect('/view/item/' + uuid)
@@ -46,7 +46,7 @@ def delete_item(uuid):
 @app.route('/restore/item/<string:uuid>')
 @login_required
 def restore_item(uuid):
-    if not view_util.validate_admin():
+    if not view_util.validate_user():
         return view_util.returnPermissionError()
     database.restore_deleted_item(uuid)
     return redirect('/view/item/' + uuid)
