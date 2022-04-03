@@ -25,21 +25,23 @@
     <a href="/barcode/check_out" class="list-group-item list-group-item-action">Scan and check out an item</a>
     <a href="/search/check_in" class="list-group-item list-group-item-action">Search and check in an item</a>
     <a href="/search/check_out" class="list-group-item list-group-item-action">Search and check out an item</a>
-    <a href="/delete/barcode" class="list-group-item list-group-item-action"><div style="color:red">Delete a barcode</div></a>
-    <a href="/delete/image" class="list-group-item list-group-item-action"><div style="color:red">Delete an image</div></a>
 </div>
 
 <br>
-{% endif %}
 
-{% if USER.is_authenticated and USER.role >= 10 %}
 <h5>Administrate</h5>
 <div class="list-group">
+    {% if USER.is_authenticated and USER.role >= 10 %}
     <a href="/view/users" class="list-group-item list-group-item-action">Manage users</a>
     <a href="/view/audit" class="list-group-item list-group-item-action">View audit logs</a>
     <a href="/view/deleted" class="list-group-item list-group-item-action">View deleted items</a>
+    {% endif %}
+    {% if USER.is_authenticated and USER.role >= 10 %}
     <a href="/register/category" class="list-group-item list-group-item-action">Create a new category</a>
     <a href="/delete/category" class="list-group-item list-group-item-action"><div style="color:red">Delete a category</div></a>
+    {% endif %}
+    <a href="/delete/barcode" class="list-group-item list-group-item-action"><div style="color:red">Delete a barcode</div></a>
+    <a href="/delete/image" class="list-group-item list-group-item-action"><div style="color:red">Delete an image</div></a>
 </div>
 <br>
 {% endif %}
