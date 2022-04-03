@@ -16,9 +16,9 @@ def validateItem(form, field):
 		raise ValidationError('Item cannot be empty')
 
 class Update_Item(Form):
-	name = StringField('Name', [validators.required()])
+	name = StringField('Name', [validators.DataRequired()])
 	category = SelectField('Category', choices=[], coerce=str)
-	location = StringField('Location', [validators.required()])
+	location = StringField('Location', [validators.DataRequired()])
 	url = StringField('URL')
 	quantity_active = IntegerField('Quantity - Active', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")], default=0)
 	quantity_expired = IntegerField('Quantity - Expired', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")], default=0)
@@ -46,7 +46,7 @@ def validateBarcodeExists(form, field):
 
 class Register_Barcode(Form):
 	item = SelectField('Item', choices=[], coerce=str)
-	barcode = StringField('Barcode', [validators.required(), validateBarcode])
+	barcode = StringField('Barcode', [validators.DataRequired(), validateBarcode])
 
 	def __init__(self, *args, **kwargs):
 		super(Register_Barcode, self).__init__(*args, **kwargs)
@@ -56,7 +56,7 @@ class Register_Barcode(Form):
 		self.item.choices = item_choices
 
 class Barcode_Lookup(Form):
-	barcode = StringField('Barcode', [validators.required(), validateBarcodeExists])
+	barcode = StringField('Barcode', [validators.DataRequired(), validateBarcodeExists])
 	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)
 	submit = SubmitField('Submit')
 

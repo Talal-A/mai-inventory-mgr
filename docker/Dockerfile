@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 MAINTAINER talal "talal.abouhaiba@gmail.com"
 
@@ -12,8 +12,6 @@ RUN apt-get update && apt-get install -y \
         tzdata
     RUN python3.7 -m pip install pip
 
-RUN apt remove python-flask
-
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./requirements.txt /app/requirements.txt
 
@@ -25,7 +23,7 @@ RUN python3.7 -m pip list
 COPY . /app
 
 # Download litestream
-ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.4/litestream-v0.3.4-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
+ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.8/litestream-v0.3.8-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
 RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
 
 # Install s6-overlay

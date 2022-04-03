@@ -1,8 +1,8 @@
-Flask==1.0.2
-wtforms
-Flask-Login
-oauthlib
-requests
-pytz
-datetime
+Flask==2.1.1
+wtforms==3.0.1
+Flask-Login==0.6.0
+oauthlib==3.2.0
+requests==2.22.0
+pytz==2022.1
+datetime==4.4
 gunicorn==20.1.0
