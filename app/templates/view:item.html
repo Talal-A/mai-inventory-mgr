@@ -4,14 +4,12 @@
 <h4 style="text-align:left;float:left;">{{item.name}}</h4> 
 <a style="text-align:right;float:right;">
     {% if item.deleted %}
-      {% if USER.is_authenticated and USER.role >= 10 %}
+      {% if USER.is_authenticated and USER.role >= 5 %}
       <button class="btn" onclick="confirmRestore('{{item.id}}','{{item.name}}')"><i class="material-icons">restore</i></button>
       {% endif %}
   {% else %}
       {% if USER.is_authenticated and USER.role >= 5 %}
       <button class="btn" onclick="window.location.href='/edit/item/{{item.id}}';"><i class="material-icons">edit</i></button>
-      {% endif %}
-      {% if USER.is_authenticated and USER.role >= 10 %}
       <button class="btn" onclick="confirmDelete('{{item.id}}','{{item.name}}')"><i class="material-icons" style="color:red">delete</i></button>
       {% endif %}
     {% endif %}
