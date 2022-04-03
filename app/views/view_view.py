@@ -40,7 +40,7 @@ def view_all_items():
 
 @app.route('/view/deleted')
 def view_all_deleted_items():
-    if not view_util.validate_admin():
+    if not view_util.validate_user():
         return view_util.returnPermissionError()
     return render_template('view:items.html', USER=current_user, category='Deleted items', items=database.get_all_deleted_items())
 

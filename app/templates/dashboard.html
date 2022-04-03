@@ -34,8 +34,8 @@
     {% if USER.is_authenticated and USER.role >= 10 %}
     <a href="/view/users" class="list-group-item list-group-item-action">Manage users</a>
     <a href="/view/audit" class="list-group-item list-group-item-action">View audit logs</a>
-    <a href="/view/deleted" class="list-group-item list-group-item-action">View deleted items</a>
     {% endif %}
+    <a href="/view/deleted" class="list-group-item list-group-item-action">View deleted items</a>
     {% if USER.is_authenticated and USER.role >= 10 %}
     <a href="/register/category" class="list-group-item list-group-item-action">Create a new category</a>
     <a href="/delete/category" class="list-group-item list-group-item-action"><div style="color:red">Delete a category</div></a>
