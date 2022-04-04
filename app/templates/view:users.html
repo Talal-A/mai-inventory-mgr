@@ -27,6 +27,9 @@
                         <td><button class="btn" id="btnSetRoleUser" onclick='setRole("{{item.user_id}}", 0)'><i class="material-icons">{{ 'check_box' if item.user_role == 0 else 'check_box_outline_blank'}}</i></button></td>
                         <td><button class="btn" id="btnSetRoleMember" onclick='setRole("{{item.user_id}}", 5)'><i class="material-icons">{{ 'check_box' if item.user_role == 5 else 'check_box_outline_blank'}}</i></button></td>
                         <td><button class="btn" id="btnSetRoleAdmin" onclick='setRole("{{item.user_id}}", 10)'><i class="material-icons">{{ 'check_box' if item.user_role == 10 else 'check_box_outline_blank'}}</i></button></td>
+                        <td class="text-right">
+                            <a href="/view/user/{{item.user_id}}"><button class="btn"><i class="material-icons">description</i></button></a>
+                        </td>        
                     </tr>
                 {% endif %}
             {% endfor %}
