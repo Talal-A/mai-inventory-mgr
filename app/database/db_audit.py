@@ -67,6 +67,31 @@ def get_item_audit(item_id):
     cursor.close()
     return result
 
+def get_all_audit_by_user(user_email):
+    result = []
+
+    cursor = db.get_data_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT * FROM audit WHERE user=? ORDER BY date DESC""", (
+            str(user_email).strip(),
+        ))
+
+    for row in query_results:
+        result.append({
+            'date_raw': int(row[0]),
+            'date': db.format_timestamp(int(row[0])),
+            'type': str(row[1]),
+            'id': str(row[2]),
+            'user': str(row[3]),
+            'event': str(row[4]),
+            'before': str(row[5]),
+            'after': str(row[6])
+        })
+
+    cursor.close()
+    return result
+
 def get_all_audit():
     result = []
 

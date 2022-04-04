@@ -32,7 +32,7 @@ def view_all_users():
 def view_user(uuid):
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
-    return render_template('view:user.html', USER=current_user, user=database.get_user(uuid))
+    return render_template('view:user.html', USER=current_user, user=database.get_user(uuid), audit=database.get_all_audit_by_user(database.get_user(uuid)['user_email']))
 
 @app.route('/view/audit')
 def view_audit():
