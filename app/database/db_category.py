@@ -191,3 +191,20 @@ def delete_category(category_id):
     cursor.close()
 
     db_audit.insert_category_audit_event(category_id, "Deleted category.", category_before, "")
+
+# Restore a category for a given category_id
+def restore_category(category_id):    
+    db_connection = db.get_data_db()
+    cursor = db_connection.cursor()
+    category_before = get_category(category_id)
+
+    query_results = cursor.execute("""
+        UPDATE category SET deleted=? WHERE category_id=?""", (
+            0,
+            str(category_id).strip(),
+    ))
+
+    db_connection.commit()
+    cursor.close()
+
+    db_audit.insert_category_audit_event(category_id, "Restored category.", category_before, "")

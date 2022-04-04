@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 {% block body %}
-<h4>{{category}}</h4>
+<h4 style="text-align:left;float:left;">{{category.name}}</h4> 
+{% if USER.is_authenticated and USER.role >= 10 %}
+<a style="text-align:right;float:right;">
+    {% if category.deleted == 1 %}
+    <button class="btn" onclick="confirmRestore('{{category.id}}','{{category.name}}')"><i
+            class="material-icons">restore</i></button>
+    {% elif items|length == 0 %}
+    <button class="btn" onclick="confirmDelete('{{category.id}}','{{category.name}}')"><i class="material-icons"
+            style="color:red">delete</i></button>
+    {% endif %}
+</a>
+{% endif %}
 
 <div class="table-responsive">
     <table class="table table-hover" id="items_table">
@@ -32,6 +43,19 @@
     </table>
 </div>
 
+<script>
+    function confirmDelete(id, name) {
+      if (confirm("Are you sure you want to delete category [" + name + "]?")) {
+        window.location.href = "/delete/category/" + id
+      }
+    }
+    function confirmRestore(id, name) {
+      if (confirm("Are you sure you want to restore category [" + name + "]?")) {
+        window.location.href = "/restore/category/" + id
+      }
+    }
+  </script>
+  
 <script>
     window.onload = function() {
         $.fn.dataTable.moment( 'DD-MMM-YYYY HH:mm:ss' );

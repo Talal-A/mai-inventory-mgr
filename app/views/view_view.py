@@ -59,7 +59,7 @@ def view_all_deleted_items():
 
 @app.route('/view/category/<string:uuid>')
 def view_category(uuid):
-    return render_template('view:items.html', USER=current_user, category=database.get_category(uuid)['name'], items=database.get_all_items_for_category(uuid))
+    return render_template('view:items.html', USER=current_user, category=database.get_category(uuid), items=database.get_all_items_for_category(uuid))
 
 
 @app.route('/view/item/<string:uuid>')

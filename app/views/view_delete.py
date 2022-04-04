@@ -64,7 +64,15 @@ def delete_category(uuid):
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     database.delete_category(uuid)
-    return redirect('/delete/category')
+    return redirect('/view/category/' + uuid)
+
+@app.route('/restore/category/<string:uuid>')
+@login_required
+def restore_category(uuid):
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    database.restore_category(uuid)
+    return redirect('/view/category/' + uuid)
 
 @app.route('/delete/user/<string:uuid>')
 @login_required
