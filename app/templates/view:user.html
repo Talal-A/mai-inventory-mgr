@@ -100,12 +100,12 @@
     <div class="card">
         <div class="card-header">
             <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i
-                    class="material-icons">fingerprint</i> Audit</span>
+                    class="material-icons">fingerprint</i> Audit - Actions performed by user</span>
         </div>
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-hover" id="audit_table">
+                <table class="table table-hover" id="audit_table_by">
                     <thead>
                         <tr>
                             <th scope="col">Date</th>
@@ -115,7 +115,41 @@
                         </tr>
                     </thead>
                     <tbody id="table">
-                        {% for event in audit %}
+                        {% for event in audit_by_user %}
+                        <tr onclick='viewDiff({{event|tojson}});'>
+                            <td>{{event.date}}</td>
+                            <td>{{event.type}}</td>
+                            <td>{{event.user}}</td>
+                            <td>{{event.event}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i
+                    class="material-icons">fingerprint</i> Audit - Actions performed on user</span>
+        </div>
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover" id="audit_table_on">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Event</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table">
+                        {% for event in audit_on_user %}
                         <tr onclick='viewDiff({{event|tojson}});'>
                             <td>{{event.date}}</td>
                             <td>{{event.type}}</td>
@@ -180,7 +214,11 @@
     <script>
         window.onload = function () {
             $.fn.dataTable.moment('DD-MMM-YYYY HH:mm:ss');
-            $("#audit_table").DataTable({
+            $("#audit_table_by").DataTable({
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "order": [[0, "desc"]]
+            });
+            $("#audit_table_on").DataTable({
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "order": [[0, "desc"]]
             });
