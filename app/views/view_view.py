@@ -22,10 +22,17 @@ def view():
 
 @app.route('/view/users')
 @login_required
-def view_users():
+def view_all_users():
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
     return render_template('view:users.html', USER=current_user, users=database.get_all_users())
+
+@app.route('/view/user/<string:uuid>')
+@login_required
+def view_user(uuid):
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    return render_template('view:user.html', USER=current_user, user=database.get_user(uuid))
 
 @app.route('/view/audit')
 def view_audit():
