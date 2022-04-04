@@ -3,7 +3,15 @@
 <div id="page">
 
     <h4 style="text-align:left;float:left;">{{user.user_name}}</h4>
-    <!-- todo add disable button here -->
+    <a style="text-align:right;float:right;">
+        {% if user.user_role == -100 %}
+        <button class="btn" onclick="confirmRestore('{{user.user_id}}','{{user.user_name}}')"><i
+                class="material-icons">restore</i></button>
+        {% else %}
+        <button class="btn" onclick="confirmDelete('{{user.user_id}}','{{user.user_name}}')"><i class="material-icons"
+                style="color:red">delete</i></button>
+        {% endif %}
+    </a>
     <br>
 
     <!-- Used to align the material icon to the text -->
@@ -142,6 +150,19 @@
         </div>
     </div>
 
+    <script>
+        function confirmDelete(id, name) {
+            if (confirm("Are you sure you want to delete user [" + name + "]?")) {
+                window.location.href = "/delete/user/" + id
+            }
+        }
+        function confirmRestore(id, name) {
+            if (confirm("Are you sure you want to restore user [" + name + "]?")) {
+                window.location.href = "/restore/user/" + id
+            }
+        }
+    </script>
+
     <script type="text/javascript">
         function viewDiff(event) {
             var modal = $('#auditDiffModal').modal();
@@ -166,4 +187,4 @@
         }
     </script>
 
-{% endblock %}
+    {% endblock %}

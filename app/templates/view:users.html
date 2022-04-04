@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-<h4>Manage users</h4>
+<h4>Manage active users</h4>
 
 <div>
     <p align="center">
@@ -21,18 +21,60 @@
         </thead>
         <tbody id="table">
             {% for item in users %}
-                {% if item.user_id != USER.id %}
-                    <tr>
-                        <td>{{item.user_email}}</td>
-                        <td><button class="btn" id="btnSetRoleUser" onclick='setRole("{{item.user_id}}", 0)'><i class="material-icons">{{ 'check_box' if item.user_role == 0 else 'check_box_outline_blank'}}</i></button></td>
-                        <td><button class="btn" id="btnSetRoleMember" onclick='setRole("{{item.user_id}}", 5)'><i class="material-icons">{{ 'check_box' if item.user_role == 5 else 'check_box_outline_blank'}}</i></button></td>
-                        <td><button class="btn" id="btnSetRoleAdmin" onclick='setRole("{{item.user_id}}", 10)'><i class="material-icons">{{ 'check_box' if item.user_role == 10 else 'check_box_outline_blank'}}</i></button></td>
-                        <td class="text-right">
-                            <a href="/view/user/{{item.user_id}}"><button class="btn"><i class="material-icons">description</i></button></a>
-                        </td>        
-                    </tr>
-                {% endif %}
+            {% if item.user_id != USER.id and item.user_role >= 0 %}
+            <tr>
+                <td>{{item.user_email}}</td>
+                <td><button class="btn" id="btnSetRoleUser" onclick='setRole("{{item.user_id}}", 0)'><i
+                            class="material-icons">{{ 'check_box' if item.user_role == 0 else
+                            'check_box_outline_blank'}}</i></button></td>
+                <td><button class="btn" id="btnSetRoleMember" onclick='setRole("{{item.user_id}}", 5)'><i
+                            class="material-icons">{{ 'check_box' if item.user_role == 5 else
+                            'check_box_outline_blank'}}</i></button></td>
+                <td><button class="btn" id="btnSetRoleAdmin" onclick='setRole("{{item.user_id}}", 10)'><i
+                            class="material-icons">{{ 'check_box' if item.user_role == 10 else
+                            'check_box_outline_blank'}}</i></button></td>
+                <td class="text-right">
+                    <a href="/view/user/{{item.user_id}}"><button class="btn"><i
+                                class="material-icons">description</i></button></a>
+                </td>
+            </tr>
+            {% endif %}
             {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<br>
+<br>
+<br>
+
+<h4>Manage deleted users</h4>
+
+<div>
+    <p align="center">
+        <input type="text" class="form-control" id="search_deleted" placeholder="Type to search deleted users">
+    </p>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">User</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody id="table_deleted">
+            {% for item in users %}
+            {% if item.user_id != USER.id and item.user_role < 0 %} <tr>
+                <td>{{item.user_email}}</td>
+                <td class="text-right">
+                    <a href="/view/user/{{item.user_id}}"><button class="btn"><i
+                                class="material-icons">description</i></button></a>
+                </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
         </tbody>
     </table>
 </div>
@@ -45,16 +87,22 @@
 </script>
 
 <script>
-    window.onload = function() {
-        $("#search").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#table tr").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    window.onload = function () {
+        $("#search").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#table tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
         });
-      });
+    }
+    window.onload = function () {
+        $("#search_deleted").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#table_deleted tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
     }
 </script>
 
-
 {% endblock %}
-
