@@ -8,24 +8,25 @@ from . import db_barcode, db_category, db_image, db_audit
 ##################
 
 # Insert an item
-def insert_item(category_id, name, location="", quantity_active=0, quantity_expired=0, notes="", url=""):
+def insert_item(category_id, name, location="", quantity_active=0, quantity_expired=0, notes_public="", url="", notes_private="",):
     item_id = str(uuid.uuid4())
 
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
-        INSERT OR IGNORE INTO item (item_id, category_id, name, location, quantity_active, quantity_expired, notes, url, deleted)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
+        INSERT OR IGNORE INTO item (item_id, category_id, name, location, quantity_active, quantity_expired, notes_public, url, deleted, notes_private)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
             str(item_id).strip(),
             str(category_id).strip(),
             str(name).strip(),
             str(location).strip(),
             int(quantity_active),
             int(quantity_expired),
-            str(notes),
+            str(notes_public),
             str(url).strip(),
-            0
+            0,
+            str(notes_private)
         ))
 
     db_connection.commit()
@@ -70,9 +71,10 @@ def get_item(item_id):
             'location': str(row[3]),
             'quantity_active': int(row[4]),
             'quantity_expired': int(row[5]),
-            'notes': str(row[6]),
+            'notes_public': str(row[6]),
             'url': str(row[7]),
-            'deleted': bool(row[8])
+            'deleted': bool(row[8]),
+            'notes_private': str(row[9])
         }
 
     cursor.close()
@@ -101,9 +103,10 @@ def get_all_items():
             'location': str(row[3]),
             'quantity_active': int(row[4]),
             'quantity_expired': int(row[5]),
-            'notes': str(row[6]),
+            'notes_public': str(row[6]),
             'url': str(row[7]),
-            'deleted': bool(row[8])
+            'deleted': bool(row[8]),
+            'notes_private': str(row[9])
         })
 
     cursor.close()
@@ -133,9 +136,10 @@ def get_all_deleted_items():
             'location': str(row[3]),
             'quantity_active': int(row[4]),
             'quantity_expired': int(row[5]),
-            'notes': str(row[6]),
+            'notes_public': str(row[6]),
             'url': str(row[7]),
-            'deleted': bool(row[8])
+            'deleted': bool(row[8]),
+            'notes_private': str(row[9])
         })
 
     cursor.close()
@@ -164,29 +168,31 @@ def get_all_items_for_category(category_id):
             'location': str(row[3]),
             'quantity_active': int(row[4]),
             'quantity_expired': int(row[5]),
-            'notes': str(row[6]),
+            'notes_public': str(row[6]),
             'url': str(row[7]),
-            'deleted': bool(row[8])
+            'deleted': bool(row[8]),
+            'notes_private': str(row[9])
         })
 
     cursor.close()
     return result
 
 # Update an item with new values
-def update_item(item_id, name, category_id, location, quantity_active, quantity_expired, notes, url):
+def update_item(item_id, name, category_id, location, quantity_active, quantity_expired, notes_public, url, notes_private):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     item_before = get_item(item_id)
 
     cursor.execute("""
-        UPDATE item SET name=?, category_id=?, location=?, quantity_active=?, quantity_expired=?, notes=?, url=? WHERE item_id=?""", (
+        UPDATE item SET name=?, category_id=?, location=?, quantity_active=?, quantity_expired=?, notes_public=?, url=?, notes_private=? WHERE item_id=?""", (
             str(name).strip(),
             str(category_id).strip(),
             str(location).strip(),
             int(quantity_active),
             int(quantity_expired),
-            str(notes),
+            str(notes_public),
             str(url).strip(),
+            str(notes_private),
             str(item_id).strip()
         ))
     

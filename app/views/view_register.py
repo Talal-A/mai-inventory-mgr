@@ -27,7 +27,7 @@ def register_with_param(type):
 
     elif type == 'item':
         if request.method == 'POST' and form_item.category.data and form_item.name.data and form_item.validate():
-            database.insert_item(form_item.category.data, form_item.name.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
+            database.insert_item(form_item.category.data, form_item.name.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes_public.data, form_item.url.data, form_item.notes_private.data)
             return redirect('/dashboard')        
         return render_template('register:' + type + '.html', USER=current_user, form=form_item, categories=database.get_all_active_categories())
 

@@ -89,7 +89,7 @@ def edit_item(uuid):
     form_item = Update_Item(request.form)
 
     if request.method == 'POST' and form_item.validate():
-        database.update_item(uuid, form_item.name.data, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes.data, form_item.url.data)
+        database.update_item(uuid, form_item.name.data, form_item.category.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes_public.data, form_item.url.data, form_item.notes_private.data)
         return redirect('/view/item/' + uuid)
     else:
         current_item = database.get_item(uuid)
@@ -98,7 +98,8 @@ def edit_item(uuid):
         form_item.location.data = current_item['location']
         form_item.quantity_active.data = current_item['quantity_active']
         form_item.quantity_expired.data = current_item['quantity_expired']
-        form_item.notes.data = current_item['notes']
+        form_item.notes_public.data = current_item['notes_public']
+        form_item.notes_private.data = current_item['notes_private']
         form_item.url.data = current_item['url']
 
     return render_template('edit:item.html', USER=current_user, form=form_item, item_name=current_item['name'])

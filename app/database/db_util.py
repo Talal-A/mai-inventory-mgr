@@ -7,7 +7,7 @@ from . import db_interface
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 7
+DATA_DB_VERSION = 8
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -55,7 +55,7 @@ def __check_data_table(db_connection):
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS item (
-            item_id text, category_id text, name text, location text, quantity_active int, quantity_expired int, notes text, url text, deleted int,
+            item_id text, category_id text, name text, location text, quantity_active int, quantity_expired int, notes_public text, url text, deleted int, notes_private text,
             UNIQUE(item_id)
         )
         """
@@ -240,6 +240,28 @@ def __upgrade_data_db(db_connection):
                 DATA_DB_NAME,
                 7
         ))
+
+    # [mai139] Enable a extra hidden notes field that is visible only to members of MAI
+    if current_version < 8:
+        # Upgrade to v8.0
+        logging.info("Upgrading data database to 8.0")
+
+
+        cursor.execute("""
+            ALTER TABLE item RENAME COLUMN notes TO notes_public
+        """)
+
+        cursor.execute("""
+            ALTER TABLE item ADD COLUMN notes_private text DEFAULT ''
+        """)
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                8
+        ))
+
 
     # Finally, commit the changes and close the cursor.
     db_connection.commit()

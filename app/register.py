@@ -22,7 +22,8 @@ class Update_Item(Form):
 	url = StringField('URL')
 	quantity_active = IntegerField('Quantity - Active', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")], default=0)
 	quantity_expired = IntegerField('Quantity - Expired', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")], default=0)
-	notes = TextAreaField('Notes')
+	notes_public = TextAreaField('Notes')
+	notes_private = TextAreaField('Notes - Internal')
 	submit = SubmitField('Submit')
 
 	def __init__(self, *args, **kwargs):

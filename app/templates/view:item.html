@@ -125,7 +125,7 @@
   </div>
   <div class="card-body">
     <blockquote class="blockquote mb-0">
-        {% set list1 = item.notes.split('\n') %}
+        {% set list1 = item.notes_public.split('\n') %}
             {% for list in list1 %}
             <p>{{ list }}</p>
         {% endfor %}
@@ -134,6 +134,24 @@
 </div>
 
 <br>
+
+{% if USER.is_authenticated and USER.role >= 5 %}
+  <div class="card">
+    <div class="card-header">
+          <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">description</i> Notes - Internal</span>
+    </div>
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+          {% set list1 = item.notes_private.split('\n') %}
+              {% for list in list1 %}
+              <p>{{ list }}</p>
+          {% endfor %}
+      </blockquote>
+    </div>
+  </div>
+
+  <br>
+{% endif %}
 
 <div class="card">
   <div class="card-header">
