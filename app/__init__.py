@@ -2,7 +2,7 @@ from flask import Flask
 from logging.config import dictConfig
 from app.logging.logging_cfg import LOGGING_CONFIGURATION
 from flask_login import LoginManager
-
+from flask_compress import Compress
 from app.user import User
 
 import os
@@ -19,6 +19,7 @@ class ReverseProxied(object):
 
 # Initialize the app
 app = Flask(__name__, instance_relative_config=True)
+Compress(app)
 app.secret_key = os.environ.get("MAI_SECRET_KEY") or os.urandom(24)
 app.wsgi_app = ReverseProxied(app.wsgi_app)
 
