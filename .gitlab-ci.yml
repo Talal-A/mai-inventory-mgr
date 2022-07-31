@@ -5,10 +5,13 @@ variables:
 
 stages:
   - build
-  - deploy
+  - deploy_image
+  - deploy_app
 
 before_script:
   - docker info
+  - apk add --update curl && rm -rf /var/cache/apk/*
+  - curl -L https://fly.io/install.sh | sh
 
 build_image:
   stage: build
@@ -18,9 +21,19 @@ build_image:
     - general
 
 deploy_image:
-  stage: deploy
+  stage: deploy_image
   script:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $IMAGE_TAG
+  tags:
+    - general
+
+deploy_app:
+  stage: deploy_app
+  script:
+    - /root/.fly/bin/flyctl deploy -t $FLY_API_TOKEN
+  only:
+    variables:
+    - $CI_COMMIT_REF_NAME == "dev/fly-io-integration"
   tags:
     - general
