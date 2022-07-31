@@ -5,7 +5,7 @@ if [ -f /data/mai.db ]; then
 	echo "mai.db already exists, skipping restore"
 else
 	echo "No mai.db found, restoring from replica if exists"
-	exec litestream restore -v -if-replica-exists -replica do-spaces /data/mai.db 
+	litestream restore -v -if-replica-exists -replica do-spaces /data/mai.db
 fi
 
 # Restore the log database if it does not already exist.
@@ -13,5 +13,5 @@ if [ -f /data/mai-log.db ]; then
 	echo "mai-log.db already exists, skipping restore"
 else
 	echo "No mai-log.db found, restoring from replica if exists"
-	exec litestream restore -v -if-replica-exists -replica do-spaces /data/mai-log.db 
+	litestream restore -v -if-replica-exists -replica do-spaces /data/mai-log.db
 fi
