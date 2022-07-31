@@ -34,6 +34,6 @@ deploy_app:
     - /root/.fly/bin/flyctl deploy -t $FLY_API_TOKEN
   only:
     variables:
-    - $CI_COMMIT_REF_NAME == "dev/fly-io-integration"
+    - $CI_COMMIT_REF_NAME == "master"
   tags:
     - general
