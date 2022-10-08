@@ -3,7 +3,7 @@ from flask_login import current_user, login_required
 from flask import request
 
 from app.database import db_interface as database
-from app.register import Register_Category, Register_Barcode
+from app.register import Register_Category
 from app.views import view_util
 
 import base64

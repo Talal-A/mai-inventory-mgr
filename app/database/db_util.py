@@ -7,7 +7,7 @@ from . import db_interface
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 9
+DATA_DB_VERSION = 10
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -38,13 +38,6 @@ def get_data_db():
 
 def __check_data_table(db_connection):
     cursor = db_connection.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS barcode (
-            barcode text, item_id text, 
-            UNIQUE(barcode)
-        )
-        """
-    )
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS category (
             category_id text, name text, deleted int,
@@ -266,14 +259,32 @@ def __upgrade_data_db(db_connection):
         # Upgrade to v9.0
         logging.info("Upgrading data database to 9.0")
 
-        for barcode in db_interface.get_all_barcodes():
-            db_interface.delete_barcode(barcode['barcode'])
+        # This code has been removed and will no longer work.
+        # for barcode in db_interface.get_all_barcodes():
+        #     db_interface.delete_barcode(barcode['barcode'])
 
         cursor.execute("""
             INSERT OR REPLACE INTO version (db_name, db_version)
             VALUES(?, ?)""", (
                 DATA_DB_NAME,
                 9
+        ))   
+
+    # [mai153] Drop barcode table
+    if current_version < 10:
+        # Upgrade to v10.0
+        logging.info("Upgrading data database to 10.0")
+
+        # Delete the now-unused table
+        cursor.execute("""
+            DROP TABLE barcode
+        """)
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                10
         ))   
 
     # Finally, commit the changes and close the cursor.

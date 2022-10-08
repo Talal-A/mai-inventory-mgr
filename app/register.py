@@ -33,34 +33,6 @@ class Update_Item(Form):
 			category_choices.append((str(category['id']), str(category['name'])))
 		self.category.choices = category_choices
 
-def validateBarcode(form, field):
-	if len(field.data.strip()) == 0:
-		raise ValidationError('Barcode cannot be empty')
-	if database.exists_barcode(field.data.strip()):
-		raise ValidationError('Barcode already exists')
-
-def validateBarcodeExists(form, field):
-	if len(field.data.strip()) == 0:
-		raise ValidationError('Barcode cannot be empty')
-	if not database.exists_barcode(field.data.strip()):
-		raise ValidationError('Barcode does not exist.')
-
-class Register_Barcode(Form):
-	item = SelectField('Item', choices=[], coerce=str)
-	barcode = StringField('Barcode', [validators.DataRequired(), validateBarcode])
-
-	def __init__(self, *args, **kwargs):
-		super(Register_Barcode, self).__init__(*args, **kwargs)
-		item_choices = []
-		for item in database.get_all_items():
-			item_choices.append((str(item['id']), str(item['name'])))
-		self.item.choices = item_choices
-
-class Barcode_Lookup(Form):
-	barcode = StringField('Barcode', [validators.DataRequired(), validateBarcodeExists])
-	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)
-	submit = SubmitField('Submit')
-
 class Search_QuantityUpdate(Form): 
 	selectInput = SelectField('Select an item:', choices=[], validators=[validators.InputRequired()])
 	quantity = IntegerField('Quantity', [validators.NumberRange(min=-2147483647, max= 2147483647, message="Quantity must be between -2.147b and 2.147b")], default=0)

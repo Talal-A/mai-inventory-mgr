@@ -5,21 +5,6 @@ from flask import render_template, redirect
 from app.database import db_interface as database
 from app.views import view_util
 
-@app.route('/delete/barcode')
-@login_required
-def delete_barcode_view():
-    if not view_util.validate_user():
-        return view_util.returnPermissionError()
-    return render_template('delete:barcode.html', USER=current_user, barcodes=database.get_all_barcodes())
-
-@app.route('/delete/barcode/<string:uuid>')
-@login_required
-def delete_barcode(uuid):
-    if not view_util.validate_user():
-        return view_util.returnPermissionError()
-    database.delete_barcode(uuid)
-    return redirect('/delete/barcode')
-
 @app.route('/delete/image')
 @login_required
 def delete_image_view():

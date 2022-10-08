@@ -1,7 +1,7 @@
 import uuid
 
 from . import db_util as db
-from . import db_barcode, db_category, db_image, db_audit
+from . import db_category, db_image, db_audit
 
 ##################
 # ITEM FUNCTIONS #
@@ -258,8 +258,6 @@ def delete_item(item_id):
     cursor.close()
 
     db_audit.insert_item_audit_event(item_id, "Deleted item.", item_before, get_item(item_id))
-
-    db_barcode.delete_barcodes_for_item(item_id)
 
 # Undo deletion of an item for a given item_id
 def restore_deleted_item(item_id):

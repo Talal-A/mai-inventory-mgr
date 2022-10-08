@@ -154,26 +154,6 @@
 {% endif %}
 
 <div class="card">
-  <div class="card-header">
-        <span class="font-weight-bold padding-bottom-3 vertical-align-middle" style="text-align:left;float:left;"><i class="material-icons">line_style</i> Barcodes</span>
-        {% if not item.deleted and USER.is_authenticated and USER.role >= 5 %}
-        <span class="font-weight-bold padding-bottom-3 vertical-align-middle" style="text-align:right;float:right;"><a href="/edit/item/add_barcode/{{item.id}}"><i class="material-icons">add</i></a></span>
-        {% endif %}
-  </div>
-  <div class="card-body">
-    <blockquote class="blockquote mb-0">
-        <ul>
-            {% for barcode in barcodes %}
-                <li><code>{{ barcode.barcode }}</code></li>
-            {% endfor %}
-        </ul>
-    </blockquote>
-  </div>
-</div>
-
-<br>
-
-<div class="card">
     <div class="card-header">
           <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">photo</i> Photos</span>
           {% if not item.deleted and USER.is_authenticated and USER.role >= 5 %}

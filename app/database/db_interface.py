@@ -1,4 +1,3 @@
-from .db_barcode import *
 from .db_category import *
 from .db_image import *
 from .db_item import *

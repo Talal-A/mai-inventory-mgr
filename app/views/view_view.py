@@ -64,4 +64,4 @@ def view_category(uuid):
 
 @app.route('/view/item/<string:uuid>')
 def view_item(uuid):
-    return render_template('view:item.html', USER=current_user, item=database.get_item(uuid), barcodes=database.get_barcodes_for_item(uuid), images=database.get_all_images_for_item(uuid), audit=database.get_item_audit(uuid))
+    return render_template('view:item.html', USER=current_user, item=database.get_item(uuid), images=database.get_all_images_for_item(uuid), audit=database.get_item_audit(uuid))

@@ -3,42 +3,12 @@ from flask_login import current_user, login_required
 from flask import render_template, request, redirect
 
 from app.database import db_interface as database
-from app.register import Register_Barcode, Register_Category, Update_Item
+from app.register import Register_Category, Update_Item
 from app.views import view_util
 
 import requests
 import config
 import logging
-
-@app.route('/edit/item/add_barcode/<string:uuid>', methods=['GET', 'POST'])
-@login_required
-def register_barcode_for_item(uuid):
-    if not view_util.validate_user():
-        return view_util.returnPermissionError()
-
-    form_barcode = Register_Barcode(request.form)
-    form_barcode.item.data = str(uuid)
-    form_barcode.item.render_kw = {'disabled':'disabled'}
-
-    if request.method == 'POST' and form_barcode.validate():
-        database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
-        return redirect('/view/item/' + uuid)
-
-    return render_template('register:' + 'barcode' + '.html', USER=current_user, form=form_barcode)
-
-@app.route('/edit/item/add_barcode', methods=['GET', 'POST'])
-@login_required
-def register_barcode():
-    if not view_util.validate_user():
-        return view_util.returnPermissionError()
-
-    form_barcode = Register_Barcode(request.form)
-
-    if request.method == 'POST' and form_barcode.validate():
-        database.insert_barcode(str(form_barcode.barcode.data).strip(), str(form_barcode.item.data).strip())
-        return redirect('/view/item/' + str(form_barcode.item.data).strip())
-
-    return render_template('register:' + 'barcode' + '.html', USER=current_user, form=form_barcode)
 
 @app.route('/edit/item/upload_photo/<string:uuid>', methods=['POST'])
 @login_required
