@@ -157,11 +157,17 @@
     <div class="card-header">
           <span class="font-weight-bold padding-bottom-3 vertical-align-middle"><i class="material-icons">photo</i> Photos</span>
           {% if not item.deleted and USER.is_authenticated and USER.role >= 5 %}
+          <a style="text-align:right;float:right;" class="vertical-align-middle">
           <input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;">
-          <label for="file" style="cursor: pointer; text-align:right;float:right;" class="font-weight-bold padding-bottom-3 vertical-align-middle">
-            <i class="material-icons">add</i>        
-        </label>
+          <label for="file">
+            <i class="material-icons">add_a_photo</i>        
+          </label>
+          {% if images|length > 0 %}
+          <button class="btn" onclick="window.location.href='/delete/image?query={{item.name}}';"><i class="material-icons"style="color:red">delete</i></button>
           {% endif %}
+          </a>  
+          {% endif %}
+          
     </div>
     <div class="card-body">
         <div id="carouselControls" class="carousel slide" data-ride="carousel">

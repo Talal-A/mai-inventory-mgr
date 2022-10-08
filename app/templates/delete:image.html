@@ -29,6 +29,14 @@
 
 <script>
   window.onload = function() {
+      let searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.has('query')) {
+        var value = searchParams.get('query').toLowerCase();
+        $("#search")[0].value = value;
+        $("#imageList a").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      }
       $("#search").on("keyup", function() {
       var value = $(this).val().toLowerCase();
       $("#imageList a").filter(function() {
