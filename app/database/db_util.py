@@ -7,7 +7,7 @@ from . import db_interface
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 8
+DATA_DB_VERSION = 9
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -246,7 +246,6 @@ def __upgrade_data_db(db_connection):
         # Upgrade to v8.0
         logging.info("Upgrading data database to 8.0")
 
-
         cursor.execute("""
             ALTER TABLE item RENAME COLUMN notes TO notes_public
         """)
@@ -262,6 +261,20 @@ def __upgrade_data_db(db_connection):
                 8
         ))
 
+    # [mai152] Removing all barcodes from webapp
+    if current_version < 9:
+        # Upgrade to v9.0
+        logging.info("Upgrading data database to 9.0")
+
+        for barcode in db_interface.get_all_barcodes():
+            db_interface.delete_barcode(barcode['barcode'])
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                9
+        ))   
 
     # Finally, commit the changes and close the cursor.
     db_connection.commit()
