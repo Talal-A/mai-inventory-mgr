@@ -45,6 +45,11 @@ ENV S6_KILL_GRACETIME=0
 # Sync disks is enabled so that data is properly flushed.
 ENV S6_SYNC_DISKS=1
 
+# Ensure any failures in initialization cause the entire container to shut down
+# This is specifically used to ensure that the service does not start if the required database is not
+# obtained from the litestream service
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+
 EXPOSE 9205
 
 # Run the s6 init process on entry.

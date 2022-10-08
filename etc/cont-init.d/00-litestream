@@ -5,5 +5,11 @@ if [ -f /data/mai.db ]; then
 	echo "mai.db already exists, skipping restore"
 else
 	echo "No mai.db found, restoring from replica if exists"
-	litestream restore -v -if-replica-exists -replica do-spaces /data/mai.db
+	litestream restore -v -replica do-spaces /data/mai.db
+	if [ $? -eq 0 ]; then
+		echo "Successfully pulled down mai.db"
+	else
+		echo "FATAL ERROR: failed to pull down the mai.db database"
+		exit 1
+	fi
 fi
