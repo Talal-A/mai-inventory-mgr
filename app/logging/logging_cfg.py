@@ -1,4 +1,5 @@
 import config
+from multiprocessing import Queue
 
 LOGGING_CONFIGURATION = {
     "version": 1,
@@ -6,6 +7,9 @@ LOGGING_CONFIGURATION = {
     "formatters": {
         "default": {
             "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+        },
+        "loki": {
+            "format": "%(levelname)s in %(module)s: %(message)s",
         },
         "access": {
             "format": "%(message)s",
@@ -18,52 +22,29 @@ LOGGING_CONFIGURATION = {
             "formatter": "default",
             "stream": "ext://sys.stdout",
         },
-        "slack": {
-            "class": "app.logging.slack_handler.SlackLoggingHandler",
-            "formatter": "default",
-            "level": "ERROR",
+        "loki": {
+            "class": "logging_loki.LokiQueueHandler",
+            "queue": Queue(-1),
+            "url": "https://loki.abouhaiba.com/loki/api/v1/push",
+            "tags": {"application": "mai-inventory-mgr", "stage": config.STAGE},
+            "formatter": "loki",
+            "version": "1",
         },
-        "db_application": {
-            "class": "app.logging.db_handler.ApplicationLoggingHandler",
-            "formatter": "default",
-            "level": "INFO",
-        },
-        "db_access": {
-            "class": "app.logging.db_handler.AccessLoggingHandler",
-            "formatter": "default",
-            "level": "INFO",
-        },
-        "error_file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "formatter": "default",
-            "filename": "/var/log/gunicorn.error.log",
-            "maxBytes": 10000,
-            "backupCount": 10,
-            "delay": "True",
-        },
-        "access_file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "formatter": "access",
-            "filename": "/var/log/gunicorn.access.log",
-            "maxBytes": 10000,
-            "backupCount": 10,
-            "delay": "True",
-        }
     },
     "loggers": {
         "gunicorn.error": {
-            "handlers": ["console"] if config.DEBUG else ["slack", "error_file", "db_application"],
+            "handlers": ["console", "loki"] if config.DEBUG else ["loki"],
             "level": "INFO",
             "propagate": False,
         },
         "gunicorn.access": {
-            "handlers": ["console"] if config.DEBUG else ["access_file", "db_access"],
+            "handlers": ["console", "loki"] if config.DEBUG else ["loki"],
             "level": "INFO",
             "propagate": False,
         }
     },
     "root": {
         "level": "DEBUG" if config.DEBUG else "INFO",
-        "handlers": ["console"] if config.DEBUG else ["console", "slack", "db_application"],
+        "handlers": ["console", "loki"] if config.DEBUG else ["loki"]
     }
 }

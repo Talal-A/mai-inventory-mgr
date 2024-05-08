@@ -15,3 +15,6 @@ IMGUR_CLIENT_ID = os.environ.get("MAI_IMGUR_CLIENT_ID", None)
 
 # Slack error logging url
 SLACK_LOGGING_URL = os.environ.get("SLACK_LOGGING_URL", None)
+
+# Stage
+STAGE = os.environ.get("STAGE", "dev")
