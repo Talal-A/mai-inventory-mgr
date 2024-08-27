@@ -18,7 +18,10 @@ def teardown_request(exception=None):
 
 @app.route('/view')
 def view():
-    return render_template('view.html', USER=current_user, categories=database.get_all_active_categories())
+    categories = database.get_all_active_categories()
+    for category in categories:
+        category['subcategories'] = database.get_all_active_subcategories_for_category(category_id=category['id'])
+    return render_template('view.html', USER=current_user, categories=categories)
 
 @app.route('/view/users')
 @login_required
@@ -43,7 +46,7 @@ def view_audit():
 
 @app.route('/view/all')
 def view_all_items():
-    return render_template('view:items.html', USER=current_user, category='All items', items=database.get_all_items())
+    return render_template('view:category.html', USER=current_user, category='{"name": "All items"}', items=database.get_all_items())
 
 @app.route('/view/deleted_categories')
 def view_all_deleted_categories():
@@ -55,12 +58,17 @@ def view_all_deleted_categories():
 def view_all_deleted_items():
     if not view_util.validate_user():
         return view_util.returnPermissionError()
-    return render_template('view:items.html', USER=current_user, category='Deleted items', items=database.get_all_deleted_items())
+    return render_template('view:category.html', USER=current_user, category='Deleted items', items=database.get_all_deleted_items())
 
 @app.route('/view/category/<string:uuid>')
 def view_category(uuid):
-    return render_template('view:items.html', USER=current_user, category=database.get_category(uuid), items=database.get_all_items_for_category(uuid))
+    return render_template('view:category.html', USER=current_user, category=database.get_category(uuid), items=database.get_all_items_for_category(uuid))
 
+@app.route('/view/subcategory/<string:uuid>')
+def view_subcategory(uuid):
+    subcategory = database.get_subcategory(uuid)
+    subcategory['parent_category'] = database.get_category(subcategory['category_id'])
+    return render_template('view:subcategory.html', USER=current_user, subcategory=subcategory, items=database.get_all_items_for_subcategory(uuid))
 
 @app.route('/view/item/<string:uuid>')
 def view_item(uuid):

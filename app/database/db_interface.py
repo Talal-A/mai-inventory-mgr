@@ -1,4 +1,5 @@
 from .db_category import *
+from .db_subcategory import *
 from .db_image import *
 from .db_item import *
 from .db_audit import *

@@ -5,6 +5,7 @@ import json
 
 ITEM_TYPE = 'ITEM'
 CATEGORY_TYPE = 'CATEGORY'
+SUBCATEGORY_TYPE = 'SUBCATEGORY'
 USER_TYPE = 'USER'
 
 # Insert a new item audit event
@@ -14,6 +15,10 @@ def insert_item_audit_event(item_id, event, before, after):
 # Insert a new category audit event
 def insert_category_audit_event(category_id, event, before, after):
     __insert_audit_event(CATEGORY_TYPE, category_id, event, before, after)
+
+# Insert a new subcategory audit event
+def insert_subcategory_audit_event(subcategory_id, event, before, after):
+    __insert_audit_event(SUBCATEGORY_TYPE, subcategory_id, event, before, after)
 
 # Insert a new user audit event
 def insert_user_audit_event(user_id, event, before, after):
