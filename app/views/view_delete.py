@@ -51,6 +51,29 @@ def delete_category(uuid):
     database.delete_category(uuid)
     return redirect('/view/category/' + uuid)
 
+@app.route('/delete/subcategory')
+@login_required
+def delete_subcategory_view():
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    return render_template('delete:subcategory.html', USER=current_user, subcategories=database.get_deletable_subcategories())
+
+@app.route('/delete/subcategory/<string:uuid>')
+@login_required
+def delete_subcategory(uuid):
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    database.delete_subcategory(uuid)
+    return redirect('/view/subcategory/' + uuid)
+
+@app.route('/restore/subcategory/<string:uuid>')
+@login_required
+def restore_subcategory(uuid):
+    if not view_util.validate_admin():
+        return view_util.returnPermissionError()
+    database.restore_subcategory(uuid)
+    return redirect('/view/subcategory/' + uuid)
+
 @app.route('/restore/category/<string:uuid>')
 @login_required
 def restore_category(uuid):

@@ -1,5 +1,5 @@
 from . import db_util as db
-from . import db_audit
+from . import db_audit, db_subcategory
 import uuid
 
 ######################
@@ -26,6 +26,7 @@ def insert_category(category_name):
 
     # Log the creation of the new category
     db_audit.insert_category_audit_event(category_id, "Created category.", "", get_category(category_id))
+    db_subcategory.insert_subcategory('General', category_id)
 
 # Return true if a category with the same name already exists
 def exists_category_name(category_name):
@@ -190,7 +191,7 @@ def delete_category(category_id):
     db_connection.commit()
     cursor.close()
 
-    db_audit.insert_category_audit_event(category_id, "Deleted category.", category_before, "")
+    db_audit.insert_category_audit_event(category_id, "Deleted category.", category_before, get_category(category_id))
 
 # Restore a category for a given category_id
 def restore_category(category_id):    
@@ -207,4 +208,4 @@ def restore_category(category_id):
     db_connection.commit()
     cursor.close()
 
-    db_audit.insert_category_audit_event(category_id, "Restored category.", category_before, "")
+    db_audit.insert_category_audit_event(category_id, "Restored category.", category_before, get_category(category_id))

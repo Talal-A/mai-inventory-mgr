@@ -4,15 +4,21 @@
 
 <div>
   <p align="center">
-      <input type="text" class="form-control" id="search" placeholder="Type to search">
+    <input type="text" class="form-control" id="search" placeholder="Type to search">
   </p>
 </div>
 
 <div class="list-group" id="categoryList">
   <a href="/view/all" class="list-group-item list-group-item-action">View all items</a>
-    {% for category in categories %}
-  <a href="/view/category/{{category.id}}" class="list-group-item list-group-item-action">{{category.name}}</a>
-    {% endfor %}
+  {% for category in categories %}
+    <a href="/view/category/{{category.id}}" class="list-group-item list-group-item-action">{{category.name}}</a>
+    <div class="list-group" style="margin-left: 10px;" id="categoryList">
+      {% for subcategory in category.subcategories %}
+      <a href="/view/subcategory/{{subcategory.id}}" class="list-group-item list-group-item-action">{{subcategory.name}}</a>
+      {% endfor %}
+    </div>
+  
+  {% endfor %}
 </div>
 
 <script>

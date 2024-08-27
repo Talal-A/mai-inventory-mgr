@@ -35,7 +35,9 @@
     {% if USER.is_authenticated and USER.role >= 10 %}
     <a href="/view/deleted_categories" class="list-group-item list-group-item-action">View deleted categories</a>
     <a href="/register/category" class="list-group-item list-group-item-action">Create a new category</a>
+    <a href="/register/subcategory" class="list-group-item list-group-item-action">Create a new subcategory</a>
     <a href="/delete/category" class="list-group-item list-group-item-action"><div style="color:red">Delete a category</div></a>
+    <a href="/delete/subcategory" class="list-group-item list-group-item-action"><div style="color:red">Delete a subcategory</div></a>
     {% endif %}
     <a href="/delete/image" class="list-group-item list-group-item-action"><div style="color:red">Delete an image</div></a>
 </div>

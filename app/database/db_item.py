@@ -1,22 +1,22 @@
 import uuid
 
 from . import db_util as db
-from . import db_category, db_image, db_audit
+from . import db_category, db_image, db_audit, db_subcategory
 
 ##################
 # ITEM FUNCTIONS #
 ##################
 
 # Insert an item
-def insert_item(category_id, name, location="", quantity_active=0, quantity_expired=0, notes_public="", url="", notes_private="",):
+def insert_item(category_id, name, location="", quantity_active=0, quantity_expired=0, notes_public="", url="", notes_private="", subcategory_id=""):
     item_id = str(uuid.uuid4())
 
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
 
     cursor.execute("""
-        INSERT OR IGNORE INTO item (item_id, category_id, name, location, quantity_active, quantity_expired, notes_public, url, deleted, notes_private)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
+        INSERT OR IGNORE INTO item (item_id, category_id, name, location, quantity_active, quantity_expired, notes_public, url, deleted, notes_private, subcategory_id)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
             str(item_id).strip(),
             str(category_id).strip(),
             str(name).strip(),
@@ -26,7 +26,8 @@ def insert_item(category_id, name, location="", quantity_active=0, quantity_expi
             str(notes_public),
             str(url).strip(),
             0,
-            str(notes_private)
+            str(notes_private),
+            str(subcategory_id).strip(),
         ))
 
     db_connection.commit()
@@ -74,7 +75,8 @@ def get_item(item_id):
             'notes_public': str(row[6]),
             'url': str(row[7]),
             'deleted': bool(row[8]),
-            'notes_private': str(row[9])
+            'notes_private': str(row[9]),
+            'subcategory': db_subcategory.get_subcategory(str(row[10])),
         }
 
     cursor.close()
@@ -85,10 +87,15 @@ def get_all_items():
     result = []
     cursor = db.get_data_db().cursor()
     
-    # # Cache list of categories
+    ## Cache list of categories
     cached_categories = {}
     for category in db_category.get_all_categories():
         cached_categories[category['id']] = category['name']
+
+    ## Cache list of subcategories
+    cached_subcategories = {}
+    for subcategory in db_subcategory.get_all_subcategories():
+        cached_subcategories[subcategory['id']] = subcategory['name']
 
     query_results = cursor.execute("""
         SELECT * FROM item WHERE deleted=0 ORDER BY name COLLATE NOCASE ASC""", (
@@ -106,7 +113,8 @@ def get_all_items():
             'notes_public': str(row[6]),
             'url': str(row[7]),
             'deleted': bool(row[8]),
-            'notes_private': str(row[9])
+            'notes_private': str(row[9]),
+            'subcategory': db_subcategory.get_subcategory(str(row[10])),
         })
 
     cursor.close()
@@ -139,7 +147,8 @@ def get_all_deleted_items():
             'notes_public': str(row[6]),
             'url': str(row[7]),
             'deleted': bool(row[8]),
-            'notes_private': str(row[9])
+            'notes_private': str(row[9]),
+            'subcategory': db_subcategory.get_subcategory(str(row[10])),
         })
 
     cursor.close()
@@ -171,20 +180,56 @@ def get_all_items_for_category(category_id):
             'notes_public': str(row[6]),
             'url': str(row[7]),
             'deleted': bool(row[8]),
-            'notes_private': str(row[9])
+            'notes_private': str(row[9]),
+            'subcategory': db_subcategory.get_subcategory(str(row[10])),
+        })
+
+    cursor.close()
+    return result
+
+# Get all items under a given subcategory
+def get_all_items_for_subcategory(subcategory_id):
+    result = []
+    cursor = db.get_data_db().cursor()
+
+    # Cache subcategory info
+    cached_subcategory = db_subcategory.get_subcategory(subcategory_id)
+
+    # Cache category info
+    cached_category = db_category.get_category(cached_subcategory['category_id'])
+
+    query_results = cursor.execute("""
+        SELECT * FROM item WHERE subcategory_id=? and deleted=0 ORDER BY name COLLATE NOCASE ASC""", (
+            str(subcategory_id).strip(),
+    ))
+
+    for row in query_results:
+        result.append({
+            'id': str(row[0]),
+            'category_id': str(row[1]),
+            'category_name': cached_category['name'],
+            'name': str(row[2]),
+            'location': str(row[3]),
+            'quantity_active': int(row[4]),
+            'quantity_expired': int(row[5]),
+            'notes_public': str(row[6]),
+            'url': str(row[7]),
+            'deleted': bool(row[8]),
+            'notes_private': str(row[9]),
+            'subcategory': cached_subcategory,
         })
 
     cursor.close()
     return result
 
 # Update an item with new values
-def update_item(item_id, name, category_id, location, quantity_active, quantity_expired, notes_public, url, notes_private):
+def update_item(item_id, name, category_id, location, quantity_active, quantity_expired, notes_public, url, notes_private, subcategory_id):
     db_connection = db.get_data_db()
     cursor = db_connection.cursor()
     item_before = get_item(item_id)
 
     cursor.execute("""
-        UPDATE item SET name=?, category_id=?, location=?, quantity_active=?, quantity_expired=?, notes_public=?, url=?, notes_private=? WHERE item_id=?""", (
+        UPDATE item SET name=?, category_id=?, location=?, quantity_active=?, quantity_expired=?, notes_public=?, url=?, notes_private=?, subcategory_id=? WHERE item_id=?""", (
             str(name).strip(),
             str(category_id).strip(),
             str(location).strip(),
@@ -193,6 +238,7 @@ def update_item(item_id, name, category_id, location, quantity_active, quantity_
             str(notes_public),
             str(url).strip(),
             str(notes_private),
+            str(subcategory_id).strip(),
             str(item_id).strip()
         ))
     

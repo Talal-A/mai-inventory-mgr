@@ -2,12 +2,11 @@ import sqlite3
 from datetime import datetime
 from flask import request
 import logging
-
 from . import db_interface
 
 DATA_DB_PATH = '/data/mai.db'
 DATA_DB_NAME = 'mai-db'
-DATA_DB_VERSION = 10
+DATA_DB_VERSION = 12
 
 LOG_DB_PATH = '/data/mai-log.db'
 LOG_DB_NAME = 'mai-logs'
@@ -27,7 +26,7 @@ def init_db():
 #####################
 
 def __init_data_db():
-    db_connection = sqlite3.connect(DATA_DB_PATH)
+    db_connection = get_data_db()
     __check_data_table(db_connection)
     __upgrade_data_db(db_connection)
 
@@ -47,8 +46,16 @@ def __check_data_table(db_connection):
     )
 
     cursor.execute("""
+        CREATE TABLE IF NOT EXISTS subcategory (
+            subcategory_id text, category_id text, name text, deleted int,
+            UNIQUE(subcategory_id)
+        )
+        """
+    )
+
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS item (
-            item_id text, category_id text, name text, location text, quantity_active int, quantity_expired int, notes_public text, url text, deleted int, notes_private text,
+            item_id text, category_id text, name text, location text, quantity_active int, quantity_expired int, notes_public text, url text, deleted int, notes_private text, subcategory_id text,
             UNIQUE(item_id)
         )
         """
@@ -90,9 +97,8 @@ def __check_data_table(db_connection):
             DATA_DB_NAME,
             DATA_DB_VERSION
     ))
-
-    db_connection.commit()
     cursor.close()
+    db_connection.commit()
 
 def __upgrade_data_db(db_connection):
     current_version = -1
@@ -286,6 +292,50 @@ def __upgrade_data_db(db_connection):
                 DATA_DB_NAME,
                 10
         ))   
+
+    # [????] Enable subcategories within item db
+    if current_version < 11:
+        # Upgrade to v11.0
+        logging.info("Upgrading data database to 11.0")
+
+        cursor.execute("""
+            ALTER TABLE item ADD COLUMN subcategory_id text DEFAULT ''
+        """)
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                11
+        ))
+    
+    if current_version < 12:
+        # Upgrade to v12.0
+        logging.info("Upgrading data database to 12.0")
+
+        # This is important - db will lock otherwise, the v12 upgrade is write intensive.
+        db_connection.commit()
+
+        for category in db_interface.get_all_categories():
+            # Create a "general" subcategory for this category
+            db_interface.insert_subcategory('General', category_id=category['id'])
+
+        # Get all these new default subcategories
+        cached_subcategories = {}
+        for subcategory in db_interface.get_all_subcategories():
+            cached_subcategories[subcategory['category_id']] = subcategory['id']
+        
+        # Insert correct default subcategory into each item
+        for item in db_interface.get_all_items():
+            subcategory = cached_subcategories[item['category_id']]
+            db_interface.update_item(item['id'], item['name'], item['category_id'], item['location'], item['quantity_active'], item['quantity_expired'], item['notes_public'], item['url'], item['notes_private'], subcategory)
+
+        cursor.execute("""
+            INSERT OR REPLACE INTO version (db_name, db_version)
+            VALUES(?, ?)""", (
+                DATA_DB_NAME,
+                12
+        ))
 
     # Finally, commit the changes and close the cursor.
     db_connection.commit()
