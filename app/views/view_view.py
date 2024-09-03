@@ -42,7 +42,7 @@ def view_audit():
     if not view_util.validate_admin():
         return view_util.returnPermissionError()
 
-    return render_template('audit.html', USER=current_user, events=database.get_all_audit())
+    return render_template('audit.html', USER=current_user, events=database.get_all_audit()[:5000])
 
 @app.route('/view/all')
 def view_all_items():
