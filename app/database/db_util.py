@@ -3,12 +3,13 @@ from datetime import datetime
 from flask import request
 import logging
 from . import db_interface
+import config
 
-DATA_DB_PATH = '/data/mai.db'
+DATA_DB_PATH = config.DB_ROOT + 'mai.db'
 DATA_DB_NAME = 'mai-db'
 DATA_DB_VERSION = 12
 
-LOG_DB_PATH = '/data/mai-log.db'
+LOG_DB_PATH = config.DB_ROOT + 'mai-log.db'
 LOG_DB_NAME = 'mai-logs'
 LOG_DB_VERSION = 0
 

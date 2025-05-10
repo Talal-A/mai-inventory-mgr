@@ -18,6 +18,8 @@ def __get_google_provider_cfg():
 
 @app.route('/login')
 def login():
+    if config.DEBUG:
+        return redirect('/login_debug')
     # Find out what URL to hit for Google login
     google_provider_cfg = __get_google_provider_cfg()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -91,6 +93,27 @@ def login_callback():
     else:
         return "User email not available or not verified by Google.", 400
 
+    return redirect('/dashboard')
+
+@app.route('/login_debug')
+def login_debug():
+    print("OK")
+    if not config.DEBUG:
+        return "Unavailable.", 400
+    
+    unique_id = "debug"
+    users_email = "developer"
+    users_name = "developer"
+    users_picture = ""
+    default_role = 10
+    if not database.exists_user_id(unique_id):
+        User.create(unique_id, users_name, users_email, default_role, users_picture)
+        user = User(id_=unique_id, name=users_name, email=users_email, role=0, picture=users_picture)
+    else:
+        # Returning user, refresh their data first
+        database.update_user_info(unique_id, users_name, users_email, users_picture)
+        user = User.get(unique_id)
+    login_user(user)
     return redirect('/dashboard')
 
 @app.route('/logout')
