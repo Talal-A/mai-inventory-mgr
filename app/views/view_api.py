@@ -16,6 +16,11 @@ def edit_user_role(user_id, new_role):
     database.update_user_role(str(base64.b64decode(user_id).decode('utf-8')), new_role)
     return ""
 
+@app.route('/api/item/<string:item_id>/images')
+def api_item_images(item_id):
+    images = database.get_all_images_for_item(item_id)
+    return jsonify({'images': [img['image_url'] for img in images]})
+
 @app.route('/api/browse')
 def api_browse():
     search = request.args.get('search', '').strip()
