@@ -1,5 +1,24 @@
 {% extends "base.html" %}
 {% block body %}
+<style>
+  .carousel-control-prev, .carousel-control-next {
+    width: auto;
+    opacity: 1;
+    background: none;
+  }
+  .carousel-control-prev { left: 20px; }
+  .carousel-control-next { right: 20px; }
+  .carousel-control-prev-icon, .carousel-control-next-icon {
+    background-color: #555;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    background-size: 50%;
+  }
+  .carousel-control-prev-icon:hover, .carousel-control-next-icon:hover {
+    background-color: #333;
+  }
+</style>
 <div id="page">
 
 {% if item.category_status != 0 %}
