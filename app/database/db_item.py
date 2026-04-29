@@ -324,15 +324,6 @@ def restore_deleted_item(item_id):
 
 # Browse items with filtering, sorting, and pagination
 def browse_items(search='', category_id='', subcategory_id='', sort_by='name', sort_order='asc', hide_out_of_stock=False, offset=0, limit=24):
-    # Cache categories and subcategories for name resolution
-    cached_categories = {}
-    for category in db_category.get_all_categories():
-        cached_categories[category['id']] = category['name']
-
-    cached_subcategories = {}
-    for subcategory in db_subcategory.get_all_subcategories():
-        cached_subcategories[subcategory['id']] = subcategory
-
     # Build WHERE clause
     conditions = ['i.deleted = 0']
     params = []
@@ -373,12 +364,13 @@ def browse_items(search='', category_id='', subcategory_id='', sort_by='name', s
     for row in count_result:
         total_count = row[0]
 
-    # Get paginated results with LEFT JOIN for category sorting
+    # Get paginated results with category/subcategory names resolved via JOIN
     data_query = (
-        'SELECT i.item_id, i.category_id, i.name, i.location, i.quantity_active, '
-        'i.quantity_expired, i.notes_public, i.url, i.deleted, i.notes_private, i.subcategory_id '
+        'SELECT i.item_id, i.category_id, c.name, i.name, i.location, i.quantity_active, '
+        'i.quantity_expired, i.notes_public, i.url, i.notes_private, s.name '
         'FROM item i '
         'LEFT JOIN category c ON i.category_id = c.category_id '
+        'LEFT JOIN subcategory s ON i.subcategory_id = s.subcategory_id '
         'WHERE ' + where_clause + ' '
         'ORDER BY ' + order_col + ' ' + order_dir + ' '
         'LIMIT ? OFFSET ?'
@@ -393,28 +385,31 @@ def browse_items(search='', category_id='', subcategory_id='', sort_by='name', s
     for row in query_results:
         item_id = str(row[0])
         item_ids.append(item_id)
-        sub = cached_subcategories.get(str(row[10]))
         result.append({
             'id': item_id,
             'category_id': str(row[1]),
-            'category_name': cached_categories.get(str(row[1]), 'Unknown'),
-            'name': str(row[2]),
-            'location': str(row[3]),
-            'quantity_active': int(row[4]),
-            'quantity_expired': int(row[5]),
-            'notes_public': str(row[6]),
-            'url': str(row[7]),
-            'subcategory_name': sub['name'] if sub else '',
+            'category_name': str(row[2]) if row[2] is not None else '',
+            'name': str(row[3]),
+            'location': str(row[4]),
+            'quantity_active': int(row[5]),
+            'quantity_expired': int(row[6]),
+            'notes_public': str(row[7]),
+            'url': str(row[8]),
+            'subcategory_name': str(row[10]) if row[10] is not None else '',
             'image_url': None,
         })
 
     cursor.close()
 
-    # Batch-fetch first image for each item
+    # Batch-fetch first image for each item (ORDER BY ROWID for deterministic "first" image)
     if item_ids:
         image_cursor = db.get_data_db().cursor()
         placeholders = ','.join(['?' for _ in item_ids])
-        image_query = 'SELECT item_id, image_url FROM image WHERE item_id IN (' + placeholders + ')'
+        image_query = (
+            'SELECT item_id, image_url FROM image '
+            'WHERE item_id IN (' + placeholders + ') '
+            'ORDER BY ROWID'
+        )
         image_results = image_cursor.execute(image_query, item_ids)
 
         image_map = {}

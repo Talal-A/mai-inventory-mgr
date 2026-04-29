@@ -51,10 +51,14 @@ def register_with_param(type):
                     result = requests.post(
                         url='https://api.imgur.com/3/image',
                         data={'image': image_data.split(',')[1]},
-                        headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID}
+                        headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID},
+                        timeout=10
                     ).json()
-                    if result['success']:
-                        database.insert_image(result['data']['link'], result['data']['deletehash'], item_id)
+                    data = result.get('data') or {}
+                    link = data.get('link')
+                    deletehash = data.get('deletehash')
+                    if result.get('success') and link and deletehash:
+                        database.insert_image(link, deletehash, item_id)
                     else:
                         logging.error("Error uploading image during item registration: " + str(result))
                 except Exception as e:
