@@ -1,17 +1,14 @@
-FROM ubuntu:20.04
+FROM python:3.7-slim-bullseye
 
-MAINTAINER talal "talal.abouhaiba@gmail.com"
+LABEL maintainer="talal.abouhaiba@gmail.com"
 
-RUN apt-get update && apt-get install -y \
-        software-properties-common
-    RUN add-apt-repository ppa:deadsnakes/ppa
-    RUN apt-get update && apt-get install -y \
-        python3.7 \
-        python3.7-distutils \
-        python3-pip \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
         wget \
-        tzdata
-    RUN python3.7 -m pip install pip
+        ca-certificates \
+        tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./requirements.txt /app/requirements.txt

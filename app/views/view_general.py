@@ -6,7 +6,7 @@ from app.database import db_interface as database
 
 @app.route('/')
 def index():
-    return redirect('/dashboard')
+    return redirect('/browse')
 
 @app.route('/dashboard')
 def dashboard():
