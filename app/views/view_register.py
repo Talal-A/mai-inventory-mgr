@@ -1,6 +1,6 @@
 from app import app
 from flask_login import current_user, login_required
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, flash
 
 from app.database import db_interface as database
 from app.register import Register_Category, Update_Item, Register_Subcategory
@@ -47,10 +47,11 @@ def register_with_param(type):
             # Upload image if one was provided
             image_data = request.form.get('image_data', '')
             if image_data:
+                image_payload = image_data.split(',', 1)[-1]
                 try:
                     result = requests.post(
                         url='https://api.imgur.com/3/image',
-                        data={'image': image_data.split(',')[1]},
+                        data={'image': image_payload},
                         headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID},
                         timeout=10
                     ).json()
@@ -61,8 +62,10 @@ def register_with_param(type):
                         database.insert_image(link, deletehash, item_id)
                     else:
                         logging.error("Error uploading image during item registration: " + str(result))
+                        flash("Item created, but the photo could not be uploaded. You can add it from the item page.")
                 except Exception as e:
                     logging.error("Exception uploading image during item registration: " + str(e))
+                    flash("Item created, but the photo could not be uploaded. You can add it from the item page.")
 
             return redirect('/dashboard')
         return render_template('register:' + type + '.html', USER=current_user, form=form_item, categories=database.get_all_active_categories())

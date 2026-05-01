@@ -484,23 +484,32 @@
       .replace(/'/g, '&#39;');
   }
 
+  var TILE_PLACEHOLDER = '<div class="placeholder-image"><i class="material-icons" style="font-size:3rem;">inventory_2</i></div>';
+  var ROW_PLACEHOLDER = '<i class="material-icons" style="font-size:24px;color:#6c757d;">image</i>';
+
   function createItemTile(item) {
     var hasImage = !!item.image_url;
     var imageContainerClass = 'card-image-container' + (hasImage ? ' has-image' : '');
-    var imageOnClick = hasImage ? ' onclick="openLightbox(\'' + escapeHtml(item.id) + '\', \'' + escapeHtml(item.image_url) + '\'); event.preventDefault(); event.stopPropagation();"' : '';
     var imageHtml = hasImage
-      ? '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(item.name) + '" class="card-image" onerror="this.parentNode.innerHTML=\'<div class=placeholder-image><i class=material-icons style=font-size:3rem>inventory_2</i></div>\'; this.parentNode.className=\'card-image-container\'; this.parentNode.removeAttribute(\'onclick\');">'
-      : '<div class="placeholder-image"><i class="material-icons" style="font-size:3rem;">inventory_2</i></div>';
+      ? '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(item.name) + '" class="card-image" data-img-fallback="tile">'
+      : TILE_PLACEHOLDER;
 
     var categoryText = escapeHtml(item.category_name);
     if (item.subcategory_name) {
       categoryText += ' / ' + escapeHtml(item.subcategory_name);
     }
 
+    var imageContainerAttrs = '';
+    if (hasImage) {
+      imageContainerAttrs = ' data-lightbox-trigger="1"' +
+        ' data-item-id="' + escapeHtml(item.id) + '"' +
+        ' data-image-url="' + escapeHtml(item.image_url) + '"';
+    }
+
     return '<div class="col-lg-4 col-md-6 col-sm-12 mb-4">' +
       '<a href="/view/item/' + escapeHtml(item.id) + '" class="supply-card-link">' +
         '<div class="supply-card">' +
-          '<div class="' + imageContainerClass + '"' + imageOnClick + '>' + imageHtml + '</div>' +
+          '<div class="' + imageContainerClass + '"' + imageContainerAttrs + '>' + imageHtml + '</div>' +
           '<div class="card-title">' + escapeHtml(item.name) + '</div>' +
           '<div class="card-category">' + categoryText + '</div>' +
           '<div class="quantity-display">' + item.quantity_active + ' <span class="quantity-unit">in stock</span></div>' +
@@ -511,13 +520,20 @@
 
   function createTableRow(item) {
     var hasImage = !!item.image_url;
-    var imageOnClick = hasImage ? ' class="table-image-clickable" onclick="openLightbox(\'' + escapeHtml(item.id) + '\', \'' + escapeHtml(item.image_url) + '\'); event.stopPropagation();"' : '';
-    var imageHtml = hasImage
-      ? '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(item.name) + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" onerror="this.outerHTML=\'<i class=material-icons style=font-size:24px;color:#6c757d>image</i>\'">'
-      : '<i class="material-icons" style="font-size:24px;color:#6c757d;">image</i>';
+    var tdAttrs = '';
+    var imageHtml;
+    if (hasImage) {
+      tdAttrs = ' class="table-image-clickable"' +
+        ' data-lightbox-trigger="1"' +
+        ' data-item-id="' + escapeHtml(item.id) + '"' +
+        ' data-image-url="' + escapeHtml(item.image_url) + '"';
+      imageHtml = '<img src="' + escapeHtml(item.image_url) + '" alt="' + escapeHtml(item.name) + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" data-img-fallback="row">';
+    } else {
+      imageHtml = ROW_PLACEHOLDER;
+    }
 
     return '<tr>' +
-      '<td' + imageOnClick + '>' + imageHtml + '</td>' +
+      '<td' + tdAttrs + '>' + imageHtml + '</td>' +
       '<td><strong>' + escapeHtml(item.name) + '</strong></td>' +
       '<td>' + escapeHtml(item.category_name) + '</td>' +
       '<td>' + escapeHtml(item.subcategory_name || '-') + '</td>' +
@@ -531,6 +547,37 @@
       '</td>' +
     '</tr>';
   }
+
+  // Image-load-failure fallbacks: handled via capture-phase 'error' listener
+  // because 'error' events do not bubble.
+  document.addEventListener('error', function(e) {
+    var target = e.target;
+    if (!target || target.tagName !== 'IMG') return;
+    var kind = target.getAttribute('data-img-fallback');
+    if (kind === 'tile') {
+      var parent = target.parentNode;
+      if (parent) {
+        parent.innerHTML = TILE_PLACEHOLDER;
+        parent.className = 'card-image-container';
+        parent.removeAttribute('data-lightbox-trigger');
+        parent.removeAttribute('data-item-id');
+        parent.removeAttribute('data-image-url');
+      }
+    } else if (kind === 'row') {
+      target.outerHTML = ROW_PLACEHOLDER;
+    }
+  }, true);
+
+  // Lightbox click delegation — works for both tile and table view.
+  function handleLightboxClick(e) {
+    var trigger = e.target.closest('[data-lightbox-trigger]');
+    if (!trigger) return;
+    e.preventDefault();
+    e.stopPropagation();
+    openLightbox(trigger.getAttribute('data-item-id'), trigger.getAttribute('data-image-url'));
+  }
+  document.getElementById('tileView').addEventListener('click', handleLightboxClick);
+  document.getElementById('tableView').addEventListener('click', handleLightboxClick);
 
   // Lightbox
   var lightboxImages = [];
@@ -546,14 +593,20 @@
     lb.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    fetch('/api/item/' + itemId + '/images')
-      .then(function(r) { return r.json(); })
+    fetch('/api/item/' + encodeURIComponent(itemId) + '/images')
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
       .then(function(data) {
         if (data.images && data.images.length > 0) {
           lightboxImages = data.images;
           lightboxIndex = 0;
           updateLightboxNav();
         }
+      })
+      .catch(function(err) {
+        console.error('Failed to load additional images for lightbox:', err);
       });
   }
 

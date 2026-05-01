@@ -2,6 +2,16 @@
 
 {% block body %}
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning" role="alert">
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
 {% if USER.is_authenticated %}
 <h4><label id="greet"></label> {{USER.name}}, what would you like to do?</h4>
 {% endif %}
