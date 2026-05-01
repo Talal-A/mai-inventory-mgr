@@ -35,7 +35,7 @@ def validateItem(form, field):
 
 class Update_Item(Form):
 	name = StringField('Name', [validators.DataRequired()])
-	category = SelectField('Category', choices=[], coerce=str, id="category_choice")
+	category = SelectField('Category', choices=[], coerce=str, id="category_choice", validators=[validators.DataRequired()])
 	location = StringField('Location', [validators.DataRequired()])
 	url = StringField('URL')
 	quantity_active = IntegerField('Quantity - Active', [validators.NumberRange(min=0, max= 2147483647, message="Quantity must be between 0 and 2.147b")], default=0)
