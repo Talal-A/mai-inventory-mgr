@@ -25,9 +25,11 @@ pip-log.txt
 
 #Mr Developer
 venv
+.venv
 *.pyc
 build
 mai-ucla.code-workspace
 data
 sheet_parser
 .secrets
+

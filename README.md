@@ -7,7 +7,15 @@ This repository has recently been migrated from gitlab. It has not been touched 
 ## Development
 
 ### Setting up your environment
-Python3 is required. See https://github.com/Talal-A/mai-inventory-mgr/blob/master/requirements.txt for all the required python packages.
+Python 3.12 is required.
+
+Create and activate a virtual environment, then install dependencies:
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
 ### Testing
 You can run directly on your local system:

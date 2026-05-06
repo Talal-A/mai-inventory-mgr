@@ -1,5 +1,5 @@
 import config
-from multiprocessing import Queue
+from queue import Queue
 
 LOGGING_CONFIGURATION = {
     "version": 1,

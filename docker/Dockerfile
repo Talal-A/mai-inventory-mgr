@@ -1,25 +1,22 @@
-FROM ubuntu:20.04
+FROM python:3.12-slim
 
 MAINTAINER talal "talal.abouhaiba@gmail.com"
 
-RUN apt-get update && apt-get install -y \
-        software-properties-common
-    RUN add-apt-repository ppa:deadsnakes/ppa
-    RUN apt-get update && apt-get install -y \
-        python3.7 \
-        python3.7-distutils \
-        python3-pip \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        bash \
+        ca-certificates \
         wget \
-        tzdata
-    RUN python3.7 -m pip install pip
+        tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
-RUN python3.7 --version
-RUN python3.7 -m pip install -r requirements.txt
-RUN python3.7 -m pip list
+RUN python --version
+RUN python -m pip install --upgrade pip
+RUN python -m pip install -r requirements.txt
+RUN python -m pip list
 
 COPY . /app
 

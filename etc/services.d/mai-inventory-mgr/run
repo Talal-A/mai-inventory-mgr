@@ -5,7 +5,9 @@ sleep 5 # Give litestream a chance to start
 
 # Prepare the database
 echo "Initializing database"
-python3.7 /app/run_init_db.py
+echo "Runtime stage: ${STAGE}"
+echo "Runtime DB root: ${MAI_DB_ROOT:-auto}"
+python3 /app/run_init_db.py
 if [ $? -eq 0 ]; then
    echo "Database initialization succeeded"
 else

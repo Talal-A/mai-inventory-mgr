@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 from flask import request
 import logging
+import os
 from . import db_interface
 import config
 
@@ -31,7 +32,27 @@ def __init_data_db():
     __check_data_table(db_connection)
     __upgrade_data_db(db_connection)
 
+def __ensure_db_parent_dir(db_path):
+    parent_dir = os.path.dirname(db_path)
+    if parent_dir:
+        if config.STAGE == "dev":
+            os.makedirs(parent_dir, exist_ok=True)
+        elif not os.path.isdir(parent_dir):
+            raise RuntimeError(
+                "Database directory does not exist: " + parent_dir +
+                ". In non-dev environments this should be provisioned before startup."
+            )
+
+def __ensure_primary_data_db_present():
+    if config.STAGE != "dev" and not os.path.isfile(DATA_DB_PATH):
+        raise RuntimeError(
+            "Primary data database is missing at " + DATA_DB_PATH +
+            ". Expected Litestream restore before initialization."
+        )
+
 def get_data_db():
+    __ensure_db_parent_dir(DATA_DB_PATH)
+    __ensure_primary_data_db_present()
     db_connection = sqlite3.connect(DATA_DB_PATH)
     db_connection.execute('pragma journal_mode=wal')
     return db_connection
@@ -347,11 +368,13 @@ def __upgrade_data_db(db_connection):
 ####################
 
 def __init_log_db():
+    __ensure_db_parent_dir(LOG_DB_PATH)
     db_connection = sqlite3.connect(LOG_DB_PATH)
     __check_log_table(db_connection)
     __upgrade_log_db(db_connection)
 
 def __get_log_db():
+    __ensure_db_parent_dir(LOG_DB_PATH)
     db_connection = sqlite3.connect(LOG_DB_PATH)
     db_connection.execute('pragma journal_mode=wal')
     return db_connection
