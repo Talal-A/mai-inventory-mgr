@@ -1,6 +1,6 @@
 from app import app
 from flask_login import current_user, login_required
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, flash
 
 from app.database import db_interface as database
 from app.register import Register_Category, Update_Item, Register_Subcategory
@@ -38,8 +38,13 @@ def register_with_param(type):
 
     elif type == 'item':
         if request.method == 'POST' and form_item.category.data and form_item.name.data and form_item.validate():
-            database.insert_item(form_item.category.data.split(',')[0], form_item.name.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes_public.data, form_item.url.data, form_item.notes_private.data, form_item.category.data.split(',')[1])
-            return redirect('/dashboard')        
+            item_id = database.insert_item(form_item.category.data.split(',')[0], form_item.name.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes_public.data, form_item.url.data, form_item.notes_private.data, form_item.category.data.split(',')[1])
+
+            image_data = request.form.get('image_data', '')
+            if image_data and not database.upload_image_for_item(image_data, item_id):
+                flash("Item created, but the photo could not be uploaded. You can add it from the item page.")
+
+            return redirect('/dashboard')
         return render_template('register:' + type + '.html', USER=current_user, form=form_item, categories=database.get_all_active_categories())
 
     else:

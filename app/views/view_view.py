@@ -76,3 +76,10 @@ def view_subcategory(uuid):
 @app.route('/view/item/<string:uuid>')
 def view_item(uuid):
     return render_template('view:item.html', USER=current_user, item=database.get_item(uuid), images=database.get_all_images_for_item(uuid), audit=database.get_item_audit(uuid))
+
+@app.route('/browse')
+def browse():
+    categories = database.get_all_active_categories()
+    grouped = database.get_all_active_subcategories_grouped_by_category()
+    subcategories_by_category = {category['id']: grouped.get(category['id'], []) for category in categories}
+    return render_template('browse.html', USER=current_user, categories=categories, subcategories_by_category=subcategories_by_category)
