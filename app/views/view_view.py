@@ -13,7 +13,10 @@ def before_request():
 
 @app.teardown_request
 def teardown_request(exception=None):
-    diff_ms = (time.time() - g.start) * 1000
+    start_time = getattr(g, 'start', None)
+    if start_time is None:
+        return
+    diff_ms = (time.time() - start_time) * 1000
     database.insert_latency_log(request.path, diff_ms)
 
 @app.route('/view')

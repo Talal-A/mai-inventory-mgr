@@ -17,10 +17,13 @@ SLACK_LOGGING_URL = os.environ.get("SLACK_LOGGING_URL", None)
 STAGE = os.environ.get("STAGE", "dev")
 
 # Enable Flask's debugging features. Should be False in production
-DEBUG = False
-if STAGE != "prod":
-    DEBUG = True
+DEBUG = STAGE in {"dev", "local", "test"}
 
-DB_ROOT = "/data/"
-if STAGE == "dev":
-    DB_ROOT = "./data/"
+DB_ROOT = os.environ.get("MAI_DB_ROOT", None)
+if not DB_ROOT:
+    DB_ROOT = "/data/"
+    if STAGE == "dev":
+        DB_ROOT = "./data/"
+
+if not DB_ROOT.endswith("/"):
+    DB_ROOT += "/"

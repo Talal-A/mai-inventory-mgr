@@ -1,12 +1,13 @@
-FROM python:3.7-slim-bullseye
+FROM python:3.12-slim
 
 LABEL maintainer="talal.abouhaiba@gmail.com"
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        wget \
+        bash \
         ca-certificates \
+        wget \
         tzdata \
     && rm -rf /var/lib/apt/lists/*
 
@@ -14,9 +15,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
-RUN python3.7 --version
-RUN python3.7 -m pip install -r requirements.txt
-RUN python3.7 -m pip list
+RUN python --version
+RUN python -m pip install --upgrade pip
+RUN python -m pip install -r requirements.txt
+RUN python -m pip list
 
 COPY . /app
 
