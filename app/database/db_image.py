@@ -27,7 +27,7 @@ def upload_image_for_item(image_data, item_id):
         link = data.get('link')
         deletehash = data.get('deletehash')
         if result.get('success') and link and deletehash:
-            insert_image(link, deletehash, item_id)
+            x(link, deletehash, item_id)
             return True
         logging.error("Error uploading image to Imgur: " + str(result))
         return False

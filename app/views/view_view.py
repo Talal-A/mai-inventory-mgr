@@ -77,8 +77,6 @@ def view_item(uuid):
 @app.route('/browse')
 def browse():
     categories = database.get_all_active_categories()
-    subcategories_by_category = {}
-    for category in categories:
-        subs = database.get_all_active_subcategories_for_category(category['id'])
-        subcategories_by_category[category['id']] = [{'id': s['id'], 'name': s['name']} for s in subs]
+    grouped = database.get_all_active_subcategories_grouped_by_category()
+    subcategories_by_category = {category['id']: grouped.get(category['id'], []) for category in categories}
     return render_template('browse.html', USER=current_user, categories=categories, subcategories_by_category=subcategories_by_category)
