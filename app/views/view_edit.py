@@ -6,33 +6,13 @@ from app.database import db_interface as database
 from app.register import Register_Category, Update_Item
 from app.views import view_util
 
-import requests
-import config
-import logging
-
 @app.route('/edit/item/upload_photo/<string:uuid>', methods=['POST'])
 @login_required
 def upload_photo_for_item(uuid):
     if not view_util.validate_user():
         return view_util.returnPermissionError()
 
-    try:
-        result = requests.post(
-            url='https://api.imgur.com/3/image',
-            data={'image': request.get_json()['img'].split(',')[1]},
-            headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID}
-            ).json()
-        image_url = result['data']['link']
-        delete_hash = result['data']['deletehash']
-        success = result['success']
-        if success:
-            database.insert_image(image_url, delete_hash, uuid)
-        else:
-            logging.error("An error occurred while uploading image: " + str(result))
-        return str(success)
-    except Exception as e:
-        logging.error(e)
-        return str(False)
+    return str(database.upload_image_for_item(request.get_json()['img'], uuid))
 
 @app.route('/edit/category/<string:uuid>', methods=['GET', 'POST'])
 @login_required

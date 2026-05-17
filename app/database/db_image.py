@@ -1,5 +1,6 @@
 import uuid
 import requests
+import logging
 import config
 
 from . import db_util as db
@@ -9,6 +10,30 @@ from . import db_item, db_audit
 ###################
 # IMAGE FUNCTIONS #
 ###################
+
+# Upload a base64-encoded image to Imgur and insert it into the database for an item.
+# `image_data` may be a raw base64 string or a data URL like "data:image/png;base64,...".
+# Returns True on success, False on failure (errors are logged).
+def upload_image_for_item(image_data, item_id):
+    image_payload = image_data.split(',', 1)[-1]
+    try:
+        result = requests.post(
+            url='https://api.imgur.com/3/image',
+            data={'image': image_payload},
+            headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID},
+            timeout=10
+        ).json()
+        data = result.get('data') or {}
+        link = data.get('link')
+        deletehash = data.get('deletehash')
+        if result.get('success') and link and deletehash:
+            insert_image(link, deletehash, item_id)
+            return True
+        logging.error("Error uploading image to Imgur: " + str(result))
+        return False
+    except Exception as e:
+        logging.error("Exception uploading image to Imgur: " + str(e))
+        return False
 
 # Insert an image
 def insert_image(image_url, deletion_hash, item_id):

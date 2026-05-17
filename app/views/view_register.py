@@ -6,10 +6,6 @@ from app.database import db_interface as database
 from app.register import Register_Category, Update_Item, Register_Subcategory
 from app.views import view_util
 
-import requests
-import config
-import logging
-
 @app.route('/register/<string:type>', methods=['GET', 'POST'])
 @login_required
 def register_with_param(type):
@@ -44,28 +40,9 @@ def register_with_param(type):
         if request.method == 'POST' and form_item.category.data and form_item.name.data and form_item.validate():
             item_id = database.insert_item(form_item.category.data.split(',')[0], form_item.name.data, form_item.location.data, form_item.quantity_active.data, form_item.quantity_expired.data, form_item.notes_public.data, form_item.url.data, form_item.notes_private.data, form_item.category.data.split(',')[1])
 
-            # Upload image if one was provided
             image_data = request.form.get('image_data', '')
-            if image_data:
-                image_payload = image_data.split(',', 1)[-1]
-                try:
-                    result = requests.post(
-                        url='https://api.imgur.com/3/image',
-                        data={'image': image_payload},
-                        headers={'Authorization': 'Client-ID ' + config.IMGUR_CLIENT_ID},
-                        timeout=10
-                    ).json()
-                    data = result.get('data') or {}
-                    link = data.get('link')
-                    deletehash = data.get('deletehash')
-                    if result.get('success') and link and deletehash:
-                        database.insert_image(link, deletehash, item_id)
-                    else:
-                        logging.error("Error uploading image during item registration: " + str(result))
-                        flash("Item created, but the photo could not be uploaded. You can add it from the item page.")
-                except Exception as e:
-                    logging.error("Exception uploading image during item registration: " + str(e))
-                    flash("Item created, but the photo could not be uploaded. You can add it from the item page.")
+            if image_data and not database.upload_image_for_item(image_data, item_id):
+                flash("Item created, but the photo could not be uploaded. You can add it from the item page.")
 
             return redirect('/dashboard')
         return render_template('register:' + type + '.html', USER=current_user, form=form_item, categories=database.get_all_active_categories())
