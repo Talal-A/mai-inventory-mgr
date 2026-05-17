@@ -26,8 +26,14 @@ def api_browse():
     search = request.args.get('search', '').strip()
     category_id = request.args.get('category', '').strip()
     subcategory_id = request.args.get('subcategory', '').strip()
-    sort_by = request.args.get('sort_by', 'name')
-    sort_order = request.args.get('sort_order', 'asc')
+    allowed_sort_by = {'name', 'category', 'quantity'}
+    allowed_sort_order = {'asc', 'desc'}
+
+    raw_sort_by = request.args.get('sort_by', 'name')
+    sort_by = raw_sort_by if raw_sort_by in allowed_sort_by else 'name'
+
+    raw_sort_order = request.args.get('sort_order', 'asc').lower()
+    sort_order = raw_sort_order if raw_sort_order in allowed_sort_order else 'asc'
     hide_out_of_stock = request.args.get('hide_out_of_stock', '0') == '1'
 
     try:
