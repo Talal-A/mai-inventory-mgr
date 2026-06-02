@@ -321,3 +321,106 @@ def restore_deleted_item(item_id):
     cursor.close()
 
     db_audit.insert_item_audit_event(item_id, "Restored item.", item_before, get_item(item_id))
+
+# Browse items with filtering, sorting, and pagination
+def browse_items(search='', category_id='', subcategory_id='', sort_by='name', sort_order='asc', hide_out_of_stock=False, offset=0, limit=24):
+    # Build WHERE clause
+    conditions = ['i.deleted = 0']
+    params = []
+
+    if search:
+        conditions.append('(i.name LIKE ? OR i.notes_public LIKE ? OR i.location LIKE ?)')
+        search_param = '%' + search + '%'
+        params.extend([search_param, search_param, search_param])
+
+    if category_id:
+        conditions.append('i.category_id = ?')
+        params.append(category_id)
+
+    if subcategory_id:
+        conditions.append('i.subcategory_id = ?')
+        params.append(subcategory_id)
+
+    if hide_out_of_stock:
+        conditions.append('i.quantity_active > 0')
+
+    where_clause = ' AND '.join(conditions)
+
+    # Whitelisted sort columns to prevent SQL injection
+    sort_columns = {
+        'name': 'i.name COLLATE NOCASE',
+        'category': 'c.name COLLATE NOCASE',
+        'quantity': 'i.quantity_active',
+    }
+    order_col = sort_columns.get(sort_by, 'i.name COLLATE NOCASE')
+    order_dir = 'ASC' if sort_order == 'asc' else 'DESC'
+
+    cursor = db.get_data_db().cursor()
+
+    # Get total count
+    count_query = 'SELECT COUNT(*) FROM item i WHERE ' + where_clause
+    count_result = cursor.execute(count_query, params)
+    total_count = 0
+    for row in count_result:
+        total_count = row[0]
+
+    # Get paginated results with category/subcategory names resolved via JOIN
+    data_query = (
+        'SELECT i.item_id, i.category_id, c.name, i.name, i.location, i.quantity_active, '
+        'i.quantity_expired, i.notes_public, i.url, i.notes_private, s.name '
+        'FROM item i '
+        'LEFT JOIN category c ON i.category_id = c.category_id AND c.deleted = 0 '
+        'LEFT JOIN subcategory s ON i.subcategory_id = s.subcategory_id AND s.deleted = 0 '
+        'WHERE ' + where_clause + ' '
+        'ORDER BY ' + order_col + ' ' + order_dir + ' '
+        'LIMIT ? OFFSET ?'
+    )
+    data_params = params + [limit, offset]
+
+    query_results = cursor.execute(data_query, data_params)
+
+    result = []
+    item_ids = []
+
+    for row in query_results:
+        item_id = str(row[0])
+        item_ids.append(item_id)
+        result.append({
+            'id': item_id,
+            'category_id': str(row[1]),
+            'category_name': str(row[2]) if row[2] is not None else '',
+            'name': str(row[3]),
+            'location': str(row[4]),
+            'quantity_active': int(row[5]),
+            'quantity_expired': int(row[6]),
+            'notes_public': str(row[7]),
+            'url': str(row[8]),
+            'subcategory_name': str(row[10]) if row[10] is not None else '',
+            'image_url': None,
+        })
+
+    cursor.close()
+
+    # Batch-fetch first image for each item (ORDER BY ROWID for deterministic "first" image)
+    if item_ids:
+        image_cursor = db.get_data_db().cursor()
+        placeholders = ','.join(['?' for _ in item_ids])
+        image_query = (
+            'SELECT item_id, image_url FROM image '
+            'WHERE item_id IN (' + placeholders + ') '
+            'ORDER BY ROWID'
+        )
+        image_results = image_cursor.execute(image_query, item_ids)
+
+        image_map = {}
+        for img_row in image_results:
+            iid = str(img_row[0])
+            if iid not in image_map:
+                image_map[iid] = str(img_row[1])
+
+        image_cursor.close()
+
+        for item in result:
+            item['image_url'] = image_map.get(item['id'])
+
+    return result, total_count

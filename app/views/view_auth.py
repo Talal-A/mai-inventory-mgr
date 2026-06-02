@@ -93,7 +93,7 @@ def login_callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    return redirect('/dashboard')
+    return redirect('/browse')
 
 @app.route('/login_debug')
 def login_debug():
@@ -114,10 +114,10 @@ def login_debug():
         database.update_user_info(unique_id, users_name, users_email, users_picture)
         user = User.get(unique_id)
     login_user(user)
-    return redirect('/dashboard')
+    return redirect('/browse')
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect('/dashboard')
+    return redirect('/browse')

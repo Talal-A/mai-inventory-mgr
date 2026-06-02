@@ -152,6 +152,24 @@ def get_all_active_subcategories():
     cursor.close()
     return result
 
+# Get all active subcategories grouped by category_id in a single query
+def get_all_active_subcategories_grouped_by_category():
+    grouped = {}
+    cursor = db.get_data_db().cursor()
+
+    query_results = cursor.execute("""
+        SELECT subcategory_id, category_id, name FROM subcategory
+        WHERE deleted=0 ORDER BY name COLLATE NOCASE ASC""")
+
+    for row in query_results:
+        grouped.setdefault(str(row[1]), []).append({
+            'id': str(row[0]),
+            'name': str(row[2]),
+        })
+
+    cursor.close()
+    return grouped
+
 # Get all active subcategories within a given category
 def get_all_active_subcategories_for_category(category_id):
     result = []

@@ -1,6 +1,8 @@
 FROM python:3.12-slim
 
-MAINTAINER talal "talal.abouhaiba@gmail.com"
+LABEL maintainer="talal.abouhaiba@gmail.com"
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         bash \
